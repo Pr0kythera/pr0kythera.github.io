@@ -1,0 +1,90 @@
+<svg viewBox="0 0 960 600" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif">
+  <defs>
+    <marker id="am" markerWidth="11" markerHeight="11" refX="8" refY="3.2" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3.2 L0,6.4 Z" fill="#f85149"/>
+    </marker>
+    <marker id="amg" markerWidth="11" markerHeight="11" refX="8" refY="3.2" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3.2 L0,6.4 Z" fill="#8b949e"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="960" height="600" fill="#0d1117"/>
+
+  <text x="40" y="48" fill="#e6edf3" font-size="26" font-weight="600">The attack chain, threaded through the graph</text>
+  <text x="40" y="74" fill="#8b949e" font-size="15">Five steps, two hosts. Each event is ordinary; the red causal thread is the signal.</text>
+
+  <!-- host panels -->
+  <rect x="40" y="110" width="490" height="430" rx="12" fill="#0f141a" stroke="#30363d"/>
+  <text x="60" y="138" fill="#8b949e" font-size="13" font-weight="600">HOST: WS-DEV-01  (workstation)</text>
+
+  <rect x="560" y="110" width="360" height="430" rx="12" fill="#0f141a" stroke="#30363d"/>
+  <text x="580" y="138" fill="#8b949e" font-size="13" font-weight="600">HOST: DC-01  (domain controller)</text>
+
+  <!-- STEP 1 logon -->
+  <circle cx="110" cy="200" r="22" fill="#d29922"/>
+  <text x="110" y="205" fill="#0d1117" font-size="11" font-weight="600" text-anchor="middle">logon</text>
+  <text x="110" y="238" fill="#8b949e" font-size="11" text-anchor="middle">1. initial logon</text>
+
+  <!-- STEP 2 recon (powershell) -->
+  <circle cx="240" cy="200" r="22" fill="#58a6ff" stroke="#f85149" stroke-width="3"/>
+  <text x="240" y="198" fill="#0d1117" font-size="10" font-weight="600" text-anchor="middle">power</text>
+  <text x="240" y="210" fill="#0d1117" font-size="10" font-weight="600" text-anchor="middle">shell</text>
+  <text x="240" y="238" fill="#f85149" font-size="11" text-anchor="middle">2. recon</text>
+
+  <!-- STEP 3 cred dump: m.exe opens lsass, writes dump -->
+  <circle cx="240" cy="320" r="22" fill="#58a6ff" stroke="#f85149" stroke-width="3"/>
+  <text x="240" y="324" fill="#0d1117" font-size="11" font-weight="600" text-anchor="middle">m.exe</text>
+  <text x="240" y="356" fill="#f85149" font-size="11" text-anchor="middle">3. credential dump</text>
+
+  <circle cx="120" cy="380" r="20" fill="#a371f7"/>
+  <text x="120" y="384" fill="#0d1117" font-size="10" font-weight="600" text-anchor="middle">lsass</text>
+  <text x="120" y="412" fill="#8b949e" font-size="10" text-anchor="middle">opened (VM_READ)</text>
+
+  <circle cx="360" cy="380" r="20" fill="#a371f7"/>
+  <text x="360" y="384" fill="#0d1117" font-size="10" font-weight="600" text-anchor="middle">dump</text>
+  <text x="360" y="412" fill="#8b949e" font-size="10" text-anchor="middle">file written</text>
+
+  <!-- STEP 4 RDP socket -->
+  <circle cx="430" cy="320" r="22" fill="#3fb950" stroke="#f85149" stroke-width="3"/>
+  <text x="430" y="318" fill="#0d1117" font-size="9.5" font-weight="600" text-anchor="middle">RDP</text>
+  <text x="430" y="330" fill="#0d1117" font-size="9" font-weight="600" text-anchor="middle">58348</text>
+  <text x="430" y="356" fill="#f85149" font-size="11" text-anchor="middle">4. lateral (RDP)</text>
+
+  <!-- STEP 5 on DC: sc.exe / service -->
+  <circle cx="660" cy="320" r="22" fill="#58a6ff" stroke="#f85149" stroke-width="3"/>
+  <text x="660" y="324" fill="#0d1117" font-size="11" font-weight="600" text-anchor="middle">sc.exe</text>
+  <text x="660" y="356" fill="#f85149" font-size="11" text-anchor="middle">5. persistence</text>
+
+  <circle cx="800" cy="320" r="22" fill="#f85149"/>
+  <text x="800" y="318" fill="#0d1117" font-size="9.5" font-weight="600" text-anchor="middle">update</text>
+  <text x="800" y="330" fill="#0d1117" font-size="9.5" font-weight="600" text-anchor="middle">svc</text>
+  <text x="800" y="356" fill="#f85149" font-size="11" text-anchor="middle">service created</text>
+
+  <!-- malicious edges -->
+  <path d="M124,218 C160,250 200,250 224,280" fill="none" stroke="#f85149" stroke-width="2.2" marker-end="url(#am)"/>
+  <path d="M240,222 L240,296" stroke="#f85149" stroke-width="2.2" marker-end="url(#am)"/>
+  <path d="M219,332 L140,372" stroke="#f85149" stroke-width="2.2" marker-end="url(#am)"/>
+  <path d="M261,332 L342,372" stroke="#f85149" stroke-width="2.2" marker-end="url(#am)"/>
+  <path d="M262,320 L408,320" stroke="#f85149" stroke-width="2.2" marker-end="url(#am)"/>
+
+  <!-- cross-host bridge -->
+  <path d="M452,320 L638,320" fill="none" stroke="#f85149" stroke-width="2.4" stroke-dasharray="7 5" marker-end="url(#am)"/>
+  <text x="545" y="308" fill="#f85149" font-size="11" text-anchor="middle">cross-host bridge</text>
+
+  <path d="M682,320 L778,320" stroke="#f85149" stroke-width="2.2" marker-end="url(#am)"/>
+
+  <!-- note: service isolated -->
+  <text x="800" y="384" fill="#8b949e" font-size="10" text-anchor="middle">(in the feature graph this</text>
+  <text x="800" y="398" fill="#8b949e" font-size="10" text-anchor="middle">node is currently isolated)</text>
+
+  <!-- legend -->
+  <g font-size="11" fill="#8b949e">
+    <circle cx="60" cy="500" r="7" fill="#58a6ff" stroke="#f85149" stroke-width="2.5"/><text x="74" y="504">malicious process</text>
+    <circle cx="220" cy="500" r="7" fill="#d29922"/><text x="234" y="504">session</text>
+    <circle cx="305" cy="500" r="7" fill="#3fb950" stroke="#f85149" stroke-width="2.5"/><text x="319" y="504">malicious socket</text>
+    <circle cx="455" cy="500" r="7" fill="#a371f7"/><text x="469" y="504">file (benign node, malice on edge)</text>
+    <line x1="60" y1="524" x2="90" y2="524" stroke="#f85149" stroke-width="2.2"/><text x="98" y="528">malicious edge</text>
+    <line x1="220" y1="524" x2="250" y2="524" stroke="#f85149" stroke-width="2.4" stroke-dasharray="6 4"/><text x="258" y="528">cross-host RDP bridge</text>
+  </g>
+
+  <text x="40" y="566" fill="#8b949e" font-size="12">6 malicious nodes, 13 malicious edges, in a graph of 3,111 nodes and 2,106 edges (0.19% / 0.62%).</text>
+</svg>

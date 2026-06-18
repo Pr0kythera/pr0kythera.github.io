@@ -1,0 +1,105 @@
+<svg viewBox="0 0 960 660" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#8b949e"/>
+    </marker>
+    <marker id="arrowAccent" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#79c0ff"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="960" height="660" fill="#0d1117"/>
+
+  <text x="40" y="48" fill="#e6edf3" font-size="26" font-weight="600">Three-scope GNN detector</text>
+  <text x="40" y="74" fill="#8b949e" font-size="15">One shared provenance graph, three views, one fused decision</text>
+
+  <!-- shared graph panel -->
+  <rect x="40" y="110" width="250" height="470" rx="12" fill="#161b22" stroke="#30363d"/>
+  <text x="165" y="140" fill="#e6edf3" font-size="15" font-weight="600" text-anchor="middle">Shared provenance graph</text>
+  <text x="165" y="160" fill="#8b949e" font-size="12" text-anchor="middle">one typed graph + one feature set</text>
+
+  <!-- mini graph nodes inside shared panel -->
+  <g>
+    <line x1="95" y1="230" x2="150" y2="210" stroke="#30363d" stroke-width="1.5"/>
+    <line x1="150" y1="210" x2="210" y2="240" stroke="#30363d" stroke-width="1.5"/>
+    <line x1="150" y1="210" x2="120" y2="300" stroke="#30363d" stroke-width="1.5"/>
+    <line x1="120" y1="300" x2="195" y2="320" stroke="#30363d" stroke-width="1.5"/>
+    <line x1="195" y1="320" x2="160" y2="400" stroke="#f85149" stroke-width="2"/>
+    <line x1="120" y1="300" x2="90" y2="390" stroke="#30363d" stroke-width="1.5"/>
+    <line x1="160" y1="400" x2="215" y2="450" stroke="#f85149" stroke-width="2"/>
+    <line x1="160" y1="400" x2="110" y2="480" stroke="#30363d" stroke-width="1.5"/>
+
+    <circle cx="95" cy="230" r="11" fill="#58a6ff"/>
+    <circle cx="150" cy="210" r="11" fill="#58a6ff"/>
+    <circle cx="210" cy="240" r="11" fill="#3fb950"/>
+    <circle cx="120" cy="300" r="11" fill="#d29922"/>
+    <circle cx="195" cy="320" r="11" fill="#58a6ff" stroke="#f85149" stroke-width="2.5"/>
+    <circle cx="90" cy="390" r="11" fill="#a371f7"/>
+    <circle cx="160" cy="400" r="11" fill="#58a6ff" stroke="#f85149" stroke-width="2.5"/>
+    <circle cx="215" cy="450" r="11" fill="#3fb950"/>
+    <circle cx="110" cy="480" r="11" fill="#d29922"/>
+  </g>
+
+  <!-- legend -->
+  <g font-size="11" fill="#8b949e">
+    <circle cx="60" cy="528" r="6" fill="#58a6ff"/><text x="72" y="532">process</text>
+    <circle cx="135" cy="528" r="6" fill="#3fb950"/><text x="147" y="532">socket</text>
+    <circle cx="205" cy="528" r="6" fill="#d29922"/><text x="217" y="532">session</text>
+    <circle cx="60" cy="552" r="6" fill="#a371f7"/><text x="72" y="556">file</text>
+    <line x1="128" y1="552" x2="152" y2="552" stroke="#f85149" stroke-width="2.5"/><text x="158" y="556">malicious edge</text>
+  </g>
+
+  <!-- three scope cards -->
+  <g>
+    <!-- scope 1 -->
+    <rect x="370" y="110" width="270" height="120" rx="10" fill="#161b22" stroke="#30363d"/>
+    <text x="388" y="138" fill="#58a6ff" font-size="14" font-weight="600">1 - Process subtree</text>
+    <text x="388" y="160" fill="#8b949e" font-size="12">GNN over each process tree</text>
+    <text x="388" y="178" fill="#8b949e" font-size="12">(process_create closure).</text>
+    <text x="388" y="200" fill="#c9d1d9" font-size="12">Local "did something its</text>
+    <text x="388" y="216" fill="#c9d1d9" font-size="12">lineage never would" signal.</text>
+
+    <!-- scope 2 -->
+    <rect x="370" y="262" width="270" height="120" rx="10" fill="#161b22" stroke="#30363d"/>
+    <text x="388" y="290" fill="#3fb950" font-size="14" font-weight="600">2 - Cross-domain boundary</text>
+    <text x="388" y="312" fill="#8b949e" font-size="12">GNN attending to edges that</text>
+    <text x="388" y="330" fill="#8b949e" font-size="12">cross a source or host boundary.</text>
+    <text x="388" y="352" fill="#c9d1d9" font-size="12">Lateral-movement /</text>
+    <text x="388" y="368" fill="#c9d1d9" font-size="12">multi-source-correlation signal.</text>
+
+    <!-- scope 3 -->
+    <rect x="370" y="414" width="270" height="120" rx="10" fill="#161b22" stroke="#30363d"/>
+    <text x="388" y="442" fill="#d29922" font-size="14" font-weight="600">3 - Whole graph</text>
+    <text x="388" y="464" fill="#8b949e" font-size="12">GNN over the entire</text>
+    <text x="388" y="482" fill="#8b949e" font-size="12">provenance graph.</text>
+    <text x="388" y="504" fill="#c9d1d9" font-size="12">Global shape: the full chain</text>
+    <text x="388" y="520" fill="#c9d1d9" font-size="12">as one connected component.</text>
+  </g>
+
+  <!-- arrows shared graph -> scopes -->
+  <path d="M290,250 C330,250 330,170 368,170" fill="none" stroke="#8b949e" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <path d="M290,320 C330,320 330,322 368,322" fill="none" stroke="#8b949e" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <path d="M290,390 C330,390 330,474 368,474" fill="none" stroke="#8b949e" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+  <!-- fusion stacker -->
+  <rect x="710" y="262" width="150" height="120" rx="10" fill="#161b22" stroke="#79c0ff" stroke-width="1.5"/>
+  <text x="785" y="304" fill="#79c0ff" font-size="14" font-weight="600" text-anchor="middle">Fusion</text>
+  <text x="785" y="324" fill="#79c0ff" font-size="14" font-weight="600" text-anchor="middle">stacker</text>
+  <text x="785" y="348" fill="#8b949e" font-size="11" text-anchor="middle">learns when to</text>
+  <text x="785" y="362" fill="#8b949e" font-size="11" text-anchor="middle">trust which scope</text>
+
+  <!-- arrows scopes -> fusion -->
+  <path d="M640,170 C680,170 680,290 708,290" fill="none" stroke="#79c0ff" stroke-width="1.6" marker-end="url(#arrowAccent)"/>
+  <path d="M640,322 C675,322 675,322 708,322" fill="none" stroke="#79c0ff" stroke-width="1.6" marker-end="url(#arrowAccent)"/>
+  <path d="M640,474 C680,474 680,354 708,354" fill="none" stroke="#79c0ff" stroke-width="1.6" marker-end="url(#arrowAccent)"/>
+
+  <!-- output -->
+  <path d="M785,382 L785,430" fill="none" stroke="#79c0ff" stroke-width="1.6" marker-end="url(#arrowAccent)"/>
+  <rect x="690" y="436" width="190" height="74" rx="10" fill="#1c2128" stroke="#f85149" stroke-width="1.5"/>
+  <text x="785" y="466" fill="#f85149" font-size="14" font-weight="600" text-anchor="middle">Per-node / per-edge</text>
+  <text x="785" y="486" fill="#f85149" font-size="14" font-weight="600" text-anchor="middle">malicious score</text>
+  <text x="785" y="502" fill="#8b949e" font-size="11" text-anchor="middle">interpretable subgraph</text>
+
+  <text x="40" y="616" fill="#8b949e" font-size="12">All three scopes share one graph and one feature schema; they differ only in which subgraph they see and how they pool.</text>
+  <text x="40" y="634" fill="#8b949e" font-size="12">Target model: HGT (Heterogeneous Graph Transformer). Evaluation metric: AUPRC.</text>
+</svg>

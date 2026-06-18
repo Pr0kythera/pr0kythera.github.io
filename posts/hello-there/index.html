@@ -341,7 +341,7 @@
 <p>This dataset does not redefine or modify any PE fields; it strictly follows the official specification provided by Microsoft.</p>
 <h3 id="exploratory-data-analysis">Exploratory Data Analysis</h3>
 <p>So we have a dataset of PE numerical features based on components of a PE file. Lets take a look at the breakdown of how many are labelled as malware vs benign? Lets load it up and see what we&rsquo;ve got.</p>
-<div class="highlight" codefences="false"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Python" data-lang="Python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#f92672">import</span> pandas <span style="color:#66d9ef">as</span> pd
+<div class="highlight" codefences="false"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-Python" data-lang="Python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#f92672">import</span> pandas <span style="color:#66d9ef">as</span> pd
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>df <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>read_csv(<span style="color:#e6db74">&#39;Malware-Benign.csv&#39;</span>)
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>print(df[<span style="color:#e6db74">&#39;Malware&#39;</span>]<span style="color:#f92672">.</span>value_counts())
 </span></span></code></pre></div><p>Turns out the dataset is skewed to having more malicious examples than benign. This is somewhat surprising considered it&rsquo;s a real  dataset that Microsoft has put together, we could look at ways to fix this like under sampling but because the ratio isn&rsquo;t really strongly skewed it would just be dropping a lot of potentially useful training data.</p>
@@ -349,7 +349,7 @@
 1 -    14599<br>
 0 -    5012</p>
 <p>Next up we split into a 70% 30% Train test. I&rsquo;m not angling this article as an intro to Machine Learning tutorial so I&rsquo;ll keep the details light as to why. I will however draw attention to stratify=y which is taking the y variable defined at df[&lsquo;mMlware&rsquo;] and ensuring we don&rsquo;t end up with all of the malware = 0 randomly in either the train or test dataset. Which would make the model very sad.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Python" data-lang="Python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#f92672">from</span> sklearn.model_selection <span style="color:#f92672">import</span> train_test_split
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-Python" data-lang="Python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#f92672">from</span> sklearn.model_selection <span style="color:#f92672">import</span> train_test_split
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span><span style="color:#75715e"># Separate features (X) and target (y)</span>
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>X <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>drop(<span style="color:#e6db74">&#39;Malware&#39;</span>, axis<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>y <span style="color:#f92672">=</span> df[<span style="color:#e6db74">&#39;Malware&#39;</span>]
@@ -361,25 +361,25 @@
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Test set shape: </span><span style="color:#e6db74">{</span>X_test<span style="color:#f92672">.</span>shape<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
 </span></span></code></pre></div><p>Here we have the successfully split data shapes:</p>
 <table>
-  <thead>
-      <tr>
-          <th>Set Type</th>
-          <th>Result</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>Training set shape</td>
-          <td>(13727, 78)</td>
-      </tr>
-      <tr>
-          <td>Test set shape</td>
-          <td>(5884, 78)</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Set Type</th>
+					<th>Result</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Training set shape</td>
+					<td>(13727, 78)</td>
+			</tr>
+			<tr>
+					<td>Test set shape</td>
+					<td>(5884, 78)</td>
+			</tr>
+	</tbody>
 </table>
 <p>Because it wouldn&rsquo;t be a ML article without a boxplot sneaking itself in somewhere lets now take a look at how a single field or feature relates to whether the sample is malware or benign:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Python" data-lang="Python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-Python" data-lang="Python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span><span style="color:#f92672">import</span> seaborn <span style="color:#66d9ef">as</span> sns
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span><span style="color:#75715e"># 1. Create a temporary DataFrame that brings X and y back together for plotting</span>
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>plot_data <span style="color:#f92672">=</span> X_train<span style="color:#f92672">.</span>copy()
@@ -398,7 +398,7 @@
 </span></span></code></pre></div><p>Rather unsurprisingly we see a correlation between number of suspicious import functions and a sample being malware! We could in theory stop here and call it a day making the assessment if a file ha more than X number of Suspicious Import functions it&rsquo;t malware. But hopefully we can see immediate flaws in that, really we want to use many more data points to make a more accurate determination..</p>
 <p><img src="/images/image.png?width=200px" alt="Resize"></p>
 <p>So to do that lets take the top most and bottom most corresponding correlations for all of the available features and see what bubbles up to the top or sinks to the bottom. These will hopefully be features that can be used to correlate strongly in combination with each other to determine the maliciousness of a file.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Python" data-lang="Python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#75715e"># 1. Create a new dataframe with ONLY numeric columns</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-Python" data-lang="Python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#75715e"># 1. Create a new dataframe with ONLY numeric columns</span>
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>numeric_X_train <span style="color:#f92672">=</span> X_train<span style="color:#f92672">.</span>select_dtypes(include<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#39;number&#39;</span>])
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span><span style="color:#75715e"># 2. Calculate correlations on that numeric data</span>
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>correlations <span style="color:#f92672">=</span> numeric_X_train<span style="color:#f92672">.</span>corrwith(y_train)<span style="color:#f92672">.</span>sort_values(ascending<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>)
@@ -453,7 +453,7 @@ SectionMainChar               NaN</p>
 </ul>
 <p><strong>Solutionising:</strong></p>
 <p>So what I ended up doing was retraining the model after removing these temporal features:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Remove features that create temporal bias</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Remove features that create temporal bias</span>
 </span></span><span style="display:flex;"><span>cols_to_drop <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;MinorOperatingSystemVersion&#39;</span>, 
 </span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#39;MajorOperatingSystemVersion&#39;</span>, 
 </span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#39;TimeDateStamp&#39;</span>]
@@ -467,7 +467,7 @@ SectionMainChar               NaN</p>
 <h3 id="training-random-forest">Training Random Forest</h3>
 <p>I&rsquo;ve decided to use Random Forest as a Classifier. Largely due to having some familiarity with it and it being a simple effective &ldquo;white box&rdquo; model which we can interrogate the weights of the parameters to understand the results we are getting. The theory behind the classifier is going beyond the scope of this article but to put it simply Random Forest is an &ldquo;ensemble method&rdquo; which randomly splits up subsets of features and generates trees based on those subsets then aggregates the multiple outputs into a single result. They can be used for regression or classification problems, the latter is what we are attempting to achieve.</p>
 <p>Where as a decision tree is a chain of if/else statements, Random Forest is less susceptible to over fitting since essentially rather than end up with a structure that perfectly fits your training data like in a Decision Tree the random forests random nature helps generalize the model. So it may be worse at predicting the Training Set it should be better with the Test set and real life data.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Python" data-lang="Python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#f92672">from</span> sklearn.ensemble <span style="color:#f92672">import</span> RandomForestClassifier
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-Python" data-lang="Python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#f92672">from</span> sklearn.ensemble <span style="color:#f92672">import</span> RandomForestClassifier
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span><span style="color:#75715e"># 1. Initialize the model</span>
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span><span style="color:#75715e"># random_state=42 helps ensure we get the same results if we run this again</span>
@@ -495,7 +495,7 @@ SectionMainChar               NaN</p>
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26</span><span>
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27</span><span>print(<span style="color:#e6db74">&#34;Predictions generated!&#34;</span>)
 </span></span></code></pre></div><h3 id="analysing-the-training-results">Analysing the training results</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Python" data-lang="Python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#f92672">from</span> sklearn.metrics <span style="color:#f92672">import</span> confusion_matrix
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-Python" data-lang="Python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#f92672">from</span> sklearn.metrics <span style="color:#f92672">import</span> confusion_matrix
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span><span style="color:#75715e"># 1. Calculate the matrix</span>
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>cm <span style="color:#f92672">=</span> confusion_matrix(y_test, y_pred)
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span><span style="color:#75715e"># 2. Plotting as a heatmap</span>
@@ -511,7 +511,7 @@ SectionMainChar               NaN</p>
 <p>An excellent result, lets wrap up there and pat ourselves on the back not worrying about if it works in &ldquo;production&rdquo;.</p>
 <p>One of the biggest bug bears of Cybersecurity Analysts, which is especially true with any black box machine learning is not being able to determine what features actually lead a detection to firing. Vendors often hand wave this away, but having never worked in or with a SOC where the True Positive percentage is higher than False Positive / Benign Positive I think it&rsquo;s more than fair for an analyst to want to understand why a detection mechanism thinks something is malicious.</p>
 <p>Not all types of machine learning can do this Neural Networks from my understanding are pretty impenetrable. But in this case we can look at the importance per feature to try to understand what features are pushing the model to a decision.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Python" data-lang="Python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#f92672">import</span> pandas <span style="color:#66d9ef">as</span> pd
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-Python" data-lang="Python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#f92672">import</span> pandas <span style="color:#66d9ef">as</span> pd
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span><span style="color:#f92672">import</span> seaborn <span style="color:#66d9ef">as</span> sns
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span><span style="color:#75715e"># 1. Get the importance scores from the trained model</span>
@@ -561,7 +561,7 @@ Feature  Importance<br>
 b) actually work with real world data and use cases</p>
 <p>So this next python script is attempting to do just that. We are using the pefile library to extract features from an actual executable passed to it with command line arguments. The next important step is we need to extract the same features the model was trained on which in our case means also calculating the files entropy.</p>
 <p>Needless to say this isn&rsquo;t the first script I wrote to do this the start was very hacky and just about worked. Since then it&rsquo;s been iterated on to make it actually work properly and to make it more readable using our good friend Claude.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Python" data-lang="Python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  1</span><span><span style="color:#75715e">#!/usr/bin/env python3</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-Python" data-lang="Python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  1</span><span><span style="color:#75715e">#!/usr/bin/env python3</span>
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  2</span><span><span style="color:#e6db74">&#34;&#34;&#34;
 </span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  3</span><span><span style="color:#e6db74">PE Malware Detection Script
 </span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  4</span><span><span style="color:#e6db74">Extracts 74 features required by the trained model
@@ -1304,6 +1304,14 @@ b) actually work with real world data and use cases</p>
       <nav class="post-navigation" aria-label="Post navigation">
         
 
+        
+          <a
+            href="/posts/new-post-here/"
+            class="nav-link nav-next"
+            aria-label="Next post: Provenance based Graph Neural Networks using Heterogeneous Graph Transformers">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">Provenance based Graph Neural Networks using Heterogeneous Graph Transformers</span>
+          </a>
         
       </nav>
     </article>

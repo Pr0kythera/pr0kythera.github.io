@@ -1,0 +1,627 @@
+<!doctype html>
+<html
+  lang="en-uk"
+  dir="ltr"
+  class="h-full">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="language" content="en-uk">
+<script>
+  
+  (function () {
+    const storedTheme = localStorage.getItem("theme");
+    const systemPrefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
+    const theme = storedTheme || (systemPrefersLight ? "light" : "dark");
+    document.documentElement.setAttribute("data-theme", theme);
+  })();
+</script>
+<title>Provenance based Graph Neural Networks using Heterogeneous Graph Transformers | Blog</title>
+<meta
+  name="description"
+  content="
+    Scene Setting If anyone recalls the first post I wrote back at the end of January I suggested more content might come sooner than half way through the year. …
+  
+  ">
+
+
+
+
+
+
+<link rel="canonical" href="https://Pr0kythera.github.io/posts/new-post-here/">
+
+<meta name="robots" content="index, follow">
+
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Provenance based Graph Neural Networks using Heterogeneous Graph Transformers | Blog">
+<meta property="og:description" content="Scene Setting If anyone recalls the first post I wrote back at the end of January I suggested more content might come sooner than half way through the year. …">
+<meta property="og:url" content="https://Pr0kythera.github.io/posts/new-post-here/">
+<meta property="og:site_name" content="Blog"><meta property="og:image" content="https://example.com/avatar.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630"><meta property="article:published_time" content="2026-06-16T16:00:00Z">
+  <meta
+    property="article:modified_time"
+    content="2026-06-16T16:00:00Z">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Provenance based Graph Neural Networks using Heterogeneous Graph Transformers | Blog">
+<meta name="twitter:description" content="Scene Setting If anyone recalls the first post I wrote back at the end of January I suggested more content might come sooner than half way through the year. …"><meta name="twitter:image" content="https://example.com/avatar.jpg">
+
+<script type="application/ld+json">
+
+
+
+
+
+
+
+
+
+
+"{\"@context\":\"https://schema.org\",\"@type\":\"BlogPosting\",\"author\":{\"@type\":\"Person\",\"email\":\"contact.prokythera@gmail.com\",\"name\":\"Blog\"},\"dateModified\":\"2026-06-16T16:00:00Z\",\"datePublished\":\"2026-06-16T16:00:00Z\",\"description\":\"Scene Setting If anyone recalls the first post I wrote back at the end of January I suggested more content might come sooner than half way through the year. …\",\"headline\":\"Provenance based Graph Neural Networks using Heterogeneous Graph Transformers\",\"image\":\"https://example.com/avatar.jpg\",\"mainEntityOfPage\":{\"@id\":\"https://Pr0kythera.github.io/posts/new-post-here/\",\"@type\":\"WebPage\"},\"publisher\":{\"@type\":\"Organization\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https://example.com/avatar.jpg\"},\"name\":\"Blog\"}}"</script>
+
+
+
+  
+  
+  
+    
+  
+  
+<script type="application/ld+json">"{\"@context\":\"https://schema.org\",\"@type\":\"BreadcrumbList\",\"itemListElement\":[{\"@type\":\"ListItem\",\"item\":\"https://Pr0kythera.github.io/\",\"name\":\"Blog\",\"position\":1},{\"@type\":\"ListItem\",\"item\":\"https://Pr0kythera.github.io/posts/\",\"name\":\"Posts\",\"position\":2},{\"@type\":\"ListItem\",\"item\":\"https://Pr0kythera.github.io/posts/new-post-here/\",\"name\":\"Provenance based Graph Neural Networks using Heterogeneous Graph Transformers\",\"position\":3}]}"</script>
+
+
+
+
+
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+  rel="stylesheet">
+
+
+<link
+  rel="stylesheet"
+  href="/css/theme.min.86a32b729f656fc6c119ed69193950db815a3ad9fdc967b32c76d602f11449a4.css"
+  integrity="sha256-hqMrcp9lb8bBGe1pGTlQ24FaOtn9yWezLHbWAvEUSaQ=">
+
+<link
+    rel="stylesheet"
+    href="/css/syntax-dark.min.b01037e5609e6260b74d6fcdd6d5131e8dcbc4d46d6ef4bfbe5a60bdfc1a9f30.css"
+    integrity="sha256-sBA35WCeYmC3TW/N1tUTHo3LxNRtbvS/vlpgvfwanzA="
+    id="syntax-dark-theme"
+    class="syntax-theme"><link
+    rel="stylesheet"
+    href="/css/syntax-light.min.9602bc2fcef52b4c62e05eae14b48ba428e114f116e993e504d83ed5a3aeda98.css"
+    integrity="sha256-lgK8L871K0xi4F6uFLSLpCjhFPEW6ZPlBNg&#43;1aOu2pg="
+    id="syntax-light-theme"
+    class="syntax-theme"
+    disabled><script>
+  
+  (function () {
+    const storedTheme = localStorage.getItem("theme");
+    const systemPrefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
+    const theme = storedTheme || (systemPrefersLight ? "light" : "dark");
+
+    const syntaxDark = document.getElementById("syntax-dark-theme");
+    const syntaxLight = document.getElementById("syntax-light-theme");
+
+    if (theme === "light") {
+      if (syntaxDark) syntaxDark.disabled = true;
+      if (syntaxLight) syntaxLight.disabled = false;
+    } else {
+      if (syntaxDark) syntaxDark.disabled = false;
+      if (syntaxLight) syntaxLight.disabled = true;
+    }
+
+    
+    const observer = new MutationObserver(() => {
+      const currentTheme = document.documentElement.getAttribute("data-theme");
+      if (currentTheme === "light") {
+        if (syntaxDark) syntaxDark.disabled = true;
+        if (syntaxLight) syntaxLight.disabled = false;
+      } else {
+        if (syntaxDark) syntaxDark.disabled = false;
+        if (syntaxLight) syntaxLight.disabled = true;
+      }
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+  })();
+</script>
+
+
+
+
+<link
+  rel="stylesheet"
+  href="/css/bundle.min.783a79746a859af9be598cbc33fba2a1087434b23768524277b07ef28336f113.css"
+  integrity="sha256-eDp5dGqFmvm&#43;WYy8M/uioQh0NLI3aFJCd7B&#43;8oM28RM=">
+
+
+
+
+
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+<link rel="icon" type="image/png" href="/favicon.png">
+
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon/logo-transparent/favicon-32x32.png">
+
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon/logo-transparent/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon/logo-transparent/apple-touch-icon.png">
+<link
+  rel="icon"
+  type="image/png"
+  sizes="192x192"
+  href="/favicon/logo-transparent/android-chrome-192x192.png">
+<link
+  rel="icon"
+  type="image/png"
+  sizes="512x512"
+  href="/favicon/logo-transparent/android-chrome-512x512.png">
+<link rel="manifest" href="/favicon/logo-transparent/site.webmanifest">
+
+
+
+
+  
+
+
+
+
+  </head>
+  <body class="flex flex-col min-h-screen">
+    <a href="#main-content" class="skip-to-main" aria-label="Skip to main content"
+      >Skip to main content</a
+    >
+    <header class="sticky-header">
+      <div class="header-container">
+        <nav class="header-nav" role="navigation" aria-label="Main navigation">
+  <div class="header-content">
+    <div class="header-logo">
+      <a href="/" class="logo-link" aria-label="Home - Blog">
+        Blog
+      </a>
+    </div>
+
+    <div class="header-menu">
+      <ul class="menu-list">
+  
+    <li class="menu-item">
+      <a
+        href="/posts/"
+        class="menu-link ">
+        Posts
+      </a>
+    </li>
+  
+</ul>
+
+
+
+      <button id="search-toggle" class="search-toggle" aria-label="Search" type="button">
+        <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+      </button>
+
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme" type="button">
+  <svg class="icon-sun" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+  </svg>
+  <svg class="icon-moon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+  </svg>
+</button>
+
+    </div>
+  </div>
+</nav>
+
+      </div>
+    </header>
+
+    <main id="main-content" class="flex-1" role="main">
+      
+  <div class="single-post-wrapper">
+    <article class="single-post">
+      
+
+
+
+
+
+
+
+      <header class="post-header">
+        <h1 class="post-title-main">Provenance based Graph Neural Networks using Heterogeneous Graph Transformers</h1>
+
+        
+
+        <div class="post-meta">
+  <div class="post-meta-info">
+    <time datetime="2026-06-16T16:00:00Z" class="post-date">
+      <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+      </svg>
+      June 16, 2026
+    </time>
+
+    <span class="meta-separator">•</span>
+
+    
+      <span class="post-word-count">
+        <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        3848 words
+      </span>
+    
+
+    
+      <span class="meta-separator">•</span>
+      <span class="post-reading-time">
+        <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        19 min
+      </span>
+    
+  </div>
+
+  
+</div>
+
+      </header>
+
+      <div class="post-content-main">
+        <h1 id="scene-setting">Scene Setting</h1>
+<p>If anyone recalls the first post I wrote back at the end of January I suggested more content might come sooner than half way through the year. Without dwelling on that too much, I would love to introduce the first half of a two part installment. This will largely focus on the problem statement, theory, research background followed by the data pipeline I&rsquo;ve built. Then hopefully this will be able to surface some interesting results in part 2.</p>
+<p>The aim of this project is to train a high fidelity detection engine on sequences of suspicious events. Building from logs which are representative of a typical Enterprise SIEM. Which in theory should be portable to any typical SOC environment. Emphasis on the theory.</p>
+<h1 id="framing">Framing</h1>
+<p>Lets begin with the problem, statement.</p>
+<p>The average compromise or intrusion is often a sequence of small mundane events. An identity logs in and executes a process which spawns a child. That child process reads another process&rsquo;s memory then opens a network connection. A service gets created.</p>
+<p>Every one of those, on its own, happens thousands of times a day on a healthy network. None of them trips a rule worth writing, because a rule that fires on (a process that read another process&rsquo;s memory) fires constantly and gets tuned out within a week. Detection engineering is always a delicate knife edge balance. On the other extreme if we only write detections for activity which is unambiguously malicious we&rsquo;re almost certainly going to miss any sort of subtle attack.</p>
+<p>Good detections try to absorb as much context from that single event and only alert on exceptions to the norm. For a sign in event this is the user agent, the location, the time, the IP. But even with these they have to tread the line between missing the malicious sign in vs alerting off a large amount of benign sign ins.</p>
+<p>Not to put too fine a point on it, if you only have fantastic detections that identify clear signs of compromise, ransomware or 2tb of data being exfiltrated. By the point those alerts have fired, the SOC has performed L1 triage and escalated it to your Incident Response Team a lot of the damage has likely been done.</p>
+<p>More than likely this isn&rsquo;t news, this entire topic has been talked to death. Equally treating Machine Learning as a panacea is absolutely not in any sense novel. EDR vendors in particular have been making heavy use of Machine Learning for many years to varying levels of success. SOC teams often have a hard time, the algorithms may be trained on a 30 day period of logs and then left to their own device. Unlike traditional Detections where tuning is usually trivial, Machine Learning rules tend to be somewhat opaque beyond a vague description of &ldquo;Anomalous sign in&rdquo; and provide little levers to effectively tune.</p>
+<p>I have strong suspicion that a great deal of this challenge is detections be it EDR/SIEM rules or Machine Learning rules tend to focus on a single event. A suspicious login, process injection, a malware signature. These events will commonly be grouped together as similar events they still only focus a single type of event. Approaches like RBA (Risk Based Alerting) do go a long way to solve this problem through aggregating risk scores for multiple alerts seen against an entity in a rolling time window. They are aggregating individuals events into a culmative score rather than clearly identifying the links between those events. An RBA alert can often comprise of 5-6 entirely seperate risk events that happened to occour within the time period.</p>
+<p>As we discussed at the outset the subtle signal isn&rsquo;t necessarily any of those individual events. The signal we are looking for is expressed in a chain of related events: this login, led to this process, which read lsass (the Windows process that holds credentials in memory), which wrote a file, which was carried over this RDP session to that host, which created this service. The malicious activity flows through the causal thread connecting ordinary events across log sources and across machines.</p>
+<p>I want to reframe the entire detection problem to focus on causal chains of activity. A potential solution is we can build a causal graph and train a model to recognise the malicious subgraph (series of events which were malicious).</p>
+<p>This is a graph-learning problem, and that&rsquo;s where this project starts.</p>
+<p><img src="/static/image-1.png" alt="alt text"></p>
+<h2 id="research--provenance">Research &amp; Provenance</h2>
+<p>Provenance-based intrusion detection (PIDS) is a well established line of research, and this project leans into it heavily. A few papers are worth naming, because they set the groundwork.</p>
+<p>Before delving in, it&rsquo;s probably useful to offer a definition before throwing out too much technical jargon:</p>
+<p>A Provenance-based intrusion detection (PIDS) models system activity as a provenance graph. This can be described as directed graph whose nodes are system entities (processes, files, sockets, users) and whose edges are the interactions between them (a process reading a file, opening another process, connecting to a host). Because the graph captures the causal dependencies between events rather than the events in isolation, an intrusion shows up as an anomalous pattern of interdependencies. Essentially highlighting it as a malicious subgraph. This gives an attack technique agnostic view, you&rsquo;re not matching known signatures or even individual behaviours, you&rsquo;re looking for structure in your logs that deviates from benign execution.</p>
+<p>UNICORN (Han, Pasquier, Bates, Mickens, Seltzer; NDSS 2020) is the one that framed the problem for me. It&rsquo;s an anomaly-based APT detector built on whole-system provenance graphs, and it&rsquo;s explicitly designed around the &ldquo;low-and-slow&rdquo; problem. Attacks that unfold over a long enough span that any short window of events looks normal. Its answer is to summarise the entire evolving graph efficiently through a &ldquo;graph-sketching technique&rdquo; rather than just inspecting local neighbourhoods. The argument being that the context you need to separate benign from malicious lives in the long causal relationships, not the immediate ones.</p>
+<p>R-CAID (Goyal, Wang, Bates; IEEE S&amp;P 2024) highlights a different point that has directly shaped my design. It names the &ldquo;curse of locality&rdquo;, when you embed a provenance graph by aggregating local neighbourhoods, you sever the link between a suspicious event and its root cause. R-CAID&rsquo;s response is to precompute each node&rsquo;s root causes during graph construction and fold them into the embedding. To do detection at the node/process level rather than classifying a whole graph as malicious or benign.</p>
+<p>For the model itself, the family I&rsquo;m targeting is HGT, the Heterogeneous Graph Transformer, because simply the graph is heterogeneous (not a single type of thing). Processes, files, sockets, sessions are different kinds of nodes with different feature spaces. HGT maintains per-node-type and per-edge-type message-passing semantics instead of flattening everything into a generic type. The whole feature schema I describe later is built around that per-type structure. Most earlier graph neural networks assumed every node was the same kind and every connection meant the same thing, which forces you to flatten that distinction away. HGT keeps it.</p>
+<p>It does this by treating each connection as a typed fact: this kind of node, connected by this kind of relationship, to that kind of node. &ldquo;A process opens a socket&rdquo; and &ldquo;a session runs a process&rdquo; are handled as distinct relationship types with their own learned behaviour, rather than being lumped together.</p>
+<p>The &ldquo;Transformer&rdquo; part borrows the same core idea that powers large language models: attention. When the network builds up its understanding of a node, it doesn&rsquo;t treat all the node&rsquo;s neighbours equally. It&rsquo;s able to learn which neighbours matter most for the task and weights them accordingly. So a process surrounded by ten ordinary children and one connection to a credential store can learn to pay disproportionate attention to that one unusual connection. Attention is what lets the model find the needle without being told where it is.</p>
+<p>To put this simply: a HGT is a graph neural network that respects that different entities and different relationships are different, and uses attention to learn which of a node&rsquo;s typed connections actually carry the signal.</p>
+<h3 id="three-gnns-that-disagree-productively">Three GNNs that disagree.. productively!</h3>
+<p>So far what I&rsquo;ve describe isn&rsquo;t awfully innovative. Applying a previously developed method against a new dataset would be highly educational, interesting and potentially fruitful. I had some intuitions that I wanted to explore and I&rsquo;m hoping I will be able to potentially find something new and interesting.</p>
+<p>The goal isn&rsquo;t a single network. It&rsquo;s three! Each one looking at the same graph through three different windows, with a fourth model learning how to combine them. The research I referenced earlier looked at entirely different aspect of a Graph. I&rsquo;m hoping by combining multiple views into one the whole will be more than the sum of it&rsquo;s parts.</p>
+<p>Scope one: the process subtree. A GNN passed over each process tree. This is the scope that catches &ldquo;this process did something its own lineage would never do.&rdquo; The credential dump, viewed inside the subtree of the session that spawned it, is anomalous against its siblings and parents. Here we have only the Local context, and only the local anomaly.</p>
+<p>Scope two: the cross-domain boundary. A GNN that specifically attends to edges crossing a boundary. For example a host boundary (the RDP hop from workstation to DC). This is the lateral-movement scope. It exists because the events that exhibit lateral movement are exactly the ones a single-source tool structurally cannot correlate. Boundary-crossing events are a signal, so a scope dedicated to boundary edges should see it most clearly.</p>
+<p>Scope three: the whole graph. A GNN over the entire provenance graph, to catch the global shape. The full chain as one connected component, the thing you only see when you zoom all the way out.</p>
+<p><img src="/static/image.png" alt="alt text">
+(Area Under the Precision-Recall Curve)</p>
+<p>The important design constraint: all three scopes share one graph and one set of features. They differ in which subgraph they see but not in what a node&rsquo;s feature vector contains. That&rsquo;s what kept the feature work tractable. I built one schema to serve all three, rather than three schemas.</p>
+<p>So why <!-- raw HTML omitted -->male models<!-- raw HTML omitted --> GNNs? My Intuition is that a single model over the entire provenance graph faces a resolution problem: the malicious subgraph is a handful of nodes and edges inside thousands. The signals that can identify it live at varying scales.</p>
+<ul>
+<li>The credential dump is a local anomaly, a process doing something its immediate lineage would not normally exhibit. A whole-graph model, containing information across thousands of nodes, tends to wash that sort of fine detail out.</li>
+<li>The lateral movement is the opposite: its signal is precisely that an edge crosses a boundary between log sources or between hosts, which is easy to miss unless you&rsquo;re specifically attending to boundary-crossing edges rather than treating them like any other connection.</li>
+<li>The overall shape of the attack and the fact that these scattered events form one long connected chain. This picture can only resolve when you zoom all the way out. No single receptive field is right for all three.</li>
+</ul>
+<p>Models tend to be tuned and focused on a single thing it&rsquo;s designed for. A model tuned to catch the local anomaly blurs the global structure; a model tuned for global structure misses the local detail. So instead of forcing one network to compromise across all three scales, each scope is specialised for the signal it&rsquo;s best placed to see. Then we can introduce a fusion model learns when to trust each individual model. This whole premise is built on my intuition that the three are good at different aspects of identifying maliciousness and a stacker can arbitrate between them better than a single averaged view can. Whether that intuition holds up you&rsquo;ll have to wait until the results come out in part 2!</p>
+<p>If an analogy would be helpful; think of it like photographing a crime scene at three settings. Zoom right in and you can see one suspicious detail in sharp focus, but you&rsquo;ve lost all sense of where it sits or what it connects to. Pull all the way back and you can see the whole scene as one shape, every element and how they&rsquo;re arranged, but the incriminating detail is now too small to make out.</p>
+<p>The third setting isn&rsquo;t really a zoom at all: it&rsquo;s a filter that lights up only the doorways and boundaries, the points where someone moved from one room, or one building, to another. I this kind of attack, the act of crossing that boundary is the tell. None of the three is the &ldquo;right&rdquo; setting. Each shows what the others can&rsquo;t. The difference from a camera is that we don&rsquo;t pick the best shot, we use all three to form a narrative of who done it.</p>
+<h2 id="sounds-great-in-theory-but">Sounds great in theory but..</h2>
+<p>Everything I&rsquo;ve described so far assumes I have data, like lots and lots of data. Well labelled, multi-source telemetry  that is capable of capturing the details of a multi-stage attack. With known ground truth of what happened and why so we can train and test against using supervised learning. Most importantly data that looks enough like the real thing to train on. This is arguably the biggest blocker and hardest part of any machine learning project.</p>
+<p>The options for getting attack telemetry are all bad in different ways. Real production logs are a compliance and privacy minefield. The well-known public datasets (LANL, DARPA OpTC) have been scrubbed and anonymised to the point where they read more like generic event abstractions than actual log sources. Which unfortunately strips out exactly the cross-source detail a correlation-based detector needs.</p>
+<p>You can generate your own with attack-simulation frameworks like Atomic Red Team or Caldera, but that needs real a lot of well maintained infrastructure to run against. Which takes time and resources and unfortunately scales poorly when what you need breadth in your datasets. Most off-the-shelf synthetic log generators have flaws for this use case, the biggest one being: they emit each log format independently. So the records don&rsquo;t agree with each other, two sources will disagree about a port number or a timestamp, which is the number-one tell of fake data. This completely destroys any causal consistency the whole approach of using GNNs depends on.</p>
+<p>Thankfully it looks like Cisco&rsquo;s EvidenceForge is what changed that,it&rsquo;s an open-source tool from Cisco Talos that was released only weeks before I wrote this. Its whole design premise is the problem above. Instead of generating each log format separately, it works from a single canonical event model. One source of truth for every event and emits all the different log formats from that same object. Two emitters physically cannot disagree about a port, a timestamp, or a logon ID, because there&rsquo;s only one underlying value, fantastic! On top of that it enforces causal and temporal ordering (the dependencies that have to hold in reality. For example a DNS lookup occurs before the HTTPS connection is resolved. A Kerberos ticket before the domain logon they enable), layers in realistic background noise and red herrings so the malicious activity isn&rsquo;t trivially separable, and models believable timing rather than the uniform-random timestamps.</p>
+<p>What it produces, concretely, is a synchronised dataset across 20-plus correlated log formats. Windows Security events, Sysmon, many Zeek log types, eCAR EDR/XDR telemetry, and more. All unified in describing the same scenario, all agreeing with each other, all with known &ldquo;ground-truth&rdquo; labels which is key for supervised learning. For this project I use four of those formats (eCAR, Windows Security, Sysmon, Zeek). The scenario authoring is LLM-assisted, you provide a description of the attack you want and it builds the canonical event. However importantly, the generation itself is entirely deterministic, so a scenario is reproducible. That combination of realistic and varied but reproducible and labelled, is exactly what a project like this needs and exactly what didn&rsquo;t exist a couple of months ago.</p>
+<p>So when I talk about &ldquo;a scenario&rdquo; in this post, that&rsquo;s what&rsquo;s underneath it: an EvidenceForge generated, causally consistent, ground truth labelled multi source capture. The project is, in a real sense, only achievable because that tool now exists.</p>
+<h2 id="the-data-pipeline-parse-correlate-label">The Data Pipeline: parse, correlate, label</h2>
+<p>Before any of the GNN ambition, you need the graph. And the graph has to be correct, which is a much higher bar than &ldquo;the code runs.&rdquo; A graph that&rsquo;s subtly wrong, for example an edge anchored to the wrong entity or a label on the wrong node will train a model that learns the wrong thing and reports a great-looking accuracy number while doing so. In essence the data pipeline is the project.</p>
+<p>The pipeline is a strict sequence: parse -&gt; correlate -&gt; label -&gt; features -&gt; train. Each stage has one job and I&rsquo;ve taken pains to enforce it doesn&rsquo;t encroach on next stage&rsquo;s job. The reasoning behind this is every Machine Learning project I&rsquo;ve attempted has taught me that being able to be flexible, iterate and modify process is key to getting a good output. If we were to combine everything into a monolith it means making targeting tweaks much more fragile and frankly it can be hard to find where you&rsquo;ve scurried away different functions. That discipline mattered more than I expected, so let me go through the first three.</p>
+<h3 id="parsers-are-pure-readers">Parsers are pure readers</h3>
+<p>Each source gets its own parser: ecar.py, windows.py, sysmon.py, zeek.py. A parser reads its source into typed records and does nothing else. No cross-source logic, no correlation, no clever joins. The moment a parser starts reaching into another source&rsquo;s data to &ldquo;help,&rdquo; you&rsquo;ve created a place where a correlation bug can hide that no correlation test will catch, because it&rsquo;s happening in the parser.</p>
+<h3 id="the-correlator-does-all-the-joining">The correlator does all the joining</h3>
+<p>correlator.py (currently on its ninth version&hellip; the version numbers tell their own story) is where the four sources become one graph. Needless to say this is the hard part.</p>
+<p>The join that builds the process graph relies on matching process identity across eCAR&rsquo;s record types. eCAR has multiple action types: PROCESS/CREATE, OPEN, FLOW, MODULE, to name a few. Each carries a pid and an objectID. The naive move is to index processes from any record that mentions them. That is wrong, and why it&rsquo;s wrong subtle: in most record types the pid is the &ldquo;actor&rdquo; (the process doing the thing) while the objectID is the target (the process being acted upon). They&rsquo;re different entities. Only in PROCESS/CREATE records do the envelope pid and the objectID reliably refer to the same process. So the process-instance index has to be built exclusively from CREATE records. Build it from anything else and you&rsquo;ll happily merge an attacker process with its victim because they appeared in the same OPEN record, and every structural test will still pass because the structure is fine. It&rsquo;s the identity that&rsquo;s wrong.</p>
+<p><img src="/static/image-3.png" alt="alt text"></p>
+<p>The correlator also does the cross-source enrichment (joining eCAR processes to their Windows/Sysmon counterparts to recover fields eCAR lacks, like logon_id), the network-flow merge (Zeek conns). Session stitching is where I&rsquo;ve built the socket-to-session bridge that connect a network flow to the session that owns it. Those bridges are what allows us to see the RDP hop as a single correlated thing rather than two unconnected halves. They&rsquo;re built in the correlator.</p>
+<h3 id="the-labeler-is-an-overlay-not-a-mutation">The labeler is an overlay, not a mutation</h3>
+<p>labeler.py (on v4, again the versions are their own story) takes the built graph plus a &lsquo;ground-truth&rsquo; file and marks which nodes and edges are malicious. One decision here paid off: the labels are an overlay, not a mutation of the graph. The graph is one object, the labels are a separate dataset set that references it. This means I can rebuild labels without rebuilding the graph, diff label versions against a fixed graph, and crucially keep the graph as the independent artifact it should be.</p>
+<p>The labelling result on the first scenario I built with Evidence Force. Six malicious nodes, thirteen malicious edges, against a graph of 3,111 nodes and 2,106 edges. Ruminate on that for a moment, because they&rsquo;re the entire challenge for the back half of this project. The malicious nodes are 0.19% of nodes and the malicious edges are 0.62% of edges. This is the kind of realism running Adversary Simulation against an attack range struggles with. The events associated with a real attack are a rounding error against background enterprise activity.</p>
+<p><img src="/static/image-2.png" alt="alt text"></p>
+<h2 id="where-this-actually-is-right-now">Where this actually is right now</h2>
+<p>So I ran the first training pass: a deliberately minimal HGT over the whole graph, no held-out data, trained on everything. It fit. Loss fell cleanly, the edge-level AUPRC (Area Under the Precision-Recall Curve) climbed to a perfect 1.0, every integrity check passed.</p>
+<p>To be clear though in reality that 1.0 is worth nothing, and that&rsquo;s exactly the output I wanted to see. The model was shown all thirteen malicious edges with the entire graph visible and no test set held back. A perfect score there means one thing: the plumbing works end to end, the artifact loads, the graph feeds the model, gradients flow through every relation type, the loss does what a loss should. All it&rsquo;s proven is that the model can memorise thirteen edges it was handed the answers to.</p>
+<p>You may be pondering that a perfect score that proves nothing is a strange thing to be happy about. If we were to think about the alternative it would be the loss falling while the model quietly learned to predict &ldquo;benign&rdquo; for everything. It didn&rsquo;t happen; the model actually found the positives.</p>
+<p>One genuinely useful thing did fall out of that run. The malicious persistence service node has no edges. None! So in the current graph it isn&rsquo;t connected to anything structurally it&rsquo;s invisible. Meaning no graph model can learn it from a node that floats unconnected. Not a model bug, but it&rsquo;s a gap in how the graph encodes that particular step, and it goes on the list for the feature stage to fix upstream. I found it because the model tried to use the graph and the graph came up short.</p>
+<h2 id="next-steps">Next Steps</h2>
+<p>Besides some minor tweaks such as the aforemented edgeless service we&rsquo;ve hit a limit with what the simple scenario I produced can do. If your thinking right now, and congrats on reading this far. That conducting a supervised ML project on a single scenario is nonsensical you are right. I&rsquo;ll need to create many more complex scenarios to properly form a training and test dataset. Another missing puzzle piece is temporal. Currently the timestamp is not being captured in my Graph which is key context the Model is currently lacking. Finally i&rsquo;ll be A B testing with the 3 layer GNN vs a single GNN.</p>
+<p>Stay tuned for more!</p>
+<h2 id="some-references">Some References</h2>
+<p>Han, X., Pasquier, T., Bates, A., Mickens, J., Seltzer, M. &ldquo;UNICORN: Runtime Provenance-Based Detector for Advanced Persistent Threats.&rdquo; NDSS 2020. <a href="https://arxiv.org/abs/2001.01525">https://arxiv.org/abs/2001.01525</a>
+Goyal, A., Wang, G., Bates, A. &ldquo;R-CAID: Embedding Root Cause Analysis within Provenance-based Intrusion Detection.&rdquo; IEEE S&amp;P 2024. <a href="https://gangw.cs.illinois.edu/rcaid-sp24.pdf">https://gangw.cs.illinois.edu/rcaid-sp24.pdf</a>
+ThreaTrace: &ldquo;ThreaTrace: Detecting and Tracing Host-based Threats in Node Level Through Provenance Graph Learning.&rdquo; IEEE TIFS 2022. <a href="https://www.researchgate.net/publication/363776766">https://www.researchgate.net/publication/363776766</a>
+StageFinder. (Recent preprint, 2026.) <a href="https://arxiv.org/pdf/2603.07560">https://arxiv.org/pdf/2603.07560</a>
+TFLAG (2025). <a href="https://arxiv.org/abs/2501.02981">https://arxiv.org/abs/2501.02981</a>
+CONTINUUM (2025). <a href="https://arxiv.org/pdf/2501.06997">https://arxiv.org/pdf/2501.06997</a>
+EvidenceForge: <a href="https://github.com/Cisco-Talos/EvidenceForge">https://github.com/Cisco-Talos/EvidenceForge</a></p>
+
+      </div>
+
+      
+
+
+      <nav class="post-navigation" aria-label="Post navigation">
+        
+          <a
+            href="/posts/hello-there/"
+            class="nav-link nav-prev"
+            aria-label="Previous post: Building the worlds worst Machine Learning Detection engine">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">Building the worlds worst Machine Learning Detection engine</span>
+          </a>
+        
+
+        
+      </nav>
+    </article>
+
+    
+  <aside class="post-toc" id="post-toc" aria-label="Table of contents">
+    <button
+      class="toc-toggle"
+      id="toc-toggle"
+      aria-expanded="true"
+      aria-controls="toc-content"
+      aria-label="Toggle table of contents">
+      <svg
+        class="toc-burger-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true">
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+      <span class="toc-toggle-text">Table of Contents</span>
+      <svg
+        class="toc-chevron-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true">
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </button>
+    <div class="toc-content" id="toc-content">
+      <nav class="toc-nav" aria-label="Table of contents">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#scene-setting">Scene Setting</a></li>
+    <li><a href="#framing">Framing</a>
+      <ul>
+        <li><a href="#research--provenance">Research &amp; Provenance</a>
+          <ul>
+            <li><a href="#three-gnns-that-disagree-productively">Three GNNs that disagree.. productively!</a></li>
+          </ul>
+        </li>
+        <li><a href="#sounds-great-in-theory-but">Sounds great in theory but..</a></li>
+        <li><a href="#the-data-pipeline-parse-correlate-label">The Data Pipeline: parse, correlate, label</a>
+          <ul>
+            <li><a href="#parsers-are-pure-readers">Parsers are pure readers</a></li>
+            <li><a href="#the-correlator-does-all-the-joining">The correlator does all the joining</a></li>
+            <li><a href="#the-labeler-is-an-overlay-not-a-mutation">The labeler is an overlay, not a mutation</a></li>
+          </ul>
+        </li>
+        <li><a href="#where-this-actually-is-right-now">Where this actually is right now</a></li>
+        <li><a href="#next-steps">Next Steps</a></li>
+        <li><a href="#some-references">Some References</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+      </nav>
+    </div>
+  </aside>
+
+
+  </div>
+
+    </main>
+
+    <footer>
+      <footer class="site-footer">
+  <div class="footer-content">
+    <p class="footer-text">
+      &copy;
+      
+      2026
+      
+      Blog.
+      
+    </p>
+    
+      <div class="footer-social">
+        <div class="social-links">
+  
+    <a
+      href="https://github.com/Pr0kythera"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="social-link"
+      aria-label="GitHub">
+      <svg fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          fill-rule="evenodd"
+          d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+          clip-rule="evenodd"></path>
+      </svg>
+    </a>
+  
+
+  
+    <a
+      href="https://www.linkedin.com/in/martin-t-16225580/"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="social-link"
+      aria-label="LinkedIn">
+      <svg fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"></path>
+      </svg>
+    </a>
+  
+
+  
+    <a href="mailto:contact.prokythera@gmail.com" class="social-link" aria-label="Email">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+      </svg>
+    </a>
+  
+</div>
+
+      </div>
+    
+  </div>
+</footer>
+
+    </footer>
+
+    <div id="search-modal" class="search-modal" aria-hidden="true" role="dialog" aria-label="Search">
+  <div class="search-modal-backdrop" id="search-modal-backdrop"></div>
+  <div class="search-modal-container">
+    <div class="search-input-wrapper">
+      <svg class="search-input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+      </svg>
+      <input
+        type="search"
+        id="search-input"
+        class="search-input"
+        placeholder="Search..."
+        autocomplete="off"
+        aria-label="Search input">
+      <button class="search-input-clear" id="search-input-clear" aria-label="Clear search">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+        </svg>
+      </button>
+      <button class="search-modal-close" id="search-modal-close" aria-label="Close search">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    <div id="search-results" class="search-results"></div>
+  </div>
+</div>
+
+    
+  <script
+    data-name="BMC-Widget"
+    data-cfasync="false"
+    src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js"
+    data-id="yourwidgetid"
+    data-description="Support me on Buy me a coffee!"
+    data-message=""
+    data-color="#BD5FFF"
+    data-position="Right"
+    data-x_margin="18"
+    data-y_margin="18"></script>
+
+
+    <button id="scroll-to-top" class="scroll-to-top" aria-label="Scroll to top" type="button">
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+  </svg>
+</button>
+
+
+    
+
+
+
+
+
+
+
+
+
+
+<script src="/js/main.min.e60ab79dca7b920b4dc5cf3163ad5ce8794839b60f27778db65782f087be3e27.js" defer></script>
+
+  </body>
+</html>

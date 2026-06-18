@@ -1,0 +1,93 @@
+<svg viewBox="0 0 960 560" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif">
+  <defs>
+    <marker id="arrow2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#8b949e"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="960" height="560" fill="#0d1117"/>
+
+  <text x="40" y="48" fill="#e6edf3" font-size="26" font-weight="600">The EvidenceForge pipeline</text>
+  <text x="40" y="74" fill="#8b949e" font-size="15">Strict sequence. Each stage has one job and is forbidden the next stage's job.</text>
+
+  <!-- four sources -->
+  <g font-size="13">
+    <rect x="40" y="120" width="150" height="46" rx="8" fill="#161b22" stroke="#30363d"/>
+    <text x="115" y="148" fill="#e6edf3" text-anchor="middle">eCAR</text>
+    <rect x="40" y="178" width="150" height="46" rx="8" fill="#161b22" stroke="#30363d"/>
+    <text x="115" y="206" fill="#e6edf3" text-anchor="middle">Windows 4688</text>
+    <rect x="40" y="236" width="150" height="46" rx="8" fill="#161b22" stroke="#30363d"/>
+    <text x="115" y="264" fill="#e6edf3" text-anchor="middle">Sysmon EID 1</text>
+    <rect x="40" y="294" width="150" height="46" rx="8" fill="#161b22" stroke="#30363d"/>
+    <text x="115" y="322" fill="#e6edf3" text-anchor="middle">Zeek conn</text>
+  </g>
+  <text x="115" y="106" fill="#8b949e" font-size="12" text-anchor="middle">four telemetry sources</text>
+
+  <!-- parsers -->
+  <rect x="250" y="120" width="130" height="220" rx="10" fill="#161b22" stroke="#30363d"/>
+  <text x="315" y="150" fill="#e6edf3" font-size="14" font-weight="600" text-anchor="middle">Parsers</text>
+  <text x="315" y="172" fill="#8b949e" font-size="11" text-anchor="middle">one per source</text>
+  <text x="315" y="220" fill="#79c0ff" font-size="12" text-anchor="middle">PURE READERS</text>
+  <text x="315" y="244" fill="#8b949e" font-size="11" text-anchor="middle">typed records in,</text>
+  <text x="315" y="260" fill="#8b949e" font-size="11" text-anchor="middle">nothing else.</text>
+  <text x="315" y="284" fill="#8b949e" font-size="11" text-anchor="middle">no cross-source</text>
+  <text x="315" y="300" fill="#8b949e" font-size="11" text-anchor="middle">logic here.</text>
+
+  <!-- arrows sources -> parsers -->
+  <path d="M190,143 L248,143" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arrow2)"/>
+  <path d="M190,201 L248,201" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arrow2)"/>
+  <path d="M190,259 L248,259" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arrow2)"/>
+  <path d="M190,317 L248,255 L248,255" stroke="#8b949e" stroke-width="1.5" fill="none" marker-end="url(#arrow2)"/>
+
+  <!-- correlator -->
+  <rect x="440" y="150" width="150" height="160" rx="10" fill="#161b22" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="515" y="186" fill="#3fb950" font-size="14" font-weight="600" text-anchor="middle">Correlator</text>
+  <text x="515" y="206" fill="#8b949e" font-size="11" text-anchor="middle">v9</text>
+  <text x="515" y="234" fill="#c9d1d9" font-size="11" text-anchor="middle">all cross-source</text>
+  <text x="515" y="250" fill="#c9d1d9" font-size="11" text-anchor="middle">joining lives here:</text>
+  <text x="515" y="270" fill="#8b949e" font-size="11" text-anchor="middle">enrichment, flows,</text>
+  <text x="515" y="286" fill="#8b949e" font-size="11" text-anchor="middle">sessions, bridges</text>
+
+  <path d="M380,230 L438,230" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arrow2)"/>
+
+  <!-- labeler -->
+  <rect x="650" y="150" width="150" height="160" rx="10" fill="#161b22" stroke="#30363d"/>
+  <text x="725" y="186" fill="#e6edf3" font-size="14" font-weight="600" text-anchor="middle">Labeler</text>
+  <text x="725" y="206" fill="#8b949e" font-size="11" text-anchor="middle">v4</text>
+  <text x="725" y="234" fill="#c9d1d9" font-size="11" text-anchor="middle">labels as OVERLAY,</text>
+  <text x="725" y="250" fill="#c9d1d9" font-size="11" text-anchor="middle">not mutation.</text>
+  <text x="725" y="270" fill="#8b949e" font-size="11" text-anchor="middle">6 malicious nodes</text>
+  <text x="725" y="286" fill="#8b949e" font-size="11" text-anchor="middle">13 malicious edges</text>
+
+  <path d="M590,230 L648,230" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arrow2)"/>
+
+  <!-- ground truth feeding labeler -->
+  <rect x="650" y="96" width="150" height="34" rx="8" fill="#1c2128" stroke="#30363d"/>
+  <text x="725" y="118" fill="#8b949e" font-size="11" text-anchor="middle">GROUND_TRUTH.json</text>
+  <path d="M725,130 L725,148" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arrow2)"/>
+
+  <!-- features + train row -->
+  <rect x="440" y="380" width="150" height="70" rx="10" fill="#161b22" stroke="#30363d"/>
+  <text x="515" y="412" fill="#e6edf3" font-size="14" font-weight="600" text-anchor="middle">Features</text>
+  <text x="515" y="432" fill="#8b949e" font-size="11" text-anchor="middle">npz + manifest</text>
+
+  <rect x="650" y="380" width="150" height="70" rx="10" fill="#161b22" stroke="#79c0ff" stroke-width="1.5"/>
+  <text x="725" y="412" fill="#79c0ff" font-size="14" font-weight="600" text-anchor="middle">Train (HGT)</text>
+  <text x="725" y="432" fill="#8b949e" font-size="11" text-anchor="middle">AUPRC</text>
+
+  <!-- arrow labeler down to features -->
+  <path d="M725,310 L725,348 L590,348 L590,378" stroke="#8b949e" stroke-width="1.5" fill="none" marker-end="url(#arrow2)"/>
+  <path d="M590,415 L648,415" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arrow2)"/>
+
+  <!-- sequence caption -->
+  <text x="40" y="500" fill="#8b949e" font-size="13">parse</text>
+  <text x="95" y="500" fill="#8b949e" font-size="13">-&gt;</text>
+  <text x="115" y="500" fill="#3fb950" font-size="13">correlate</text>
+  <text x="185" y="500" fill="#8b949e" font-size="13">-&gt;</text>
+  <text x="205" y="500" fill="#e6edf3" font-size="13">label</text>
+  <text x="250" y="500" fill="#8b949e" font-size="13">-&gt;</text>
+  <text x="270" y="500" fill="#e6edf3" font-size="13">features</text>
+  <text x="330" y="500" fill="#8b949e" font-size="13">-&gt;</text>
+  <text x="350" y="500" fill="#79c0ff" font-size="13">train</text>
+
+  <text x="40" y="530" fill="#8b949e" font-size="12">A graph that is subtly wrong trains a model that learns the wrong thing and reports a great-looking number. Correctness is the whole game.</text>
+</svg>
