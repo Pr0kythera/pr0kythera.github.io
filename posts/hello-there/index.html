@@ -396,7 +396,7 @@
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span>plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">&#39;Distribution of Section SuspiciousImportFunctions&#39;</span>)
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span>plt<span style="color:#f92672">.</span>show()
 </span></span></code></pre></div><p>Rather unsurprisingly we see a correlation between number of suspicious import functions and a sample being malware! We could in theory stop here and call it a day making the assessment if a file ha more than X number of Suspicious Import functions it&rsquo;t malware. But hopefully we can see immediate flaws in that, really we want to use many more data points to make a more accurate determination..</p>
-<p><img src="/images/image.png?width=200px" alt="Resize"></p>
+<p><img src="/images/image.png?width=200px" alt="Resize" style="max-width: 100%; height: auto; display: block;"></p>
 <p>So to do that lets take the top most and bottom most corresponding correlations for all of the available features and see what bubbles up to the top or sinks to the bottom. These will hopefully be features that can be used to correlate strongly in combination with each other to determine the maliciousness of a file.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-Python" data-lang="Python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#75715e"># 1. Create a new dataframe with ONLY numeric columns</span>
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>numeric_X_train <span style="color:#f92672">=</span> X_train<span style="color:#f92672">.</span>select_dtypes(include<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#39;number&#39;</span>])
@@ -507,7 +507,7 @@ SectionMainChar               NaN</p>
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>plt<span style="color:#f92672">.</span>xlabel(<span style="color:#e6db74">&#39;Predicted&#39;</span>)
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">&#39;Confusion Matrix&#39;</span>)
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>plt<span style="color:#f92672">.</span>show()
-</span></span></code></pre></div><p><img src="/images/confusion.png?width=400px" alt="Image"></p>
+</span></span></code></pre></div><p><img src="/images/confusion.png?width=400px" alt="Image" style="max-width: 100%; height: auto; display: block;"></p>
 <p>An excellent result, lets wrap up there and pat ourselves on the back not worrying about if it works in &ldquo;production&rdquo;.</p>
 <p>One of the biggest bug bears of Cybersecurity Analysts, which is especially true with any black box machine learning is not being able to determine what features actually lead a detection to firing. Vendors often hand wave this away, but having never worked in or with a SOC where the True Positive percentage is higher than False Positive / Benign Positive I think it&rsquo;s more than fair for an analyst to want to understand why a detection mechanism thinks something is malicious.</p>
 <p>Not all types of machine learning can do this Neural Networks from my understanding are pretty impenetrable. But in this case we can look at the importance per feature to try to understand what features are pushing the model to a decision.</p>
@@ -547,7 +547,7 @@ Feature  Importance<br>
 35  MajorOperatingSystemVersion    0.046653<br>
 44                    Subsystem    0.044585<br>
 40        MinorSubsystemVersion    0.037700</p>
-<p><img src="/images/top10feature.png?width=400px" alt="Image"></p>
+<p><img src="/images/top10feature.png?width=400px" alt="Image" style="max-width: 100%; height: auto; display: block;"></p>
 <p>Interesting, it turns out that three of the most important features are all version based. This is where domain knowledge comes in very handy and hopefully my plan to develop meaningful skill and knowledge in both ML and Malware analysis will start to produce some value. Often malware authors really want to ensure that they can infect older systems. If we refer to window documentation we see:</p>
 <p><strong>MinorOperatingSystemVersion - The minor version number of the required operating system.</strong></p>
 <p>So we could draw the conclusion that malware often uses  older MinorOperatingSystemVersion requirements to target old versions of windows. However this could also be that the dataset just had a lot of old malware samples in it rather than modern ones. This is where having a dataset you know exactly what each sample&rsquo;s providence is greatly will increase your ability to get more accurate results.</p>
@@ -1276,15 +1276,15 @@ b) actually work with real world data and use cases</p>
 </span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">713</span><span>    main()
 </span></span></code></pre></div><h3 id="it-works">It works</h3>
 <p>Let&rsquo;s take this thing for a spin in my Malware Analysis VM. This first sample is something I was messing around with revese engineering over Christmas called Santa Stealer. It was pretty confidently able to correclty classify as malware.</p>
-<p><img src="/images/malware-analysis1.png?width=400px" alt="Image"></p>
+<p><img src="/images/malware-analysis1.png?width=400px" alt="Image" style="max-width: 100%; height: auto; display: block;"></p>
 <h3 id="it-still-works">It still works!</h3>
 <p>Next up time for everyones favourite classic calc.exe. This again was correctly classified as benign!</p>
-<p><img src="/images/calc-tn.png?width=400px" alt="Image"></p>
+<p><img src="/images/calc-tn.png?width=400px" alt="Image" style="max-width: 100%; height: auto; display: block;"></p>
 <h3 id="annd-its-useless">Annd it&rsquo;s useless!</h3>
 <p>Unsuprisingly a hastily trained Random Forest model falls short. PEStudio for anyone who doesn&rsquo;t spend too much time in their Malware Analysis VM is a fantastic tool for performing static analysis.</p>
 <p>To cut the model some slack PEStudio does inhibit some malicious looking qualities due to the way it pulls out static features from files.</p>
 <p>But as I probably said at the outset, the purpose of this whole endevour was exploration. Learning and finding out the shortcomings along the way, to then move onto bigger and better things which are more resiliant.</p>
-<p><img src="/images/pestudio-fp.png?width=400px" alt="Image"></p>
+<p><img src="/images/pestudio-fp.png?width=400px" alt="Image" style="max-width: 100%; height: auto; display: block;"></p>
 <p>There is obviously a lot more we could do, extract strings perform hash lookups and more to get higher quality of data to train this rudementary engine on. Also I could build a better dataset, producing data for all windows binaries on a typical system would likely improve performance as well as looking at other facets like file signatures.</p>
 <p>While these would be worthwhile if my aim was to create a more accurate detection tool, my aim is to dig deeper into ML so instead heres what I want to take this to in February!</p>
 <h3 id="whats-next">Whats next?</h3>
