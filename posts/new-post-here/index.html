@@ -343,7 +343,7 @@
 <p><img src="/images/gnn-post/image.png" alt="alt text" style="max-width: 100%; height: auto; display: block;">
 (Area Under the Precision-Recall Curve)</p>
 <p>The important design constraint: all three scopes share one graph and one set of features. They differ in which subgraph they see but not in what a node&rsquo;s feature vector contains. That&rsquo;s what kept the feature work tractable. I built one schema to serve all three, rather than three schemas.</p>
-<p>So why <!-- raw HTML omitted -->male models<!-- raw HTML omitted --> GNNs? My Intuition is that a single model over the entire provenance graph faces a resolution problem: the malicious subgraph is a handful of nodes and edges inside thousands. The signals that can identify it live at varying scales.</p>
+<p>So why <del>male models</del> GNNs? My Intuition is that a single model over the entire provenance graph faces a resolution problem: the malicious subgraph is a handful of nodes and edges inside thousands. The signals that can identify it live at varying scales.</p>
 <ul>
 <li>The credential dump is a local anomaly, a process doing something its immediate lineage would not normally exhibit. A whole-graph model, containing information across thousands of nodes, tends to wash that sort of fine detail out.</li>
 <li>The lateral movement is the opposite: its signal is precisely that an edge crosses a boundary between log sources or between hosts, which is easy to miss unless you&rsquo;re specifically attending to boundary-crossing edges rather than treating them like any other connection.</li>
