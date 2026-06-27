@@ -284,7 +284,7 @@
             stroke-width="2"
             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
         </svg>
-        3848 words
+        4457 words
       </span>
     
 
@@ -298,7 +298,7 @@
             stroke-width="2"
             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
-        19 min
+        21 min
       </span>
     
   </div>
@@ -310,36 +310,69 @@
 
       <div class="post-content-main">
         <h1 id="scene-setting">Scene Setting</h1>
-<p>If anyone recalls the first post I wrote back at the end of January I suggested more content might come sooner than half way through the year. Without dwelling on that too much, I would love to introduce the first half of a two part installment. This will largely focus on the problem statement, theory, research background followed by the data pipeline I&rsquo;ve built. Then hopefully this will be able to surface some interesting results in part 2.</p>
+<p>If anyone recalls the first post I wrote back at the end of January I suggested more content might come sooner than half way through the year. Without dwelling on that too much, I would love to introduce the first half of a two part installment. Here we will largely focus on the problem statement, theory, research background followed by the data pipeline I&rsquo;ve built. Then hopefully this will be able to surface some interesting results in part 2.</p>
 <p>The aim of this project is to train a high fidelity detection engine on sequences of suspicious events. Building from logs which are representative of a typical Enterprise SIEM. Which in theory should be portable to any typical SOC environment. Emphasis on the theory.</p>
 <h1 id="framing">Framing</h1>
 <p>Lets begin with the problem, statement.</p>
-<p>The average compromise or intrusion is often a sequence of small mundane events. An identity logs in and executes a process which spawns a child. That child process reads another process&rsquo;s memory then opens a network connection. A service gets created.</p>
-<p>Every one of those, on its own, happens thousands of times a day on a healthy network. None of them trips a rule worth writing, because a rule that fires on (a process that read another process&rsquo;s memory) fires constantly and gets tuned out within a week. Detection engineering is always a delicate knife edge balance. On the other extreme if we only write detections for activity which is unambiguously malicious we&rsquo;re almost certainly going to miss any sort of subtle attack.</p>
-<p>Good detections try to absorb as much context from that single event and only alert on exceptions to the norm. For a sign in event this is the user agent, the location, the time, the IP. But even with these they have to tread the line between missing the malicious sign in vs alerting off a large amount of benign sign ins.</p>
-<p>Not to put too fine a point on it, if you only have fantastic detections that identify clear signs of compromise, ransomware or 2tb of data being exfiltrated. By the point those alerts have fired, the SOC has performed L1 triage and escalated it to your Incident Response Team a lot of the damage has likely been done.</p>
-<p>More than likely this isn&rsquo;t news, this entire topic has been talked to death. Equally treating Machine Learning as a panacea is absolutely not in any sense novel. EDR vendors in particular have been making heavy use of Machine Learning for many years to varying levels of success. SOC teams often have a hard time, the algorithms may be trained on a 30 day period of logs and then left to their own device. Unlike traditional Detections where tuning is usually trivial, Machine Learning rules tend to be somewhat opaque beyond a vague description of &ldquo;Anomalous sign in&rdquo; and provide little levers to effectively tune.</p>
-<p>I have strong suspicion that a great deal of this challenge is detections be it EDR/SIEM rules or Machine Learning rules tend to focus on a single event. A suspicious login, process injection, a malware signature. These events will commonly be grouped together as similar events they still only focus a single type of event. Approaches like RBA (Risk Based Alerting) do go a long way to solve this problem through aggregating risk scores for multiple alerts seen against an entity in a rolling time window. They are aggregating individuals events into a culmative score rather than clearly identifying the links between those events. An RBA alert can often comprise of 5-6 entirely seperate risk events that happened to occour within the time period.</p>
-<p>As we discussed at the outset the subtle signal isn&rsquo;t necessarily any of those individual events. The signal we are looking for is expressed in a chain of related events: this login, led to this process, which read lsass (the Windows process that holds credentials in memory), which wrote a file, which was carried over this RDP session to that host, which created this service. The malicious activity flows through the causal thread connecting ordinary events across log sources and across machines.</p>
-<p>I want to reframe the entire detection problem to focus on causal chains of activity. A potential solution is we can build a causal graph and train a model to recognise the malicious subgraph (series of events which were malicious).</p>
+<p>The average compromise or intrusion is often observed as a sequence of small mundane events. An identity logs in and executes a process which spawns a child. That child process reads another process&rsquo;s memory then opens a network connection. A service gets created.</p>
+<p>Every one of those, on its own, happens thousands of times a day on a normal enterprise network. These activities would likely not trip any rule worth writing. A rule that fires on a process that read another process&rsquo;s memory would end up firing constantly. And as we know that leads to it being tuned out within a week (or longer depending on the week). Detection engineering is always a delicate knife edge balance. On the other extreme if we only write detections for activity which is unambiguously malicious we&rsquo;re almost certainly going to miss any sort of subtle attack. On the other we have the noisy scenarios described above.</p>
+<p>The aim of good detections is that try to absorb as much context from that single event and only alert on exceptions to the norm. As an example for a sign in event this is the user agent, the location, the time, the IP reputation. But even when taking as much context into account as possible we still have to tread the line between missing the malicious sign in vs alerting off a large amount of benign sign ins.</p>
+<p>Not to put too fine a point on it, if you only have fantastic detections that identify clear signs of compromise like ransomware or 2tb of data being exfiltrated. By the point those alerts have fired the SOC has performed L1 triage and escalated it to your Incident Response Team a lot of the damage has likely been done. That is to say in an ideal world we want to identify and stop an attack as early in the attack chain as possible but quite often activity early in the lifecycle is more prone to false and benign positives.</p>
+<p>Most likely this isn&rsquo;t news to you. This entire topic has been discussed to death across papers, conference talks and promises given by vendor pitches. Equally attempting to treat the problem with Machine Learning as a panacea is absolutely not novel. EDR vendors in particular have been making heavy use of Machine Learning for many years to varying levels of success. SOC teams often have a hard time, the algorithms may be trained on a 30 day period of logs and then left to their own device. Unlike traditional Detections where tuning is usually trivial, Machine Learning rules tend to be somewhat opaque beyond a vague description of &ldquo;Anomalous sign in&rdquo; and provide little levers to effectively tune.</p>
+<p>I have strong suspicion that a great deal of this challenge is detections be it EDR/SIEM rules or Machine Learning rules tend to focus on a single category of events. They may focus on a suspicious login (everyone&rsquo;s favorite Impossible Travel or Risk Sign in), process injection, a malware signature. These events will be grouped together but they still only focus a single type of event.</p>
+<p>Approaches like RBA (Risk Based Alerting) do go a long way to solve this problem through aggregating risk scores for multiple alerts seen against an entity in a rolling time window. They are aggregating individuals events into a culmative score rather than clearly identifying the links between those events. An RBA alert can often comprise of 5-6 entirely unrelated risk events that happened to occour within the time period.</p>
+<p>As we discussed at the outset the &ldquo;subtle&rdquo; signals are not necessarily surfaced any of those individual events. The signal we are looking for is expressed in a chain of related events: A login, led to a process being spawned, this process read lsass (the Windows process that holds credentials in memory), which wrote a file, which was carried over this RDP session to that host, which created this service. The malicious activity flows through the causal thread connecting ordinary events across log sources and across machines. E</p>
+<p>In this series of blog posts want to reframe the entire detection problem to focus on causal chains of activity. This still leaves us with the question of how do we find a solution that can address how this problem is not being framed. A potential solution is we can build a causal graph and train a model to recognise the malicious subgraph (series of events which were malicious).</p>
 <p>This is a graph-learning problem, and that&rsquo;s where this project starts.</p>
 <p><img src="/images/gnn-post/image-1.png" alt="alt text" style="max-width: 100%; height: auto; display: block;"></p>
 <h2 id="research--provenance">Research &amp; Provenance</h2>
-<p>Provenance-based intrusion detection (PIDS) is a well established line of research, and this project leans into it heavily. A few papers are worth naming, because they set the groundwork.</p>
+<p>Provenance-based intrusion detection (PIDS) is a well established line of research, and this project leans into it heavily. I&rsquo;d like to reference a few papers as an introduction, because they set the groundwork and guided my thinking for how I am conducting my approach.</p>
 <p>Before delving in, it&rsquo;s probably useful to offer a definition before throwing out too much technical jargon:</p>
 <p>A Provenance-based intrusion detection (PIDS) models system activity as a provenance graph. This can be described as directed graph whose nodes are system entities (processes, files, sockets, users) and whose edges are the interactions between them (a process reading a file, opening another process, connecting to a host). Because the graph captures the causal dependencies between events rather than the events in isolation, an intrusion shows up as an anomalous pattern of interdependencies. Essentially highlighting it as a malicious subgraph. This gives an attack technique agnostic view, you&rsquo;re not matching known signatures or even individual behaviours, you&rsquo;re looking for structure in your logs that deviates from benign execution.</p>
 <p>UNICORN (Han, Pasquier, Bates, Mickens, Seltzer; NDSS 2020) is the one that framed the problem for me. It&rsquo;s an anomaly-based APT detector built on whole-system provenance graphs, and it&rsquo;s explicitly designed around the &ldquo;low-and-slow&rdquo; problem. Attacks that unfold over a long enough span that any short window of events looks normal. Its answer is to summarise the entire evolving graph efficiently through a &ldquo;graph-sketching technique&rdquo; rather than just inspecting local neighbourhoods. The argument being that the context you need to separate benign from malicious lives in the long causal relationships, not the immediate ones.</p>
 <p>R-CAID (Goyal, Wang, Bates; IEEE S&amp;P 2024) highlights a different point that has directly shaped my design. It names the &ldquo;curse of locality&rdquo;, when you embed a provenance graph by aggregating local neighbourhoods, you sever the link between a suspicious event and its root cause. R-CAID&rsquo;s response is to precompute each node&rsquo;s root causes during graph construction and fold them into the embedding. To do detection at the node/process level rather than classifying a whole graph as malicious or benign.</p>
-<p>For the model itself, the family I&rsquo;m targeting is HGT, the Heterogeneous Graph Transformer, because simply the graph is heterogeneous (not a single type of thing). Processes, files, sockets, sessions are different kinds of nodes with different feature spaces. HGT maintains per-node-type and per-edge-type message-passing semantics instead of flattening everything into a generic type. The whole feature schema I describe later is built around that per-type structure. Most earlier graph neural networks assumed every node was the same kind and every connection meant the same thing, which forces you to flatten that distinction away. HGT keeps it.</p>
+<p>For the model itself, the family I&rsquo;m targeting is HGT, the Heterogeneous Graph Transformer, the graph is heterogeneous (not a single type of thing). Processes, files, sockets, sessions are different kinds of nodes with different feature spaces. HGT maintains per-node-type and per-edge-type message-passing semantics instead of flattening everything into a generic type. The whole feature schema I describe later is built around that per-type structure. Most earlier graph neural networks assumed every node was the same kind and every connection meant the same thing, which forces you to flatten that distinction away. HGT keeps it.</p>
 <p>It does this by treating each connection as a typed fact: this kind of node, connected by this kind of relationship, to that kind of node. &ldquo;A process opens a socket&rdquo; and &ldquo;a session runs a process&rdquo; are handled as distinct relationship types with their own learned behaviour, rather than being lumped together.</p>
 <p>The &ldquo;Transformer&rdquo; part borrows the same core idea that powers large language models: attention. When the network builds up its understanding of a node, it doesn&rsquo;t treat all the node&rsquo;s neighbours equally. It&rsquo;s able to learn which neighbours matter most for the task and weights them accordingly. So a process surrounded by ten ordinary children and one connection to a credential store can learn to pay disproportionate attention to that one unusual connection. Attention is what lets the model find the needle without being told where it is.</p>
 <p>To put this simply: a HGT is a graph neural network that respects that different entities and different relationships are different, and uses attention to learn which of a node&rsquo;s typed connections actually carry the signal.</p>
+<h2 id="but-what-even-is-a-gnn-or-a-graph-for-that-matter">But what even is a GNN or a Graph for that matter?</h2>
+<p>To boil it down a Graph is a network of interconnected points. It consists of two main building blocks:</p>
+<ul>
+<li>
+<p>Nodes (or Vertices): The individual entities or &ldquo;things&rdquo; in the network. If we are mapping a social network, a node is a person. In a corporate network, a node might be a computer or a server.</p>
+</li>
+<li>
+<p>Edges: The lines connecting the nodes. These represent relationships. An edge could mean &ldquo;is friends with,&rdquo; &ldquo;sent an email to,&rdquo; or &ldquo;transferred money to.&rdquo;</p>
+</li>
+</ul>
+<p>Graphs represent computer activity very well. A simple domain specific example would be a Process, Spawning a Sub Process. This can be represented as two Nodes one for each process represented by their PID&rsquo;s and the Edge being the ancestry relationship (parent/child)</p>
+<p>A Graph Neural Network is a Machine Learning model designed to look at a graph, analyze the relationships, and make predictions. In our case whether a causal chain of activity is malicious or benign.</p>
+<ol>
+<li>Preparing the Profiles</li>
+</ol>
+<p>Every node starts with its own basic information. For a user account on an app, this might include their account age and location.
+2. Passing Messages (The Gossip)</p>
+<p>The GNN instructs every single node to look at its immediate neighbors and collect their data. If Node A is connected to Node B and Node C, Node A asks them, &ldquo;What&rsquo;s your status?&rdquo; and listens to their answers.
+3. Aggregating Information (The Filter)</p>
+<p>Node A takes all the information it just gathered from its neighbors and blends it together (usually by averaging it out or finding the maximum values). This ensures the model doesn&rsquo;t get overwhelmed if a node has thousands of friends.
+4. Updating the State</p>
+<p>Node A combines its original profile with this new neighborhood summary. Now, Node A&rsquo;s profile doesn&rsquo;t just say who it is—it reflects the context of the company it keeps.
+5. Repeating the Process</p>
+<p>If the GNN repeats this loop a second time, Node A collects information from its neighbors, who have already collected information from their neighbors. Suddenly, Node A knows what is happening two steps away. By running this loop a few times, every node gains a rich understanding of its place in the wider community.</p>
 <h3 id="three-gnns-that-disagree-productively">Three GNNs that disagree.. productively!</h3>
-<p>So far what I&rsquo;ve describe isn&rsquo;t awfully innovative. Applying a previously developed method against a new dataset would be highly educational, interesting and potentially fruitful. I had some intuitions that I wanted to explore and I&rsquo;m hoping I will be able to potentially find something new and interesting.</p>
-<p>The goal isn&rsquo;t a single network. It&rsquo;s three! Each one looking at the same graph through three different windows, with a fourth model learning how to combine them. The research I referenced earlier looked at entirely different aspect of a Graph. I&rsquo;m hoping by combining multiple views into one the whole will be more than the sum of it&rsquo;s parts.</p>
+<p>So far what I&rsquo;ve describe isn&rsquo;t awfully innovative. If I just applied a previously developed method against a new dataset would be highly educational, interesting and potentially fruitful but I had some intuitions that I wanted to explore. Through those intuitions I&rsquo;m hoping I will be able to potentially find something new and interesting.</p>
+<p>The goal in this project isn&rsquo;t a single network. It&rsquo;s three! Each one looking at the same graph through three different windows, with a fourth model learning how to combine them. The research I referenced earlier looked at entirely different aspect of a Graph. I&rsquo;m hoping by combining multiple views into one the whole will be more than the sum of it&rsquo;s parts.</p>
+<ul>
+<li>
 <p>Scope one: the process subtree. A GNN passed over each process tree. This is the scope that catches &ldquo;this process did something its own lineage would never do.&rdquo; The credential dump, viewed inside the subtree of the session that spawned it, is anomalous against its siblings and parents. Here we have only the Local context, and only the local anomaly.</p>
+</li>
+<li>
 <p>Scope two: the cross-domain boundary. A GNN that specifically attends to edges crossing a boundary. For example a host boundary (the RDP hop from workstation to DC). This is the lateral-movement scope. It exists because the events that exhibit lateral movement are exactly the ones a single-source tool structurally cannot correlate. Boundary-crossing events are a signal, so a scope dedicated to boundary edges should see it most clearly.</p>
+</li>
+<li>
 <p>Scope three: the whole graph. A GNN over the entire provenance graph, to catch the global shape. The full chain as one connected component, the thing you only see when you zoom all the way out.</p>
+</li>
+</ul>
 <p><img src="/images/gnn-post/image.png" alt="alt text" style="max-width: 100%; height: auto; display: block;">
 (Area Under the Precision-Recall Curve)</p>
 <p>The important design constraint: all three scopes share one graph and one set of features. They differ in which subgraph they see but not in what a node&rsquo;s feature vector contains. That&rsquo;s what kept the feature work tractable. I built one schema to serve all three, rather than three schemas.</p>
@@ -378,17 +411,23 @@
 <p>To be clear though in reality that 1.0 is worth nothing, and that&rsquo;s exactly the output I wanted to see. The model was shown all thirteen malicious edges with the entire graph visible and no test set held back. A perfect score there means one thing: the plumbing works end to end, the artifact loads, the graph feeds the model, gradients flow through every relation type, the loss does what a loss should. All it&rsquo;s proven is that the model can memorise thirteen edges it was handed the answers to.</p>
 <p>You may be pondering that a perfect score that proves nothing is a strange thing to be happy about. If we were to think about the alternative it would be the loss falling while the model quietly learned to predict &ldquo;benign&rdquo; for everything. It didn&rsquo;t happen; the model actually found the positives.</p>
 <p>One genuinely useful thing did fall out of that run. The malicious persistence service node has no edges. None! So in the current graph it isn&rsquo;t connected to anything structurally it&rsquo;s invisible. Meaning no graph model can learn it from a node that floats unconnected. Not a model bug, but it&rsquo;s a gap in how the graph encodes that particular step, and it goes on the list for the feature stage to fix upstream. I found it because the model tried to use the graph and the graph came up short.</p>
-<h2 id="next-steps">Next Steps</h2>
+<h2 id="next-steps--ambitions">Next Steps &amp; Ambitions</h2>
 <p>Besides some minor tweaks such as the aforemented edgeless service we&rsquo;ve hit a limit with what the simple scenario I produced can do. If your thinking right now, and congrats on reading this far. That conducting a supervised ML project on a single scenario is nonsensical you are right. I&rsquo;ll need to create many more complex scenarios to properly form a training and test dataset. Another missing puzzle piece is temporal. Currently the timestamp is not being captured in my Graph which is key context the Model is currently lacking. Finally i&rsquo;ll be A B testing with the 3 layer GNN vs a single GNN.</p>
-<p>Stay tuned for more!</p>
+<p>To be blunt I can see this taking a while as this is work being conducted in my free time among a bunch of other projects which are at varying stages and likely will never see the face of day. But I&rsquo;m keen as soon as I have anything tangible to share both in terms of results and the whole codebase it will be provided on my github.</p>
 <h2 id="some-references">Some References</h2>
-<p>Han, X., Pasquier, T., Bates, A., Mickens, J., Seltzer, M. &ldquo;UNICORN: Runtime Provenance-Based Detector for Advanced Persistent Threats.&rdquo; NDSS 2020. <a href="https://arxiv.org/abs/2001.01525">https://arxiv.org/abs/2001.01525</a>
-Goyal, A., Wang, G., Bates, A. &ldquo;R-CAID: Embedding Root Cause Analysis within Provenance-based Intrusion Detection.&rdquo; IEEE S&amp;P 2024. <a href="https://gangw.cs.illinois.edu/rcaid-sp24.pdf">https://gangw.cs.illinois.edu/rcaid-sp24.pdf</a>
-ThreaTrace: &ldquo;ThreaTrace: Detecting and Tracing Host-based Threats in Node Level Through Provenance Graph Learning.&rdquo; IEEE TIFS 2022. <a href="https://www.researchgate.net/publication/363776766">https://www.researchgate.net/publication/363776766</a>
-StageFinder. (Recent preprint, 2026.) <a href="https://arxiv.org/pdf/2603.07560">https://arxiv.org/pdf/2603.07560</a>
-TFLAG (2025). <a href="https://arxiv.org/abs/2501.02981">https://arxiv.org/abs/2501.02981</a>
-CONTINUUM (2025). <a href="https://arxiv.org/pdf/2501.06997">https://arxiv.org/pdf/2501.06997</a>
-EvidenceForge: <a href="https://github.com/Cisco-Talos/EvidenceForge">https://github.com/Cisco-Talos/EvidenceForge</a></p>
+<p>Han, X., Pasquier, T., Bates, A., Mickens, J., Seltzer, M. &ldquo;UNICORN: Runtime Provenance-Based Detector for Advanced Persistent Threats.&rdquo;</p>
+<p>NDSS 2020. <a href="https://arxiv.org/abs/2001.01525">https://arxiv.org/abs/2001.01525</a></p>
+<p>Goyal, A., Wang, G., Bates, A. &ldquo;R-CAID: Embedding Root Cause Analysis within Provenance-based Intrusion Detection.&rdquo; IEEE S&amp;P 2024.</p>
+<p><a href="https://gangw.cs.illinois.edu/rcaid-sp24.pdf">https://gangw.cs.illinois.edu/rcaid-sp24.pdf</a></p>
+<p>ThreaTrace: &ldquo;ThreaTrace: Detecting and Tracing Host-based Threats in Node Level Through Provenance Graph Learning.&rdquo; IEEE TIFS 2022.</p>
+<p><a href="https://www.researchgate.net/publication/363776766">https://www.researchgate.net/publication/363776766</a></p>
+<p>StageFinder. (Recent preprint, 2026.)</p>
+<p><a href="https://arxiv.org/pdf/2603.07560">https://arxiv.org/pdf/2603.07560</a></p>
+<p>TFLAG (2025).</p>
+<p><a href="https://arxiv.org/abs/2501.02981">https://arxiv.org/abs/2501.02981</a></p>
+<p>CONTINUUM (2025).</p>
+<p><a href="https://arxiv.org/pdf/2501.06997">https://arxiv.org/pdf/2501.06997</a></p>
+<p>EvidenceForge: <a href="https://github.com/Cisco-Talos/EvidenceForge">https://github.com/Cisco-Talos/EvidenceForge</a></p>
 
       </div>
 
@@ -451,7 +490,8 @@ EvidenceForge: <a href="https://github.com/Cisco-Talos/EvidenceForge">https://gi
     <li><a href="#scene-setting">Scene Setting</a></li>
     <li><a href="#framing">Framing</a>
       <ul>
-        <li><a href="#research--provenance">Research &amp; Provenance</a>
+        <li><a href="#research--provenance">Research &amp; Provenance</a></li>
+        <li><a href="#but-what-even-is-a-gnn-or-a-graph-for-that-matter">But what even is a GNN or a Graph for that matter?</a>
           <ul>
             <li><a href="#three-gnns-that-disagree-productively">Three GNNs that disagree.. productively!</a></li>
           </ul>
@@ -465,7 +505,7 @@ EvidenceForge: <a href="https://github.com/Cisco-Talos/EvidenceForge">https://gi
           </ul>
         </li>
         <li><a href="#where-this-actually-is-right-now">Where this actually is right now</a></li>
-        <li><a href="#next-steps">Next Steps</a></li>
+        <li><a href="#next-steps--ambitions">Next Steps &amp; Ambitions</a></li>
         <li><a href="#some-references">Some References</a></li>
       </ul>
     </li>

@@ -18,7 +18,7 @@
 				<link>https://Pr0kythera.github.io/posts/new-post-here/</link>
 				<pubDate>Tue, 16 Jun 2026 16:00:00 +0000</pubDate>
 				<guid>https://Pr0kythera.github.io/posts/new-post-here/</guid>
-				<description>&lt;h1 id=&#34;scene-setting&#34;&gt;Scene Setting&lt;/h1&gt;&#xA;&lt;p&gt;If anyone recalls the first post I wrote back at the end of January I suggested more content might come sooner than half way through the year. Without dwelling on that too much, I would love to introduce the first half of a two part installment. This will largely focus on the problem statement, theory, research background followed by the data pipeline I&amp;rsquo;ve built. Then hopefully this will be able to surface some interesting results in part 2.&lt;/p&gt;</description>
+				<description>&lt;h1 id=&#34;scene-setting&#34;&gt;Scene Setting&lt;/h1&gt;&#xA;&lt;p&gt;If anyone recalls the first post I wrote back at the end of January I suggested more content might come sooner than half way through the year. Without dwelling on that too much, I would love to introduce the first half of a two part installment. Here we will largely focus on the problem statement, theory, research background followed by the data pipeline I&amp;rsquo;ve built. Then hopefully this will be able to surface some interesting results in part 2.&lt;/p&gt;</description>
 			</item>
 			<item>
 				<title>Building the worlds worst Machine Learning Detection engine</title>
