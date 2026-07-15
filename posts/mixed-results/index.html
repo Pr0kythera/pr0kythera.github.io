@@ -477,6 +477,7 @@ Fold 4 test: B4, A7, A11, F1, A13
 			</tr>
 	</tbody>
 </table>
+<hr>
 <p>To suprise no one as I spoiled it at the start The central thesis held, cleanly, in every fold with roughly a 5.7x margin on edge level AUPRC. This ended up being the single strongest, result in the whole study to date. In plain terms: given the same graph, the same
 features, and the same training budget, three GNNs looking at the same data through different windows and combined by a simple average substantially outperformed one GNN looking at everything everywhere all at once.</p>
 <p>One potential suprise however was that simple Averaging beat learned fusion, for edges. The ablation table (control vs. naive average-of-3 vs. logistic stacker vs. MLP stacker) found that for edge level prediction, plain averaging (0.5755) beat <em>both</em> the
@@ -548,6 +549,7 @@ heterogeneous score scales.&rdquo;</p>
 			</tr>
 	</tbody>
 </table>
+<hr>
 <p>Good news everyone? The results show every fold improved on both metrics for M1, no exceptions. For M2, every fusion arm improved on both axes except logistic-stacker edge AUPRC, which was flat. The logit-saturation guard (max edge logit under a ~36.0 float64 sigmoid-saturation threshold) improved substantially for M2 - from failing on all 4 folds under Round 1 to failing on 2 of 4 - though it did not fully close.</p>
 <p><img src="/images/gnn-post2/04_auprc_by_round.svg" alt="alt text" style="max-width: 100%; height: auto; display: block;">
 (Round based Results)</p>
@@ -617,6 +619,7 @@ B2&rsquo;s specific fragility as a side effect.</p>
 			</tr>
 	</tbody>
 </table>
+<hr>
 <p>M1 improved cleanly across the board, every fold, both metrics. The most plausible driver being the new negative-subsampling scheme. A ~20:1 ratio replacing the old 878x-3119x fixed <code>pos_weight</code>, a roughly two-orders-of- magnitude gentler imbalance correction.</p>
 <p>M2&rsquo;s picture is&hellip; mixed:</p>
 <ul>
@@ -665,6 +668,7 @@ B2&rsquo;s specific fragility as a side effect.</p>
 			</tr>
 	</tbody>
 </table>
+<hr>
 <p>This is a somewhat counterintuitive finding: M1 has better precision than M2 at 90-95% recall, despite M2&rsquo;s much higher overall AUPRC. AUPRC integrates over the <em>whole</em> curve and rewards M2&rsquo;s substantially stronger middle band even though M1 wins the tail. In practical terms: if the deployment goal is &ldquo;keep the analyst&rsquo;s review queue clean, catch most things,&rdquo; M2 is the clear win. If the goal is &ldquo;catch nearly everything, and accept the noise that comes with it,&rdquo; M1 is not obviously the worse choice, despite its much lower headline number a nuance the single AUPRC figure hides completely.</p>
 <p>A separate, more reassuring check: for every attack scenario, how deep would a SOC reviewing one combined, pooled queue have to go before that incident&rsquo;s <em>first</em> real alert appears? Both models surface nearly every incident (worst non-outlier case: M1 rank 55, M2 rank 26, out of ~241,000 pooled edges). F2 - the deliberately subtle, contained-before-lateral-movement scenario - is a hard outlier for <em>both</em> models (ranks 740 and 207 respectively), which is arguably the expected, not the alarming, result: F2 was built specifically to be the hardest case in the study. The practical reading: the three-scope treatment&rsquo;s real value-add isn&rsquo;t &ldquo;catches
 incidents the single-GNN control misses entirely&rdquo;  - both catch nearly everything. The real advantage is the cleaner mid-recall queue shown in the precision table above.</p>
