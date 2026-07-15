@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 414" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .surface { fill: #fcfcfb; }
+    .ink-primary { fill: #0b0b0b; }
+    .ink-secondary { fill: #52514e; }
+    .ink-muted { fill: #898781; }
+    .panel-title { font-size: 14px; font-weight: 700; }
+    .cap { font-size: 11px; }
+    .step-arrow { stroke: #c3c2b7; stroke-width: 2; fill: none; }
+  </style>
+  <defs>
+    <marker id="ah" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#c3c2b7"/>
+    </marker>
+  </defs>
+
+  <rect class="surface" x="0" y="0" width="1060" height="414"/>
+
+  <text x="30" y="32" class="ink-primary" font-size="19" font-weight="700">"Detect, then reconstruct": how the pattern actually works</text>
+  <text x="30" y="52" class="ink-secondary" font-size="12.5">A Regime-A-style example -- one connected malicious component, recovered from a single alert.</text>
+
+  <!-- legend, own row -->
+  <circle cx="30" cy="76" r="6" fill="#184f95"/>
+  <text x="42" y="80" class="ink-secondary" font-size="11.5">higher model score</text>
+  <circle cx="220" cy="76" r="6" fill="#d03b3b"/>
+  <text x="232" y="80" class="ink-secondary" font-size="11.5">confirmed malicious</text>
+  <circle cx="410" cy="76" r="6" fill="#ec835a"/>
+  <text x="422" y="80" class="ink-secondary" font-size="11.5">newly expanded</text>
+  <circle cx="590" cy="76" r="6" fill="#d8d6cd"/>
+  <text x="602" y="80" class="ink-secondary" font-size="11.5">unscored / benign</text>
+
+  <!-- PANEL 1 -->
+  <g transform="translate(30,104)">
+    <text class="panel-title ink-primary" x="0" y="0">1. Score every edge</text>
+    <g transform="translate(10,20)">
+      <line x1="20" y1="30" x2="70" y2="60" stroke="#cde2fb" stroke-width="2"/>
+      <line x1="70" y1="60" x2="125" y2="30" stroke="#cde2fb" stroke-width="2"/>
+      <line x1="125" y1="30" x2="175" y2="55" stroke="#cde2fb" stroke-width="2"/>
+      <line x1="70" y1="60" x2="70" y2="110" stroke="#5598e7" stroke-width="2.5"/>
+      <line x1="70" y1="110" x2="150" y2="110" stroke="#184f95" stroke-width="3.5"/>
+      <line x1="150" y1="110" x2="200" y2="90" stroke="#5598e7" stroke-width="2.5"/>
+      <line x1="200" y1="90" x2="232" y2="58" stroke="#cde2fb" stroke-width="2"/>
+      <circle cx="20" cy="30" r="7" fill="#d8d6cd" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="70" cy="60" r="7" fill="#d8d6cd" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="125" cy="30" r="7" fill="#d8d6cd" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="175" cy="55" r="7" fill="#d8d6cd" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="70" cy="110" r="7" fill="#d8d6cd" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="150" cy="110" r="7" fill="#d8d6cd" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="200" cy="90" r="7" fill="#d8d6cd" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="232" cy="58" r="7" fill="#d8d6cd" stroke="#fcfcfb" stroke-width="2"/>
+    </g>
+    <text class="ink-secondary cap" x="0" y="185">No verdict yet -- just a</text>
+    <text class="ink-secondary cap" x="0" y="199">continuous ranking.</text>
+  </g>
+
+  <path class="step-arrow" d="M270,189 L292,189" marker-end="url(#ah)"/>
+
+  <!-- PANEL 2 -->
+  <g transform="translate(300,104)">
+    <text class="panel-title ink-primary" x="0" y="0">2. One alert fires</text>
+    <g transform="translate(10,20)">
+      <line x1="20" y1="30" x2="70" y2="60" stroke="#c3c2b7" stroke-width="2"/>
+      <line x1="70" y1="60" x2="125" y2="30" stroke="#c3c2b7" stroke-width="2"/>
+      <line x1="125" y1="30" x2="175" y2="55" stroke="#c3c2b7" stroke-width="2"/>
+      <line x1="70" y1="60" x2="70" y2="110" stroke="#c3c2b7" stroke-width="2"/>
+      <line x1="70" y1="110" x2="150" y2="110" stroke="#d03b3b" stroke-width="3.5"/>
+      <line x1="150" y1="110" x2="200" y2="90" stroke="#c3c2b7" stroke-width="2"/>
+      <line x1="200" y1="90" x2="232" y2="58" stroke="#c3c2b7" stroke-width="2"/>
+      <circle cx="20" cy="30" r="7" fill="#d8d6cd" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="70" cy="60" r="7" fill="#d8d6cd" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="125" cy="30" r="7" fill="#d8d6cd" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="175" cy="55" r="7" fill="#d8d6cd" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="70" cy="110" r="8" fill="#d03b3b" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="150" cy="110" r="8" fill="#d03b3b" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="200" cy="90" r="7" fill="#d8d6cd" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="232" cy="58" r="7" fill="#d8d6cd" stroke="#fcfcfb" stroke-width="2"/>
+    </g>
+    <text class="ink-secondary cap" x="0" y="185">Highest-scoring edge crosses</text>
+    <text class="ink-secondary cap" x="0" y="199">the alert threshold -- seed.</text>
+  </g>
+
+  <path class="step-arrow" d="M540,189 L562,189" marker-end="url(#ah)"/>
+
+  <!-- PANEL 3 -->
+  <g transform="translate(570,104)">
+    <text class="panel-title ink-primary" x="0" y="0">3. Expand outward</text>
+    <g transform="translate(10,20)">
+      <line x1="20" y1="30" x2="70" y2="60" stroke="#c3c2b7" stroke-width="2"/>
+      <line x1="70" y1="60" x2="125" y2="30" stroke="#c3c2b7" stroke-width="2"/>
+      <line x1="125" y1="30" x2="175" y2="55" stroke="#c3c2b7" stroke-width="2"/>
+      <line x1="70" y1="60" x2="70" y2="110" stroke="#ec835a" stroke-width="2.5"/>
+      <line x1="70" y1="110" x2="150" y2="110" stroke="#d03b3b" stroke-width="3.5"/>
+      <line x1="150" y1="110" x2="200" y2="90" stroke="#ec835a" stroke-width="2.5"/>
+      <line x1="200" y1="90" x2="232" y2="58" stroke="#c3c2b7" stroke-width="2"/>
+      <circle cx="20" cy="30" r="7" fill="#d8d6cd" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="70" cy="60" r="7" fill="#ec835a" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="125" cy="30" r="7" fill="#d8d6cd" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="175" cy="55" r="7" fill="#d8d6cd" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="70" cy="110" r="8" fill="#d03b3b" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="150" cy="110" r="8" fill="#d03b3b" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="200" cy="90" r="7" fill="#ec835a" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="232" cy="58" r="7" fill="#d8d6cd" stroke="#fcfcfb" stroke-width="2"/>
+    </g>
+    <text class="ink-secondary cap" x="0" y="185">Structural BFS from the seed --</text>
+    <text class="ink-secondary cap" x="0" y="199">no model score involved.</text>
+  </g>
+
+  <path class="step-arrow" d="M810,189 L832,189" marker-end="url(#ah)"/>
+
+  <!-- PANEL 4 -->
+  <g transform="translate(840,104)">
+    <text class="panel-title ink-primary" x="0" y="0">4. Subgraph recovered</text>
+    <g transform="translate(10,20)">
+      <line x1="20" y1="30" x2="70" y2="60" stroke="#c3c2b7" stroke-width="2"/>
+      <line x1="70" y1="60" x2="125" y2="30" stroke="#d03b3b" stroke-width="3.5"/>
+      <line x1="125" y1="30" x2="175" y2="55" stroke="#d03b3b" stroke-width="3.5"/>
+      <line x1="70" y1="60" x2="70" y2="110" stroke="#d03b3b" stroke-width="3.5"/>
+      <line x1="70" y1="110" x2="150" y2="110" stroke="#d03b3b" stroke-width="3.5"/>
+      <line x1="150" y1="110" x2="200" y2="90" stroke="#d03b3b" stroke-width="3.5"/>
+      <line x1="200" y1="90" x2="232" y2="58" stroke="#c3c2b7" stroke-width="2"/>
+      <circle cx="20" cy="30" r="7" fill="#d8d6cd" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="70" cy="60" r="8" fill="#d03b3b" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="125" cy="30" r="8" fill="#d03b3b" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="175" cy="55" r="8" fill="#d03b3b" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="70" cy="110" r="8" fill="#d03b3b" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="150" cy="110" r="8" fill="#d03b3b" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="200" cy="90" r="8" fill="#d03b3b" stroke="#fcfcfb" stroke-width="2"/>
+      <circle cx="232" cy="58" r="7" fill="#d8d6cd" stroke="#fcfcfb" stroke-width="2"/>
+    </g>
+    <text class="ink-secondary cap" x="0" y="185">All 6 malicious nodes reached --</text>
+    <text class="ink-secondary cap" x="0" y="199">session and service stay clean.</text>
+  </g>
+
+  <text x="30" y="374" class="ink-secondary cap" font-size="12.5">Figure 9. The SOC never needs the model to flag all 6 malicious edges -- one alert plus graph structure does the rest,</text>
+  <text x="30" y="392" class="ink-secondary cap" font-size="12.5">provided the malicious footprint is one connected component (section 3.8) -- the case this pattern was built for.</text>
+</svg>

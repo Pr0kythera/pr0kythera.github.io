@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 540" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .surface { fill: #fcfcfb; }
+    .ink-primary { fill: #0b0b0b; }
+    .ink-secondary { fill: #52514e; }
+    .ink-muted { fill: #898781; }
+    .grid { stroke: #e1e0d9; stroke-width: 1; }
+    .axis { stroke: #c3c2b7; stroke-width: 1; }
+    .m1-line { stroke: #2a78d6; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .m2-line { stroke: #1baf7a; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .m1-dot { fill: #2a78d6; stroke: #fcfcfb; stroke-width: 2; }
+    .m2-dot { fill: #1baf7a; stroke: #fcfcfb; stroke-width: 2; }
+    .tick { font-size: 12px; }
+  </style>
+
+  <rect class="surface" x="0" y="0" width="860" height="540"/>
+
+  <text x="30" y="32" class="ink-primary" font-size="19" font-weight="700">What AUPRC hides: precision at fixed recall</text>
+  <text x="30" y="52" class="ink-secondary" font-size="12.5">Edge-level, pooled across all 4 folds -- 241,553 edges, 242 positives, base rate 0.10%.</text>
+
+  <!-- legend -->
+  <circle cx="610" cy="80" r="6" fill="#2a78d6"/>
+  <text x="622" y="84" class="ink-secondary" font-size="12.5">M1 (single whole-graph control)</text>
+  <circle cx="610" cy="102" r="6" fill="#1baf7a"/>
+  <text x="622" y="106" class="ink-secondary" font-size="12.5">M2 (three-scope treatment, avg-of-3)</text>
+
+  <!-- gridlines + y ticks (0/25/50/75/100 %) -->
+  <g>
+    <line class="grid" x1="100" y1="400" x2="780" y2="400"/>
+    <line class="grid" x1="100" y1="315" x2="780" y2="315"/>
+    <line class="grid" x1="100" y1="230" x2="780" y2="230"/>
+    <line class="grid" x1="100" y1="145" x2="780" y2="145"/>
+    <line class="grid" x1="100" y1="60" x2="780" y2="60"/>
+    <text x="90" y="404" text-anchor="end" class="ink-muted tick">0%</text>
+    <text x="90" y="319" text-anchor="end" class="ink-muted tick">25%</text>
+    <text x="90" y="234" text-anchor="end" class="ink-muted tick">50%</text>
+    <text x="90" y="149" text-anchor="end" class="ink-muted tick">75%</text>
+    <text x="90" y="64" text-anchor="end" class="ink-muted tick">100%</text>
+  </g>
+  <text x="40" y="230" text-anchor="middle" class="ink-secondary" font-size="12.5" transform="rotate(-90 40 230)">Precision</text>
+
+  <!-- x axis -->
+  <line class="axis" x1="100" y1="400" x2="780" y2="400"/>
+  <text x="100" y="424" text-anchor="middle" class="ink-secondary tick">50%</text>
+  <text x="270" y="424" text-anchor="middle" class="ink-secondary tick">70%</text>
+  <text x="440" y="424" text-anchor="middle" class="ink-secondary tick">80%</text>
+  <text x="610" y="424" text-anchor="middle" class="ink-secondary tick">90%</text>
+  <text x="780" y="424" text-anchor="middle" class="ink-secondary tick">95%</text>
+  <text x="440" y="448" text-anchor="middle" class="ink-secondary" font-size="12.5">Recall</text>
+
+  <!-- crossover annotation -->
+  <rect x="520" y="248" width="180" height="46" rx="6" fill="#eda100" opacity="0.12"/>
+  <text x="610" y="264" text-anchor="middle" class="ink-secondary" font-size="11" font-weight="600">M1 overtakes M2</text>
+  <text x="610" y="278" text-anchor="middle" class="ink-muted" font-size="10">above ~85% recall</text>
+
+  <!-- M1 line -->
+  <polyline class="m1-line" points="100,157.9 270,206.5 440,266.0 610,322.5 780,365.7"/>
+  <!-- M2 line -->
+  <polyline class="m2-line" points="100,110.3 270,198.0 440,231.4 610,368.0 780,389.5"/>
+
+  <!-- dots -->
+  <circle class="m1-dot" cx="100" cy="157.9" r="5"/>
+  <circle class="m1-dot" cx="270" cy="206.5" r="5"/>
+  <circle class="m1-dot" cx="440" cy="266.0" r="5"/>
+  <circle class="m1-dot" cx="610" cy="322.5" r="5"/>
+  <circle class="m1-dot" cx="780" cy="365.7" r="5"/>
+
+  <circle class="m2-dot" cx="100" cy="110.3" r="5"/>
+  <circle class="m2-dot" cx="270" cy="198.0" r="5"/>
+  <circle class="m2-dot" cx="440" cy="231.4" r="5"/>
+  <circle class="m2-dot" cx="610" cy="368.0" r="5"/>
+  <circle class="m2-dot" cx="780" cy="389.5" r="5"/>
+
+  <!-- end labels -->
+  <text x="792" y="369" class="ink-primary" font-size="12" font-weight="600">10.1%</text>
+  <text x="792" y="393" class="ink-primary" font-size="12" font-weight="600">3.1%</text>
+
+  <text x="30" y="500" class="ink-secondary" font-size="12.5">Figure 3. M2 wins the 50-80% recall band; M1 has better precision at 90-95% recall --</text>
+  <text x="30" y="518" class="ink-secondary" font-size="12.5">a nuance AUPRC's single number integrates away (section 3.7).</text>
+</svg>

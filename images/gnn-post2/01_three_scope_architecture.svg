@@ -1,0 +1,170 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 620" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .surface { fill: #fcfcfb; }
+    .ink-primary { fill: #0b0b0b; }
+    .ink-secondary { fill: #52514e; }
+    .ink-muted { fill: #898781; }
+    .edge-muted { stroke: #c3c2b7; stroke-width: 2; }
+    .edge-blue { stroke: #2a78d6; stroke-width: 2.5; }
+    .edge-aqua { stroke: #1baf7a; stroke-width: 2.5; }
+    .edge-yellow { stroke: #eda100; stroke-width: 2.5; }
+    .node-muted { fill: #d8d6cd; stroke: #fcfcfb; stroke-width: 2; }
+    .node-blue { fill: #2a78d6; stroke: #fcfcfb; stroke-width: 2; }
+    .node-aqua { fill: #1baf7a; stroke: #fcfcfb; stroke-width: 2; }
+    .node-yellow { fill: #eda100; stroke: #fcfcfb; stroke-width: 2; }
+    .panel-title { font-size: 15px; font-weight: 600; }
+    .node-label { font-size: 9.5px; }
+    .caption { font-size: 11.5px; }
+    .dashed { stroke: #c3c2b7; stroke-width: 1.5; stroke-dasharray: 4 4; fill: none; }
+  </style>
+
+  <rect class="surface" x="0" y="0" width="960" height="620"/>
+
+  <text x="30" y="32" class="ink-primary" font-size="19" font-weight="700">The same provenance graph, scored three different ways</text>
+  <text x="30" y="52" class="ink-secondary caption" font-size="12.5">Each scope is a separate HGT encoder over the identical node/edge set -- only which relations it attends to changes.</text>
+
+  <!-- shared local graph layout, reused identically across all three panels:
+       session(20,30) proc1(70,60) proc2(125,30) file(175,55)
+       sockA(70,110) sockB(150,110) proc3(200,90) service(232,58) -->
+
+  <!-- PANEL 1: Scope 1: process-subtree -->
+  <g transform="translate(30,85)">
+    <text class="panel-title ink-primary" x="0" y="-16">Scope 1 -- process-subtree</text>
+    <text class="ink-muted" font-size="11.5" x="0" y="0">"one machine's blast radius"</text>
+    <g transform="translate(0,14)">
+      <line class="edge-muted" x1="70" y1="110" x2="150" y2="110"/>
+      <line class="edge-muted" x1="150" y1="110" x2="200" y2="90"/>
+      <line class="edge-muted" x1="200" y1="90" x2="232" y2="58"/>
+      <line class="edge-blue" x1="20" y1="30" x2="70" y2="60"/>
+      <line class="edge-blue" x1="70" y1="60" x2="125" y2="30"/>
+      <line class="edge-blue" x1="125" y1="30" x2="175" y2="55"/>
+      <line class="edge-muted" x1="70" y1="60" x2="70" y2="110"/>
+      <circle class="node-muted" cx="70" cy="110" r="7"/>
+      <circle class="node-muted" cx="150" cy="110" r="7"/>
+      <circle class="node-muted" cx="200" cy="90" r="7"/>
+      <circle class="node-muted" cx="232" cy="58" r="7"/>
+      <circle class="node-blue" cx="20" cy="30" r="7"/>
+      <circle class="node-blue" cx="70" cy="60" r="7"/>
+      <circle class="node-blue" cx="125" cy="30" r="7"/>
+      <circle class="node-blue" cx="175" cy="55" r="7"/>
+      <text class="node-label ink-secondary" x="20" y="48" text-anchor="middle">session</text>
+      <text class="node-label ink-secondary" x="48" y="63" text-anchor="end">proc1</text>
+      <text class="node-label ink-secondary" x="125" y="14" text-anchor="middle">proc2</text>
+      <text class="node-label ink-secondary" x="198" y="58" text-anchor="start">file</text>
+      <text class="node-label ink-muted" x="70" y="132" text-anchor="middle">sockA</text>
+      <text class="node-label ink-muted" x="150" y="132" text-anchor="middle">sockB</text>
+      <text class="node-label ink-muted" x="200" y="112" text-anchor="middle">proc3</text>
+      <text class="node-label ink-muted" x="232" y="40" text-anchor="middle">service</text>
+    </g>
+    <text class="ink-secondary caption" x="0" y="172">Process-lineage edges only,</text>
+    <text class="ink-secondary caption" x="0" y="187">shallow hop budget.</text>
+  </g>
+
+  <!-- PANEL 2: Scope 2: cross-domain-boundary -->
+  <g transform="translate(345,85)">
+    <text class="panel-title ink-primary" x="0" y="-16">Scope 2 -- cross-domain-boundary</text>
+    <text class="ink-muted" font-size="11.5" x="0" y="0">"did this cross a trust boundary"</text>
+    <g transform="translate(0,14)">
+      <line class="edge-muted" x1="20" y1="30" x2="70" y2="60"/>
+      <line class="edge-muted" x1="70" y1="60" x2="125" y2="30"/>
+      <line class="edge-muted" x1="125" y1="30" x2="175" y2="55"/>
+      <line class="edge-muted" x1="70" y1="60" x2="70" y2="110"/>
+      <line class="edge-muted" x1="150" y1="110" x2="200" y2="90"/>
+      <line class="edge-muted" x1="200" y1="90" x2="232" y2="58"/>
+      <line class="edge-aqua" x1="70" y1="110" x2="150" y2="110"/>
+      <circle class="node-muted" cx="20" cy="30" r="7"/>
+      <circle class="node-muted" cx="70" cy="60" r="7"/>
+      <circle class="node-muted" cx="125" cy="30" r="7"/>
+      <circle class="node-muted" cx="175" cy="55" r="7"/>
+      <circle class="node-muted" cx="200" cy="90" r="7"/>
+      <circle class="node-muted" cx="232" cy="58" r="7"/>
+      <circle class="node-aqua" cx="70" cy="110" r="7.5"/>
+      <circle class="node-aqua" cx="150" cy="110" r="7.5"/>
+      <text class="node-label ink-muted" x="20" y="48" text-anchor="middle">session</text>
+      <text class="node-label ink-muted" x="48" y="63" text-anchor="end">proc1</text>
+      <text class="node-label ink-muted" x="125" y="14" text-anchor="middle">proc2</text>
+      <text class="node-label ink-muted" x="198" y="58" text-anchor="start">file</text>
+      <text class="node-label ink-secondary" x="70" y="132" text-anchor="middle">sockA</text>
+      <text class="node-label ink-secondary" x="150" y="132" text-anchor="middle">sockB</text>
+      <text class="node-label ink-muted" x="200" y="112" text-anchor="middle">proc3</text>
+      <text class="node-label ink-muted" x="232" y="40" text-anchor="middle">service</text>
+    </g>
+    <text class="ink-secondary caption" x="0" y="172">Seeded on is_cross_host=1,</text>
+    <text class="ink-secondary caption" x="0" y="187">transport-agnostic.</text>
+  </g>
+
+  <!-- PANEL 3: Scope 3: maximal-context -->
+  <g transform="translate(660,85)">
+    <text class="panel-title ink-primary" x="0" y="-16">Scope 3 -- maximal-context</text>
+    <text class="ink-muted" font-size="11.5" x="0" y="0">"the whole case file"</text>
+    <g transform="translate(0,14)">
+      <line class="edge-yellow" x1="20" y1="30" x2="70" y2="60"/>
+      <line class="edge-yellow" x1="70" y1="60" x2="125" y2="30"/>
+      <line class="edge-yellow" x1="125" y1="30" x2="175" y2="55"/>
+      <line class="edge-yellow" x1="70" y1="60" x2="70" y2="110"/>
+      <line class="edge-yellow" x1="70" y1="110" x2="150" y2="110"/>
+      <line class="edge-yellow" x1="150" y1="110" x2="200" y2="90"/>
+      <line class="edge-yellow" x1="200" y1="90" x2="232" y2="58"/>
+      <circle class="node-yellow" cx="20" cy="30" r="7"/>
+      <circle class="node-yellow" cx="70" cy="60" r="7"/>
+      <circle class="node-yellow" cx="125" cy="30" r="7"/>
+      <circle class="node-yellow" cx="175" cy="55" r="7"/>
+      <circle class="node-yellow" cx="70" cy="110" r="7"/>
+      <circle class="node-yellow" cx="150" cy="110" r="7"/>
+      <circle class="node-yellow" cx="200" cy="90" r="7"/>
+      <circle class="node-yellow" cx="232" cy="58" r="7"/>
+      <text class="node-label ink-secondary" x="20" y="48" text-anchor="middle">session</text>
+      <text class="node-label ink-secondary" x="48" y="63" text-anchor="end">proc1</text>
+      <text class="node-label ink-secondary" x="125" y="14" text-anchor="middle">proc2</text>
+      <text class="node-label ink-secondary" x="198" y="58" text-anchor="start">file</text>
+      <text class="node-label ink-secondary" x="70" y="132" text-anchor="middle">sockA</text>
+      <text class="node-label ink-secondary" x="150" y="132" text-anchor="middle">sockB</text>
+      <text class="node-label ink-secondary" x="200" y="112" text-anchor="middle">proc3</text>
+      <text class="node-label ink-secondary" x="232" y="40" text-anchor="middle">service</text>
+    </g>
+    <text class="ink-secondary caption" x="0" y="172">Widest fanout,</text>
+    <text class="ink-secondary caption" x="0" y="187">no relation restriction.</text>
+  </g>
+
+  <!-- connecting lines down to logit pills -->
+  <line class="dashed" x1="155" y1="270" x2="220" y2="312"/>
+  <line class="dashed" x1="470" y1="270" x2="480" y2="312"/>
+  <line class="dashed" x1="785" y1="270" x2="740" y2="312"/>
+
+  <!-- logit pills -->
+  <g>
+    <rect x="150" y="314" width="140" height="34" rx="17" fill="#2a78d6"/>
+    <text x="220" y="336" text-anchor="middle" fill="#fcfcfb" font-size="13" font-weight="600">scope1_logit</text>
+
+    <rect x="410" y="314" width="140" height="34" rx="17" fill="#1baf7a"/>
+    <text x="480" y="336" text-anchor="middle" fill="#fcfcfb" font-size="13" font-weight="600">scope2_logit</text>
+
+    <rect x="670" y="314" width="140" height="34" rx="17" fill="#eda100"/>
+    <text x="740" y="336" text-anchor="middle" fill="#fcfcfb" font-size="13" font-weight="600">scope3_logit</text>
+  </g>
+
+  <!-- converge to fusion box -->
+  <line class="dashed" x1="220" y1="348" x2="480" y2="392"/>
+  <line class="dashed" x1="480" y1="348" x2="480" y2="392"/>
+  <line class="dashed" x1="740" y1="348" x2="480" y2="392"/>
+
+  <!-- side input: regime features -->
+  <rect x="770" y="378" width="170" height="46" rx="6" fill="none" stroke="#c3c2b7" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <text x="855" y="397" text-anchor="middle" class="ink-secondary" font-size="11">+ regime features</text>
+  <text x="855" y="412" text-anchor="middle" class="ink-muted" font-size="9.5">(is_cross_host, ts_is_synthetic...)</text>
+  <line class="dashed" x1="770" y1="401" x2="670" y2="401"/>
+
+  <!-- fusion box -->
+  <rect x="290" y="392" width="380" height="58" rx="8" fill="#0b0b0b"/>
+  <text x="480" y="415" text-anchor="middle" fill="#fcfcfb" font-size="15" font-weight="700">Fusion stacker</text>
+  <text x="480" y="435" text-anchor="middle" fill="#c3c2b7" font-size="11.5">average-of-3 / logistic / MLP -- fit on held-out inner logits</text>
+
+  <!-- output -->
+  <line x1="480" y1="450" x2="480" y2="478" stroke="#0b0b0b" stroke-width="2"/>
+  <polygon points="480,486 474,476 486,476" fill="#0b0b0b"/>
+  <rect x="330" y="490" width="300" height="46" rx="6" fill="none" stroke="#0b0b0b" stroke-width="1.5"/>
+  <text x="480" y="518" text-anchor="middle" class="ink-primary" font-size="13.5" font-weight="600">Combined edge / node score</text>
+
+  <text x="30" y="580" class="ink-secondary caption" font-size="12.5">Figure 1. Three independently-scoped HGT encoders read the same graph and</text>
+  <text x="30" y="598" class="ink-secondary caption" font-size="12.5">produce three per-instance logits, combined by a learned stacker (section 3.3).</text>
+</svg>

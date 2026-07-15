@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 630" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .surface { fill: #fcfcfb; }
+    .ink-primary { fill: #0b0b0b; }
+    .ink-secondary { fill: #52514e; }
+    .ink-muted { fill: #898781; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; }
+    .row-label { font-size: 13.5px; font-weight: 700; }
+    .row-sub { font-size: 10.5px; }
+    .cap { font-size: 12.5px; }
+    .card { fill: #fcfcfb; stroke: #c3c2b7; stroke-width: 1.5; }
+    .cellbox { stroke-width: 1.5; }
+  </style>
+
+  <rect class="surface" x="0" y="0" width="980" height="630"/>
+
+  <text x="30" y="32" class="ink-primary" font-size="19" font-weight="700">One raw node, one fixed-width row -- the same shape for every scenario</text>
+  <text x="30" y="52" class="ink-secondary" font-size="12.5">feature_config.py fixes one global schema, shared by all 9 node types and all 20 scenarios.</text>
+
+  <!-- raw node card -->
+  <g transform="translate(330,76)">
+    <rect class="card" x="0" y="0" width="320" height="128" rx="8"/>
+    <text x="14" y="24" class="ink-primary" font-size="14" font-weight="700">PROCESS node (raw)</text>
+    <text x="14" y="46" class="mono ink-secondary">host: SRV-FILE-01   origin: sysmon</text>
+    <text x="14" y="66" class="mono ink-secondary">enriched_by: [windows, sysmon]</text>
+    <text x="14" y="86" class="mono ink-secondary">in_degree: 1200  out_degree: 340</text>
+    <text x="14" y="108" class="mono ink-muted" text-decoration="line-through">username: rafael.castro</text>
+    <text x="230" y="108" fill="#d03b3b" font-size="10.5" font-weight="700">not a feature</text>
+  </g>
+
+  <!-- arrow down -->
+  <line x1="490" y1="212" x2="490" y2="240" stroke="#0b0b0b" stroke-width="2"/>
+  <polygon points="490,248 484,238 496,238" fill="#0b0b0b"/>
+
+  <!-- ================= 5-row schema breakdown ================= -->
+
+  <!-- Row 1: origin one-hot -->
+  <text class="row-label ink-primary" x="30" y="278">origin</text>
+  <text class="row-sub ink-muted" x="30" y="292">one-hot, 3 cols</text>
+  <g transform="translate(300,262)">
+    <rect x="0" y="0" width="26" height="32" rx="4" class="cellbox" fill="#fcfcfb" stroke="#c3c2b7"/>
+    <rect x="30" y="0" width="26" height="32" rx="4" class="cellbox" fill="#fcfcfb" stroke="#c3c2b7"/>
+    <rect x="60" y="0" width="26" height="32" rx="4" class="cellbox" fill="#2a78d6" stroke="#2a78d6"/>
+  </g>
+  <text x="400" y="284" class="ink-muted row-sub">ecar / windows / <tspan font-weight="700" fill="#2a78d6">sysmon</tspan></text>
+
+  <!-- Row 2: hostname one-hot -->
+  <text class="row-label ink-primary" x="30" y="343">hostname</text>
+  <text class="row-sub ink-muted" x="30" y="357">one-hot, ~20 cols</text>
+  <g transform="translate(300,327)">
+    <rect x="0" y="0" width="26" height="32" rx="4" class="cellbox" fill="#fcfcfb" stroke="#c3c2b7"/>
+    <rect x="30" y="0" width="26" height="32" rx="4" class="cellbox" fill="#fcfcfb" stroke="#c3c2b7"/>
+    <rect x="60" y="0" width="26" height="32" rx="4" class="cellbox" fill="#fcfcfb" stroke="#c3c2b7"/>
+    <rect x="90" y="0" width="26" height="32" rx="4" class="cellbox" fill="#fcfcfb" stroke="#c3c2b7"/>
+    <rect x="120" y="0" width="26" height="32" rx="4" class="cellbox" fill="#fcfcfb" stroke="#c3c2b7"/>
+    <rect x="150" y="0" width="26" height="32" rx="4" class="cellbox" fill="#1baf7a" stroke="#1baf7a"/>
+    <rect x="180" y="0" width="26" height="32" rx="4" class="cellbox" fill="#fcfcfb" stroke="#c3c2b7"/>
+    <rect x="210" y="0" width="26" height="32" rx="4" class="cellbox" fill="#fcfcfb" stroke="#c3c2b7"/>
+    <text x="240" y="22" class="ink-muted row-sub">...</text>
+  </g>
+  <text x="560" y="349" class="ink-muted row-sub"><tspan font-weight="700" fill="#1baf7a">SRV-FILE-01</tspan>, other slots for unseen hosts</text>
+
+  <!-- Row 3: os one-hot (R3-1) -->
+  <text class="row-label ink-primary" x="30" y="408">os</text>
+  <text class="row-sub ink-muted" x="30" y="422">one-hot, 3 cols</text>
+  <g transform="translate(300,392)">
+    <rect x="0" y="0" width="26" height="32" rx="4" class="cellbox" fill="#eda100" stroke="#eda100"/>
+    <rect x="30" y="0" width="26" height="32" rx="4" class="cellbox" fill="#fcfcfb" stroke="#c3c2b7"/>
+    <rect x="60" y="0" width="26" height="32" rx="4" class="cellbox" fill="#fcfcfb" stroke="#c3c2b7"/>
+  </g>
+  <text x="400" y="414" class="ink-muted row-sub"><tspan font-weight="700" fill="#eda100">windows</tspan> / linux / unknown -- Round 3 addition</text>
+
+  <!-- Row 4: enriched_by multi-hot -->
+  <text class="row-label ink-primary" x="30" y="473">enriched_by</text>
+  <text class="row-sub ink-muted" x="30" y="487">multi-hot, 4 cols</text>
+  <g transform="translate(300,457)">
+    <rect x="0" y="0" width="26" height="32" rx="4" class="cellbox" fill="#008300" stroke="#008300"/>
+    <rect x="30" y="0" width="26" height="32" rx="4" class="cellbox" fill="#fcfcfb" stroke="#c3c2b7"/>
+    <rect x="60" y="0" width="26" height="32" rx="4" class="cellbox" fill="#008300" stroke="#008300"/>
+    <rect x="90" y="0" width="26" height="32" rx="4" class="cellbox" fill="#fcfcfb" stroke="#c3c2b7"/>
+  </g>
+  <text x="450" y="479" class="ink-muted row-sub"><tspan font-weight="700" fill="#008300">ecar + sysmon</tspan> both fired -- can be &gt;1 bit</text>
+
+  <!-- Row 5: structural scalars -->
+  <text class="row-label ink-primary" x="30" y="538">structural</text>
+  <text class="row-sub ink-muted" x="30" y="552">log1p scalars, 6+ cols</text>
+  <g transform="translate(300,510)">
+    <rect x="0" y="20" width="26" height="30" fill="#4a3aa7"/>
+    <rect x="30" y="10" width="26" height="40" fill="#4a3aa7"/>
+    <rect x="60" y="26" width="26" height="24" fill="#4a3aa7"/>
+    <rect x="90" y="2" width="26" height="48" fill="#4a3aa7"/>
+    <line x1="0" y1="50" x2="116" y2="50" stroke="#c3c2b7" stroke-width="1"/>
+  </g>
+  <text x="450" y="538" class="ink-muted row-sub">in_degree, out_degree, total_degree,</text>
+  <text x="450" y="552" class="ink-muted row-sub">per-edge-type breakdowns (all log1p-scaled, R3-2)</text>
+
+  <text x="30" y="596" class="ink-secondary cap">Figure 10. Every node/edge in every scenario maps to a stable index into the same shared schema --</text>
+  <text x="30" y="614" class="ink-secondary cap">what lets three differently-scoped GNNs later agree on which embedding belongs to which entity (section 3.2).</text>
+</svg>

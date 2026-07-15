@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 480" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .surface { fill: #fcfcfb; }
+    .ink-primary { fill: #0b0b0b; }
+    .ink-secondary { fill: #52514e; }
+    .ink-muted { fill: #898781; }
+    .card { fill: #fcfcfb; stroke: #c3c2b7; stroke-width: 1.5; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; }
+    .dashed { stroke: #c3c2b7; stroke-width: 1.5; stroke-dasharray: 4 4; fill: none; }
+  </style>
+
+  <rect class="surface" x="0" y="0" width="900" height="480"/>
+
+  <text x="30" y="32" class="ink-primary" font-size="19" font-weight="700">The matched-pair method: one seed, one field changed</text>
+  <text x="30" y="52" class="ink-secondary" font-size="12.5">EvidenceForge seeds its run RNG from the scenario's own name: field -- shared name, shared background.</text>
+
+  <!-- Card A1 -->
+  <g transform="translate(60,80)">
+    <rect class="card" x="0" y="0" width="330" height="150" rx="8"/>
+    <text x="14" y="24" class="ink-primary" font-size="14" font-weight="700">scenario_a1.yaml</text>
+    <rect x="14" y="38" width="300" height="22" rx="4" fill="#2a78d6" opacity="0.14"/>
+    <text x="20" y="54" class="mono ink-primary">name: a1-smb-lateral</text>
+    <text x="20" y="82" class="mono ink-muted">storyline:</text>
+    <text x="20" y="102" class="mono ink-muted">  - step: remote_logon</text>
+    <text x="20" y="122" class="mono ink-secondary"># network_transport: auto (default)</text>
+  </g>
+
+  <!-- Card A2 -->
+  <g transform="translate(510,80)">
+    <rect class="card" x="0" y="0" width="330" height="150" rx="8"/>
+    <text x="14" y="24" class="ink-primary" font-size="14" font-weight="700">scenario_a2.yaml</text>
+    <rect x="14" y="38" width="300" height="22" rx="4" fill="#2a78d6" opacity="0.14"/>
+    <text x="20" y="54" class="mono ink-primary">name: a1-smb-lateral</text>
+    <text x="20" y="82" class="mono ink-muted">storyline:</text>
+    <text x="20" y="102" class="mono ink-muted">  - step: remote_logon</text>
+    <rect x="14" y="110" width="300" height="22" rx="4" fill="#eb6834" opacity="0.16"/>
+    <text x="20" y="126" class="mono ink-primary">network_transport: wmi</text>
+  </g>
+
+  <text x="225" y="255" text-anchor="middle" class="ink-secondary" font-size="11.5">same seed</text>
+  <text x="675" y="255" text-anchor="middle" class="ink-secondary" font-size="11.5">one field differs</text>
+
+  <line class="dashed" x1="225" y1="230" x2="400" y2="290"/>
+  <line class="dashed" x1="675" y1="230" x2="500" y2="290"/>
+
+  <!-- shared seed box -->
+  <rect x="250" y="292" width="400" height="60" rx="8" fill="#0b0b0b"/>
+  <text x="450" y="316" text-anchor="middle" fill="#fcfcfb" font-size="14.5" font-weight="700">Identical background activity +</text>
+  <text x="450" y="336" text-anchor="middle" fill="#fcfcfb" font-size="14.5" font-weight="700">identical malicious object IDs</text>
+
+  <!-- diverge to outputs -->
+  <line x1="350" y1="352" x2="230" y2="400" class="dashed"/>
+  <line x1="550" y1="352" x2="670" y2="400" class="dashed"/>
+
+  <rect x="110" y="404" width="240" height="46" rx="6" fill="none" stroke="#2a78d6" stroke-width="1.5"/>
+  <text x="230" y="424" text-anchor="middle" class="ink-primary" font-size="12.5" font-weight="600">A1 lateral socket: 445 / smb</text>
+  <text x="230" y="441" text-anchor="middle" class="ink-muted" font-size="10.5">(network_transport: auto)</text>
+
+  <rect x="550" y="404" width="240" height="46" rx="6" fill="none" stroke="#eb6834" stroke-width="1.5"/>
+  <text x="670" y="424" text-anchor="middle" class="ink-primary" font-size="12.5" font-weight="600">A2 lateral socket: 135 / dce_rpc</text>
+  <text x="670" y="441" text-anchor="middle" class="ink-muted" font-size="10.5">(network_transport: wmi)</text>
+
+  <text x="30" y="472" class="ink-secondary" font-size="12.5">Figure 2. A "true" matched pair (A1/A2): the only observed difference across the entire generated dataset is the lateral socket itself.</text>
+</svg>

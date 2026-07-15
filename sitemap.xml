@@ -4,12 +4,17 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://Pr0kythera.github.io/</loc>
-    <lastmod>2026-06-16T16:00:00+00:00</lastmod>
+    <lastmod>2026-07-11T22:40:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://Pr0kythera.github.io/posts/</loc>
-    <lastmod>2026-06-16T16:00:00+00:00</lastmod>
+    <lastmod>2026-07-11T22:40:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://Pr0kythera.github.io/posts/mixed-results/</loc>
+    <lastmod>2026-07-11T22:40:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>

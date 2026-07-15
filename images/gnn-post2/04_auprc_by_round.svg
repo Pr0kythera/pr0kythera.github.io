@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 650" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .surface { fill: #fcfcfb; }
+    .ink-primary { fill: #0b0b0b; }
+    .ink-secondary { fill: #52514e; }
+    .ink-muted { fill: #898781; }
+    .grid { stroke: #e1e0d9; stroke-width: 1; }
+    .axis { stroke: #c3c2b7; stroke-width: 1; }
+    .panel-title { font-size: 14px; font-weight: 700; }
+    .tick { font-size: 11px; }
+  </style>
+
+  <rect class="surface" x="0" y="0" width="900" height="650"/>
+
+  <text x="30" y="32" class="ink-primary" font-size="19" font-weight="700">The central thesis, three rounds running -- and the shrinking margin</text>
+  <text x="30" y="52" class="ink-secondary" font-size="12.5">Mean AUPRC across all 4 folds. M2 beats M1 in every round on both metrics -- but the gap narrows each round.</text>
+
+  <!-- legend, own row, clear of title/subtitle -->
+  <circle cx="30" cy="78" r="6" fill="#2a78d6"/>
+  <text x="42" y="82" class="ink-secondary" font-size="12.5">M1 control</text>
+  <circle cx="230" cy="78" r="6" fill="#1baf7a"/>
+  <text x="242" y="82" class="ink-secondary" font-size="12.5">M2 three-scope (avg-of-3)</text>
+
+  <!-- ===================== PANEL: EDGE AUPRC ===================== -->
+  <g transform="translate(30,122)">
+    <text class="panel-title ink-primary" x="150" y="0" text-anchor="middle">Edge AUPRC</text>
+    <g transform="translate(0,20)">
+      <line class="grid" x1="40" y1="380" x2="330" y2="380"/>
+      <line class="grid" x1="40" y1="300" x2="330" y2="300"/>
+      <line class="grid" x1="40" y1="220" x2="330" y2="220"/>
+      <line class="grid" x1="40" y1="140" x2="330" y2="140"/>
+      <line class="grid" x1="40" y1="60" x2="330" y2="60"/>
+      <text x="32" y="384" text-anchor="end" class="ink-muted tick">0.0</text>
+      <text x="32" y="304" text-anchor="end" class="ink-muted tick">0.25</text>
+      <text x="32" y="224" text-anchor="end" class="ink-muted tick">0.50</text>
+      <text x="32" y="144" text-anchor="end" class="ink-muted tick">0.75</text>
+      <text x="32" y="64" text-anchor="end" class="ink-muted tick">1.00</text>
+      <line class="axis" x1="40" y1="380" x2="330" y2="380"/>
+
+      <path d="M 66,351.84 Q 66,347.84 70,347.84 L 84,347.84 Q 88,347.84 88,351.84 L 88,380 L 66,380 Z" fill="#2a78d6"/>
+      <path d="M 92,199.84 Q 92,195.84 96,195.84 L 110,195.84 Q 114,195.84 114,199.84 L 114,380 L 92,380 Z" fill="#1baf7a"/>
+      <text x="77.0" y="341.84" text-anchor="middle" font-size="11" font-weight="600" fill="#0b0b0b">0.10</text>
+      <text x="103.0" y="189.84" text-anchor="middle" font-size="11" font-weight="600" fill="#0b0b0b">0.58</text>
+      <text x="90" y="400" text-anchor="middle" font-size="12" fill="#52514e">Round 1</text>
+
+      <path d="M 166,252.06 Q 166,248.06 170,248.06 L 184,248.06 Q 188,248.06 188,252.06 L 188,380 L 166,380 Z" fill="#2a78d6"/>
+      <path d="M 192,132.54 Q 192,128.54 196,128.54 L 210,128.54 Q 214,128.54 214,132.54 L 214,380 L 192,380 Z" fill="#1baf7a"/>
+      <text x="177.0" y="242.06" text-anchor="middle" font-size="11" font-weight="600" fill="#0b0b0b">0.41</text>
+      <text x="203.0" y="122.54" text-anchor="middle" font-size="11" font-weight="600" fill="#0b0b0b">0.79</text>
+      <text x="190" y="400" text-anchor="middle" font-size="12" fill="#52514e">Round 2</text>
+
+      <path d="M 266,174.88 Q 266,170.88 270,170.88 L 284,170.88 Q 288,170.88 288,174.88 L 288,380 L 266,380 Z" fill="#2a78d6"/>
+      <path d="M 292,141.82 Q 292,137.82 296,137.82 L 310,137.82 Q 314,137.82 314,141.82 L 314,380 L 292,380 Z" fill="#1baf7a"/>
+      <text x="277.0" y="164.88" text-anchor="middle" font-size="11" font-weight="600" fill="#0b0b0b">0.65</text>
+      <text x="303.0" y="131.82" text-anchor="middle" font-size="11" font-weight="600" fill="#0b0b0b">0.76</text>
+      <text x="290" y="400" text-anchor="middle" font-size="12" fill="#52514e">Round 3</text>
+    </g>
+    <text x="150" y="440" text-anchor="middle" class="ink-secondary" font-size="11.5">margin: ~5.7x -&gt; ~1.9x -&gt; ~1.16x</text>
+  </g>
+
+  <!-- ===================== PANEL: NODE AUPRC ===================== -->
+  <g transform="translate(480,122)">
+    <text class="panel-title ink-primary" x="150" y="0" text-anchor="middle">Node AUPRC</text>
+    <g transform="translate(0,20)">
+      <line class="grid" x1="40" y1="380" x2="330" y2="380"/>
+      <line class="grid" x1="40" y1="300" x2="330" y2="300"/>
+      <line class="grid" x1="40" y1="220" x2="330" y2="220"/>
+      <line class="grid" x1="40" y1="140" x2="330" y2="140"/>
+      <line class="grid" x1="40" y1="60" x2="330" y2="60"/>
+      <text x="32" y="384" text-anchor="end" class="ink-muted tick">0.0</text>
+      <text x="32" y="304" text-anchor="end" class="ink-muted tick">0.25</text>
+      <text x="32" y="224" text-anchor="end" class="ink-muted tick">0.50</text>
+      <text x="32" y="144" text-anchor="end" class="ink-muted tick">0.75</text>
+      <text x="32" y="64" text-anchor="end" class="ink-muted tick">1.00</text>
+      <line class="axis" x1="40" y1="380" x2="330" y2="380"/>
+
+      <path d="M 66,325.38 Q 66,321.38 70,321.38 L 84,321.38 Q 88,321.38 88,325.38 L 88,380 L 66,380 Z" fill="#2a78d6"/>
+      <path d="M 92,280.83 Q 92,276.83 96,276.83 L 110,276.83 Q 114,276.83 114,280.83 L 114,380 L 92,380 Z" fill="#1baf7a"/>
+      <text x="77.0" y="315.38" text-anchor="middle" font-size="11" font-weight="600" fill="#0b0b0b">0.18</text>
+      <text x="103.0" y="270.83" text-anchor="middle" font-size="11" font-weight="600" fill="#0b0b0b">0.32</text>
+      <text x="90" y="400" text-anchor="middle" font-size="12" fill="#52514e">Round 1</text>
+
+      <path d="M 166,239.30 Q 166,235.30 170,235.30 L 184,235.30 Q 188,235.30 188,239.30 L 188,380 L 166,380 Z" fill="#2a78d6"/>
+      <path d="M 192,160.13 Q 192,156.13 196,156.13 L 210,156.13 Q 214,156.13 214,160.13 L 214,380 L 192,380 Z" fill="#1baf7a"/>
+      <text x="177.0" y="229.30" text-anchor="middle" font-size="11" font-weight="600" fill="#0b0b0b">0.45</text>
+      <text x="203.0" y="150.13" text-anchor="middle" font-size="11" font-weight="600" fill="#0b0b0b">0.70</text>
+      <text x="190" y="400" text-anchor="middle" font-size="12" fill="#52514e">Round 2</text>
+
+      <path d="M 266,185.82 Q 266,181.82 270,181.82 L 284,181.82 Q 288,181.82 288,185.82 L 288,380 L 266,380 Z" fill="#2a78d6"/>
+      <path d="M 292,175.33 Q 292,171.33 296,171.33 L 310,171.33 Q 314,171.33 314,175.33 L 314,380 L 292,380 Z" fill="#1baf7a"/>
+      <text x="277.0" y="175.82" text-anchor="middle" font-size="11" font-weight="600" fill="#0b0b0b">0.62</text>
+      <text x="303.0" y="165.33" text-anchor="middle" font-size="11" font-weight="600" fill="#0b0b0b">0.65</text>
+      <text x="290" y="400" text-anchor="middle" font-size="12" fill="#52514e">Round 3</text>
+    </g>
+    <text x="150" y="440" text-anchor="middle" class="ink-secondary" font-size="11.5">win rate: most folds -&gt; 3/4 -&gt; 2/4</text>
+  </g>
+
+  <text x="30" y="608" class="ink-secondary" font-size="12.5">Figure 4. Both systems improve every round, but M1's relative gains outpace M2's --</text>
+  <text x="30" y="626" class="ink-secondary" font-size="12.5">the central thesis still holds edge-level, every round, by a shrinking margin (section 3.7).</text>
+</svg>

@@ -1,0 +1,1039 @@
+<!doctype html>
+<html
+  lang="en-uk"
+  dir="ltr"
+  class="h-full">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="language" content="en-uk">
+<script>
+  
+  (function () {
+    const storedTheme = localStorage.getItem("theme");
+    const systemPrefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
+    const theme = storedTheme || (systemPrefersLight ? "light" : "dark");
+    document.documentElement.setAttribute("data-theme", theme);
+  })();
+</script>
+<title>Provenance-based Graph Neural Networks using Heterogeneous Graph Transformers - Part 2 | Blog</title>
+<meta
+  name="description"
+  content="
+    Provenance-based Graph Neural Networks using Heterogeneous Graph Transformers - Part 2 In this post we directly continue from Part 1 …
+  
+  ">
+
+
+
+
+
+
+<link rel="canonical" href="https://Pr0kythera.github.io/posts/mixed-results/">
+
+<meta name="robots" content="index, follow">
+
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Provenance-based Graph Neural Networks using Heterogeneous Graph Transformers - Part 2 | Blog">
+<meta property="og:description" content="Provenance-based Graph Neural Networks using Heterogeneous Graph Transformers - Part 2 In this post we directly continue from Part 1 …">
+<meta property="og:url" content="https://Pr0kythera.github.io/posts/mixed-results/">
+<meta property="og:site_name" content="Blog"><meta property="og:image" content="https://example.com/avatar.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630"><meta property="article:published_time" content="2026-07-11T22:40:00Z">
+  <meta
+    property="article:modified_time"
+    content="2026-07-11T22:40:00Z">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Provenance-based Graph Neural Networks using Heterogeneous Graph Transformers - Part 2 | Blog">
+<meta name="twitter:description" content="Provenance-based Graph Neural Networks using Heterogeneous Graph Transformers - Part 2 In this post we directly continue from Part 1 …"><meta name="twitter:image" content="https://example.com/avatar.jpg">
+
+<script type="application/ld+json">
+
+
+
+
+
+
+
+
+
+
+"{\"@context\":\"https://schema.org\",\"@type\":\"BlogPosting\",\"author\":{\"@type\":\"Person\",\"email\":\"contact.prokythera@gmail.com\",\"name\":\"Blog\"},\"dateModified\":\"2026-07-11T22:40:00Z\",\"datePublished\":\"2026-07-11T22:40:00Z\",\"description\":\"Provenance-based Graph Neural Networks using Heterogeneous Graph Transformers - Part 2 In this post we directly continue from Part 1 …\",\"headline\":\"Provenance-based Graph Neural Networks using Heterogeneous Graph Transformers - Part 2\",\"image\":\"https://example.com/avatar.jpg\",\"mainEntityOfPage\":{\"@id\":\"https://Pr0kythera.github.io/posts/mixed-results/\",\"@type\":\"WebPage\"},\"publisher\":{\"@type\":\"Organization\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https://example.com/avatar.jpg\"},\"name\":\"Blog\"}}"</script>
+
+
+
+  
+  
+  
+    
+  
+  
+<script type="application/ld+json">"{\"@context\":\"https://schema.org\",\"@type\":\"BreadcrumbList\",\"itemListElement\":[{\"@type\":\"ListItem\",\"item\":\"https://Pr0kythera.github.io/\",\"name\":\"Blog\",\"position\":1},{\"@type\":\"ListItem\",\"item\":\"https://Pr0kythera.github.io/posts/\",\"name\":\"Posts\",\"position\":2},{\"@type\":\"ListItem\",\"item\":\"https://Pr0kythera.github.io/posts/mixed-results/\",\"name\":\"Provenance-based Graph Neural Networks using Heterogeneous Graph Transformers - Part 2\",\"position\":3}]}"</script>
+
+
+
+
+
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+  rel="stylesheet">
+
+
+<link
+  rel="stylesheet"
+  href="/css/theme.min.86a32b729f656fc6c119ed69193950db815a3ad9fdc967b32c76d602f11449a4.css"
+  integrity="sha256-hqMrcp9lb8bBGe1pGTlQ24FaOtn9yWezLHbWAvEUSaQ=">
+
+<link
+    rel="stylesheet"
+    href="/css/syntax-dark.min.b01037e5609e6260b74d6fcdd6d5131e8dcbc4d46d6ef4bfbe5a60bdfc1a9f30.css"
+    integrity="sha256-sBA35WCeYmC3TW/N1tUTHo3LxNRtbvS/vlpgvfwanzA="
+    id="syntax-dark-theme"
+    class="syntax-theme"><link
+    rel="stylesheet"
+    href="/css/syntax-light.min.9602bc2fcef52b4c62e05eae14b48ba428e114f116e993e504d83ed5a3aeda98.css"
+    integrity="sha256-lgK8L871K0xi4F6uFLSLpCjhFPEW6ZPlBNg&#43;1aOu2pg="
+    id="syntax-light-theme"
+    class="syntax-theme"
+    disabled><script>
+  
+  (function () {
+    const storedTheme = localStorage.getItem("theme");
+    const systemPrefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
+    const theme = storedTheme || (systemPrefersLight ? "light" : "dark");
+
+    const syntaxDark = document.getElementById("syntax-dark-theme");
+    const syntaxLight = document.getElementById("syntax-light-theme");
+
+    if (theme === "light") {
+      if (syntaxDark) syntaxDark.disabled = true;
+      if (syntaxLight) syntaxLight.disabled = false;
+    } else {
+      if (syntaxDark) syntaxDark.disabled = false;
+      if (syntaxLight) syntaxLight.disabled = true;
+    }
+
+    
+    const observer = new MutationObserver(() => {
+      const currentTheme = document.documentElement.getAttribute("data-theme");
+      if (currentTheme === "light") {
+        if (syntaxDark) syntaxDark.disabled = true;
+        if (syntaxLight) syntaxLight.disabled = false;
+      } else {
+        if (syntaxDark) syntaxDark.disabled = false;
+        if (syntaxLight) syntaxLight.disabled = true;
+      }
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+  })();
+</script>
+
+
+
+
+<link
+  rel="stylesheet"
+  href="/css/bundle.min.783a79746a859af9be598cbc33fba2a1087434b23768524277b07ef28336f113.css"
+  integrity="sha256-eDp5dGqFmvm&#43;WYy8M/uioQh0NLI3aFJCd7B&#43;8oM28RM=">
+
+
+
+
+
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+<link rel="icon" type="image/png" href="/favicon.png">
+
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon/logo-transparent/favicon-32x32.png">
+
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon/logo-transparent/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon/logo-transparent/apple-touch-icon.png">
+<link
+  rel="icon"
+  type="image/png"
+  sizes="192x192"
+  href="/favicon/logo-transparent/android-chrome-192x192.png">
+<link
+  rel="icon"
+  type="image/png"
+  sizes="512x512"
+  href="/favicon/logo-transparent/android-chrome-512x512.png">
+<link rel="manifest" href="/favicon/logo-transparent/site.webmanifest">
+
+
+
+
+  
+
+
+
+
+  </head>
+  <body class="flex flex-col min-h-screen">
+    <a href="#main-content" class="skip-to-main" aria-label="Skip to main content"
+      >Skip to main content</a
+    >
+    <header class="sticky-header">
+      <div class="header-container">
+        <nav class="header-nav" role="navigation" aria-label="Main navigation">
+  <div class="header-content">
+    <div class="header-logo">
+      <a href="/" class="logo-link" aria-label="Home - Blog">
+        Blog
+      </a>
+    </div>
+
+    <div class="header-menu">
+      <ul class="menu-list">
+  
+    <li class="menu-item">
+      <a
+        href="/posts/"
+        class="menu-link ">
+        Posts
+      </a>
+    </li>
+  
+</ul>
+
+
+
+      <button id="search-toggle" class="search-toggle" aria-label="Search" type="button">
+        <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+      </button>
+
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme" type="button">
+  <svg class="icon-sun" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+  </svg>
+  <svg class="icon-moon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+  </svg>
+</button>
+
+    </div>
+  </div>
+</nav>
+
+      </div>
+    </header>
+
+    <main id="main-content" class="flex-1" role="main">
+      
+  <div class="single-post-wrapper">
+    <article class="single-post">
+      
+
+
+
+
+
+
+
+      <header class="post-header">
+        <h1 class="post-title-main">Provenance-based Graph Neural Networks using Heterogeneous Graph Transformers - Part 2</h1>
+
+        
+
+        <div class="post-meta">
+  <div class="post-meta-info">
+    <time datetime="2026-07-11T22:40:00Z" class="post-date">
+      <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+      </svg>
+      July 11, 2026
+    </time>
+
+    <span class="meta-separator">•</span>
+
+    
+      <span class="post-word-count">
+        <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        6817 words
+      </span>
+    
+
+    
+      <span class="meta-separator">•</span>
+      <span class="post-reading-time">
+        <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        33 min
+      </span>
+    
+  </div>
+
+  
+</div>
+
+      </header>
+
+      <div class="post-content-main">
+        <h1 id="provenance-based-graph-neural-networks-using-heterogeneous-graph-transformers---part-2">Provenance-based Graph Neural Networks using Heterogeneous Graph Transformers - Part 2</h1>
+<p>In this post we directly continue from Part 1 (<a href="https://blog.pr0kythera.com/posts/new-post-here/)">https://blog.pr0kythera.com/posts/new-post-here/)</a>, we ended up with: a single minimal test HGT (hetrogeneous graph transformer) which worked but could tell us nothing besides the pipeline was a success, and three hopes and dreams: more scenarios, a temporal feature, and an A/B test of the three-scope idea against a single GNN (the control) to determine if my hypothesis that 3 differently scoped approaches out performs a single GNN that looks over the entire graph.</p>
+<p>I somewhat apologise that the following is very long. I&rsquo;ve also decided to commit to hopefully a shorter part 3 with the aim to make the project a bit more in the realm of real world application rather than solely one focused on research. Once I have something a bit more generalisable i&rsquo;m really keen to release the whole project. But currently everything is built against Evidence Forge output and also only the specific scenarios at that.</p>
+<p>For a tldr headline. We successfully proved hypothesis! what I am calling &ldquo;PARALLAX&rdquo; a multi-scope Heterogeneous Graph Transformer ensemble out performed a control HGTConv encoder trained over the whole graph. What follows is how we got to that point, the problems encountered along the way and the iterative improvements that drastically improved out output over 2 rounds of modifications.</p>
+<p>To be complete transparent Claude Opus 5.8 and Sonnet 5.0 were heavily utilised in this project. The design, direction and this writeup is all my own. But as you can imagine authoring everything by hand would be months or years worth of work for a team. A GNN detection project like this has been rattling around in my head for a long time but the advent of frontier models over the past 12 months make something with this scope actually achievable in my afternoons and weekends. With that in mind i&rsquo;m trying to be very cogent not to be just producing slop. My personal take is as long as there is heavy human involvement in the input, process and output LLM&rsquo;s are a fantastic enabler. The problems lie with overreliance and a lack of understanding and engagement Rubbish in Rubbish out isn&rsquo;t by any means a new concept and it&rsquo;s being amplified by LLM&rsquo;s.</p>
+<hr>
+<h2 id="a-recap-for-readers-who-somehow-ended-up-here-without-bothering-to-read-part-1">A recap (for readers who somehow ended up here without bothering to read Part 1)</h2>
+<p>My fundamental thesis is as follows: attack signals in enterprise telemetry lives in causal CHAINS across log sources, for example: a login that created a new process, that process reads LSASS, and then wrote the output to a file, the process went on and crossed a network boundary, on the new host it then installed a service.</p>
+<p>Part 1 framed this as a provenance-graph learning problem, we chose a Heterogeneous Graph Transformer (HGT) as the model family because it keeps per-node-type (a service is treated differently to a process) and per-edge-type semantics distinct instead of flattening everything into one generic type. Most importantly I proposed that three GNNs looking at the same graph through three different windows (a process-subtree scope, a cross-domain-boundary scope, a whole-graph scope), fused by a fourth model. It also introduced EvidenceForge (Cisco Talos), the synthetic multi-source log generator this entire project depends on.</p>
+<hr>
+<h2 id="data-pipeline-scenario-generation-and-validation">Data pipeline, scenario generation, and validation</h2>
+<h3 id="from-one-scenario-to-twenty">From one scenario to twenty</h3>
+<p>Quickly to recap the data pipeline this image does a good job of desrcibing what the process:</p>
+<p><img src="/images/gnn-post2/07_pipeline_stages.svg" alt="alt text" style="max-width: 100%; height: auto; display: block;">
+(The data pipeline)</p>
+<p>Part 1 ended on a single scenario. Building a study meant going from one to twenty: thirteen attack scenarios built in EvidenceForce (A1-A13), two &ldquo;failed/contained&rdquo; scenarios (F1, a firewall-blocked lateral move; F2, a &ldquo;contained intrusion&rdquo;), one dual-independent-attacker scenario (D1), and four benign scenarios (B1-B4) 20 total, all built through a repeatable procedure so the process was identical for each scenario. The reason I wanted to include additional scenarios where a SOC identifies and contains a malicious attack chain part way though as well as a scenario featuring dual attackers is so the model does not only get clean training data to learn from. Similarly the benign examples are important so we don&rsquo;t end up with a model that labels everything as malicious because everything it trained on was malicious.</p>
+<p>The procedure was as follows:</p>
+<ol>
+<li>Author the YAML from a scenario spec described above, using only documented storyline event types (<code>service_installed</code>,<code>scheduled_task_created</code>), because EvidenceForge has no <code>psexec</code> or <code>schtasks</code> event type.</li>
+<li><code>eforge validate &lt;scenario&gt;.yaml</code> - validate and fix issues as soon as they rear their ugly heads.</li>
+<li><code>eforge generate &lt;scenario&gt;.yaml -o &lt;out_dir&gt; -target default</code> Here we produces the deterministic log set. Also run <code>eforge eval</code> against four hard quality gates (spec conformance, value plausibility, causal ordering, event presence) any issues and it gets sent back to step 1 to iterate.</li>
+<li>Inspect the RAW output against the spec, before any pipeline code touches it. Read <code>GROUND_TRUTH.json</code> as the oracle, then confirm each storyline step actually produced the expected records in the expected shape. This is where divergences between &ldquo;what the spec asked for&rdquo; and &ldquo;what the engine actually emitted&rdquo; get caught and analysed and potentially re-authored.</li>
+<li>Run and adapt the pipeline (parse -&gt; correlate -&gt; label) each step validated against the scenario output.</li>
+<li>Verify the built graph against ground truth entity-by-entity ensure timestamps are present and ordered.</li>
+<li>Record and close the loop Document scenario created successfully with any required changes.</li>
+</ol>
+<p><img src="/images/gnn-post2/08_scenario_build_loop.svg" alt="alt text" style="max-width: 100%; height: auto; display: block;">
+(Scenario Build Loop)</p>
+<p>EvidenceForge&rsquo;s scenario-authoring layer is LLM-assisted and therefore non-deterministic, but generation <em>from</em> a finished, committed YAML is fully deterministic and seeded from <code>scenario.name</code>.</p>
+<h3 id="the-matched-pair-method">The matched-pair method</h3>
+<p>Most of the 20 scenarios aren&rsquo;t just independent data points. They&rsquo;re actually six matched pairs, each isolating one axis of variation while holding everything else constant.</p>
+<p>Why? With only 20 scenarios total, an unpaired comparison can&rsquo;t tell you whether a result reflects the thing you actually changed (transport, dwell time, persistence mechanism, OS) or just incidental differences between two unrelated scenarios. By sharing EvidenceForge&rsquo;s RNG seed and changing exactly one axis, a matched pair isolates that one variable against an identical background. So when scope 2 catches both A1 (SMB) and A2 (WMI) equally, there we have the evidence that the model generalizes to &ldquo;crossed a trust boundary&rdquo;! Rather than just overfitting to one lateral-movement technique&rsquo;s specific fingerprint.</p>
+<ul>
+<li>A1/A2 (lateral movement): SMB vs WMI transport</li>
+<li>A3/A4 (credential access): LSASS dump vs DCSync</li>
+<li>A5/A6 (persistence): service creation vs registry Run-key</li>
+<li>A7/A8 (dwell time): ~12 minutes vs ~7 hours</li>
+<li>A9/A10 (background noise): low-noise vs ~12x background volume</li>
+<li>A11/A12 (operating system): Windows lateral vs Linux pivot</li>
+</ul>
+<p>The trick that makes this work is EvidenceForge seeding its run RNG from the scenario&rsquo;s own <code>name:</code> field. Two YAML files that share the same <code>name</code> and differ in exactly one field will generate identical background activity and identical malicious object identities, diverging only where the deliberately changed field takes effect. A2&rsquo;s YAML is byte-for-byte identical to A1&rsquo;s except for one line:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#75715e"># scenario_a1.yaml</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">name</span>: <span style="color:#ae81ff">a1-smb-lateral</span>
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span><span style="color:#f92672">storyline</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">step</span>: <span style="color:#ae81ff">remote_logon</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">event</span>: <span style="color:#ae81ff">logon</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># network_transport defaults to &#34;auto&#34; == stock SMB behaviour</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># scenario_a2.yaml - SAME name, ONE field different</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">name</span>: <span style="color:#ae81ff">a1-smb-lateral  </span> <span style="color:#75715e"># &lt;- shared seed, not &#34;a2-...&#34;</span>
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span><span style="color:#f92672">storyline</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">step</span>: <span style="color:#ae81ff">remote_logon</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">event</span>: <span style="color:#ae81ff">logon</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">network_transport: wmi   # the only diff</span>: <span style="color:#ae81ff">DCOM/RPC 135 instead of SMB 445</span>
+</span></span></code></pre></div><p>Due to some issues which I won&rsquo;t get into not every pair is this closely aligned. But they&rsquo;re close enough to meet our goal to be able to compare them.</p>
+<h3 id="where-evidenceforge-itself-had-to-be-extended">Where EvidenceForge itself had to be extended</h3>
+<p>Two of the six pairs needed a capability stock EvidenceForge 1.9.0 didn&rsquo;t have. Rather than give up on them we created an additive local fork patch.</p>
+<p>WMI transport (A1/A2). Stock EvidenceForge&rsquo;s remote admin storyline bundle is SMB-only. There&rsquo;s no way to author a WMI/DCOM lateral move at all. The patch adds one field, <code>network_transport: &quot;auto&quot;|&quot;smb&quot;|&quot;wmi&quot;</code>, to the storyline <code>logon</code> event; <code>wmi</code> routes a type-3 logon&rsquo;s establishing cross host connection to DCOM/RPC (port 135, <code>dce_rpc</code>) instead of SMB (445). The edits spanned the scenario model, the auth-session action, the activity generator, and the storyline engine and <code>auto</code> (the default) reproduces stock behavior exactly.</p>
+<p>Registry persistence (A5/A6). EvidenceForge has no Reg run key persistence event the stock path is unfortunately a 50% probability, EDR-pool-random registry side effect, which means an <em>authored</em> Run key persistence step was never reliably emitted. The patch hooks the process generator: when a storyline <code>reg.exe</code> process runs <code>reg add &lt;Run-key&gt; [/v &lt;value&gt;] [/d &lt;data&gt;]</code>, it now deterministically emits one <code>registry_modify</code> event to that exact key, stamped with the process&rsquo;s own actor ID - and skips the stock random side effect for that process only. Our existing correlator picks this up through its existing generic actor-to-object path; no correlator change was needed! Only the labeler needed a new rule (rule 3b, scoped specifically to <code>CurrentVersion\Run</code> targets, so an <em>incidental</em> malicious registry write event elsewhere such as A3&rsquo;s Office key touch correctly stays unlabeled).</p>
+<h3 id="f1-when-the-correlator-has-to-synthesize-a-node-from-nothing">F1: when the correlator has to synthesize a node from nothing</h3>
+<p>Scenario F1 (firewall-blocked lateral movement) forced a different kind of extension. A connection blocked by a firewall produces no eCAR FLOW record at all on the source host. Only the Zeek sensor (a <code>REJ</code> connection state, on the source segment) and a new ASA syslog parser (ported from EvidenceForge&rsquo;s own MIT-licensed reference implementation) see it at all. That meant the correlator had to learn to <em>synthesize</em> a socket node when the graph would otherwise have no node to hang a label on. Normally we&rsquo;d expect to see something in a table like Microsoft&rsquo;s DeviceNetworkEvents:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">build_asa_deny_nodes</span>(self, zeek_events) <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;For each retained ASA 106023 deny, ensure a socket node exists
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    at its 5-tuple identity - even when eCAR is silent. Resolution
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    order: (1) an eCAR-built socket at this 5-tuple, if one exists;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    (2) else a Zeek conn record at the same 5-tuple, synthesize from
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    Zeek fields; (3) else synthesize a BARE socket from the ASA
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    record&#39;s own 5-tuple alone.&#34;&#34;&#34;</span>
+</span></span></code></pre></div><p>That node deliberately carries no actor edge. Nothing in the graph links any process or session to it, because the only candidate (a Windows 5156 filtering-platform event) is attributed to the generic &ldquo;System&rdquo; PID 4 shared by all network activity on the host, a useless anchor. Building machinery to wire that up was considered and explicitly declined as disproportionate in this project.</p>
+<h3 id="validation">Validation</h3>
+<p>Every one of the 20 scenarios has its own validator script that re-reads the assembled feature artifact from disk and checks for the following:</p>
+<ul>
+<li>Malicious node/edge counts match ground truth exactly, entity-by-entity</li>
+<li>Every malicious node has at least one edge or is a recorded exception</li>
+<li>Timestamps are present and correctly ordered</li>
+<li>Both baseline reconciliation flags in the manifest are <code>True</code></li>
+</ul>
+<hr>
+<h2 id="feature-engineering">Feature engineering</h2>
+<h3 id="why-this-is-harder-than-it-sounds">Why this is harder than it sounds</h3>
+<p>A graph node like &ldquo;the process <code>pd.exe</code> opened LSASS at 14:32:07&rdquo; means nothing to a neural network until it becomes a vector of numbers.Turning &ldquo;what happened on a compromised machine&rdquo; into numbers a model can compare <em>across twenty different attacks, on different hosts, with different personas and different background noise</em> is the actual work of this stage. It&rsquo;s also a bit more complicated than simply turning a scenario&rsquo;s own logs into numbers.</p>
+<p><img src="/images/gnn-post2/10_feature_engineering.svg" alt="alt text" style="max-width: 100%; height: auto; display: block;">
+(Feature Engineering)</p>
+<p>The script <code>feature_config.py</code> created one fixed global schema for all 9 node types (process, socket, session, file, service, registry, module, account, scheduled_task) and all 16 edge/relation types, shared by every one of the 20 scenarios. Each node type gets a fixed-width feature block: one-hot encodings over static, hand crafted vocabularies (hostnames, origins, Zeek service names), multi-hot encodings for things like &ldquo;which merge stages enriched this node,&rdquo; and scalar structural features (in-degree, out-degree, total degree, and per-edge-type degree breakdowns). Every node and every edge in every scenario&rsquo;s graph gets a stable index which is globally shared, This allows the three differently scoped GNNs agree on which embedding belongs to which entity.</p>
+<p>One schema decision worth calling out for the non-ML reader: usernames and persona names are deliberately NOT features. Only structural and derived values go into the tensors. This matters because personas rotate across scenarios specifically so that no single name is consistently &ldquo;the attacker&rdquo;. If a name leaked into the feature vector, the model could trivially learn:</p>
+<p>&ldquo;this specific username = malicious,&rdquo; which would be a shortcut that says nothing about the general provenance-graph thesis.</p>
+<h3 id="the-abused-node-concept-9c">The &ldquo;abused node&rdquo; concept (9C)</h3>
+<p>One label-design decision to call out is. A node can be benign (node label 0) while still being the target of a malicious edge. A3&rsquo;s LSASS process is a real, legitimate Windows process. It did nothing wrong by existing, but the edge representing an attacker&rsquo;s process opening it with <code>0x1FFFFF</code> access is malicious. The project tracks this explicitly as an <code>abused</code> metadata flag: a benign node with at least one malicious incident edge. It&rsquo;s the concept that makes A3&rsquo;s LSASS and A4&rsquo;s krbtgt account symmetric rather than looking like two unrelated one off decisions.</p>
+<h3 id="round-3s-feature-layer-additions-os-and-log1p">Round 3&rsquo;s feature-layer additions: os and log1p</h3>
+<p>Two later, smaller feature-layer changes are worth mentioning here:</p>
+<p>An <code>os=windows|linux|unknown</code> node feature, added per-hostname by
+checking <em>which sensor artifact files actually exist</em> for that host.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>row<span style="color:#f92672">.</span>update(_onehot(hostname_os<span style="color:#f92672">.</span>get(node<span style="color:#f92672">.</span>hostname), fc<span style="color:#f92672">.</span>OS_VOCAB, <span style="color:#e6db74">&#34;os_&#34;</span>,
+</span></span><span style="display:flex;"><span>                    other_slot<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;unknown&#34;</span>))
+</span></span></code></pre></div><p>This mattered because A12 (the one Linux pivot scenario) is otherwise indistinguishable from a Windows host at the structural level except through <code>is_cross_host</code> and the flow bridge an explicit OS signal was found to be a gap.</p>
+<hr>
+<h2 id="the-three-scope-architecture">The three-scope architecture</h2>
+<p>Part 1&rsquo;s thesis was that attack signal lives in causal <em>chains</em> spanning log sources rather than in any single event taken in isolation. A single whole-graph GNN sees that whole chain in one pass, which sounds like an advantage, but it also means every node&rsquo;s representation gets diluted by attention over the <em>entire</em> graph, including tens of thousands of irrelevant benign nodes on a large scenario like A10 or D1. The bet: giving the model three deliberately different fields of view over the <em>same</em> graph one tight and local, one narrow and targeted, one as wide as M1&rsquo;s own control. Then finally combining their verdicts, recovers signal that gets averaged away under a single unrestricted view.</p>
+<h3 id="scope-1---process-subtree">Scope 1 - process-subtree</h3>
+<p>Scope one is seeded on every process node, restricted to process lineage relation types only (parent/child creation, and the file/registry/socket edges hanging directly off that process&rsquo;s own subtree), with a shallow hop budget. Structurally, this is the same as a SOC analyst pulling up one process&rsquo;s ancestry tree in an EDR console.</p>
+<p>This is also where R-CAID&rsquo;s framing is directly relevant (root-cause localization <em>within</em> a provenance graph, rather than a single whole-graph verdict). Scope 1 is this project&rsquo;s own analogue of that same idea, built as one input among three rather than the whole system.</p>
+<h3 id="scope-2---cross-domain-boundary">Scope 2 - cross-domain-boundary</h3>
+<p>Scope two is seeded specifically on entities and edges where <code>is_cross_host=1</code>. A structural feature already in the schema, not anything scenario-specific. Lateral movement lights this feature up regardless of which technique caused it (SMB, WMI, RDP all set the same flag), which is exactly why the PAIR-LATERAL matched pair (A1/SMB vs. A2/WMI) exists: if scope 2 only worked for one transport, it would be
+overfit to a technique rather than to the boundary-crossing structure itself. This would be analogous to the SOC checking for connections from a compromise host during an investigation.</p>
+<h3 id="scope-3---maximal-context">Scope 3 - maximal-context</h3>
+<p>Scope three has the widest supported &ldquo;fanout&rdquo;, no relation-type restriction structurally the same encoder family as M1&rsquo;s control, but now one of three inputs rather than the only one. The is the hardest aspect of manual investigations casting a wide net on activity can easily lead to rabbit holes and in some cases threat actors generating events purposely to distract analysts.</p>
+<p><img src="/images/gnn-post2/01_three_scope_architecture.svg" alt="alt text" style="max-width: 100%; height: auto; display: block;">
+(Three Scoped GNNs)</p>
+<h3 id="why-fuse-three-verdicts">Why fuse three verdicts?</h3>
+<p>Different scopes are expected to win on different scenario shapes. A fixed choice of scope would mean picking a single trade off point and living with it across every scenario shape in the study, from a single host LSASS dump to a 70,000-node noisy background to a two-attacker D1. A per instance combination of scopes can in principle do better than any one fixed view.</p>
+<p>Fusion is a small stacker (logistic regression, with an MLP tried as an ablation arm) over <code>{scope1_logit, scope2_logit, scope3_logit, regime features}</code>, fit with explicit anti-leakage discipline: an inner held out subset of each fold&rsquo;s <em>training</em> scenarios generates the out of sample logits the stacker is actually fit on, so it can never simply learn to trust whichever scope happened to overfit hardest on data it had already seen.</p>
+<p>One finding worth flagging:</p>
+<p>A directly comparable paper in this same problem space, PROVFUSION (arXiv:2604.14685), reports that simple <em>voting-based</em> fusion of multiple provenance-graph views beats a learned stacker across nine benchmark datasets. A result this project&rsquo;s own Round 2 work tested against its own data, and which came back with rather mixed results.. More on that later!</p>
+<h3 id="the-model-doing-the-seeing-hgtconv">The model doing the seeing: HGTConv</h3>
+<p>A Heterogeneous Graph Transformer (<code>HGTConv</code> in PyTorch Geometric) is a transformer-style attention mechanism that is &ldquo;type-aware&rdquo; - a login node attends differently to a neighboring process node than to a neighboring socket node, using separate learned weights for each (source-type, relation-type, destination-type) combination, instead of just treating every edge in the graph as interchangeable the way a plain GNN would. It was chosen specifically because it preserves per-node-type and per-edge-type semantics through attention rather than collapsing everything to one generic type, which matters here because the schema&rsquo;s 9 node types and 16 edge relations (<code>dc_replication</code>, <code>scheduled_task_create</code>, <code>session_installs_service</code>, and so on).</p>
+<hr>
+<h2 id="model-build-test-and-validation">Model build, test, and validation</h2>
+<h3 id="the-4-fold-split">The 4-fold split</h3>
+<p>A 4-fold scenario-level rotation was chosen, one benign scenario anchoring each fold:</p>
+<pre tabindex="0"><code>Fold 1 test: B1, A10, A2, A4, A6
+Fold 2 test: B2, A1, A3, A5, A9
+Fold 3 test: B3, D1, A8, A12, F2
+Fold 4 test: B4, A7, A11, F1, A13
+</code></pre><p>We Verified all 20 scenarios appear in exactly one fold&rsquo;s test set; all six matched pairs land in <em>different</em> folds so whenever either arm is held out, its partner is in that fold&rsquo;s training set. Meaning that the axis contrast itself is always evaluated out-of-sample. Every fold&rsquo;s test set contains exactly one benign anchor and at least one attack scenario; the three largest graphs (A10, D1, B2) land in three different folds rather than stacking them together.</p>
+<p><img src="/images/gnn-post2/02_matched_pair_method.svg" alt="alt text" style="max-width: 100%; height: auto; display: block;">
+(Matched Pair Scenarios)</p>
+<h3 id="the-m0-m4-build-sequence">The M0-M4 build sequence</h3>
+<ul>
+<li>M0 - sampling-equivalence gate. Before trusting any sampled training run, prove that sampled and full batch forward passes on a frozen model produce matching logits. Run first on F2 (smallest scenario with real malicious labels. The smaller B1 has <em>zero</em> positives, making its AUPRC degenerate and useless for this check).</li>
+<li>M1 - single-GNN control. One HGTConv encoder over the <em>whole</em> graph, shared weights across all 20 scenarios, trained/evaluated on the 4-fold rotation. M1 acts as baseline the whole three scope thesis has to beat.</li>
+<li>M2 - three-scope treatment + fusion stacker. The architecture Part 1 proposed, now fully specified: scope 1 (process-subtree, shallow fanout, process-lineage relations only), scope 2 (cross-domain-boundary, seeded on boundary-spanning entities where <code>is_cross_host=1</code>), scope 3 (maximal-context, widest supported fanout). All three loaders run against the <em>full</em> node/edge set, so every scope produces a prediction for every node and edge, aligned via the same global index. Fusion: a small stacker (logistic regression, upgraded to an MLP as an ablation arm) over <code>{scope1_logit, scope2_logit, scope3_logit, regime features}</code>, fit with anti-leakage discipline - an inner held-out subset of each fold&rsquo;s training scenarios generates the out-of-sample logits the stacker is actually fit on, so it can&rsquo;t just learn to trust whichever scope overfit hardest.</li>
+<li>M2.5 - a UNICORN-style whole-graph A/B. A lightweight Weisfeiler-Lehman structural sketch (not a full re-implementation of the NDSS 2020 paper just an appropriate analogue) plus a supervised classifier, reduced to the same graph-level grain as M1/M2 via top-k-mean of edge logits. M2.5 was built to answer a separate question: does node/edge-level localization actually buy anything over a whole-graph verdict?</li>
+<li>M3 - temporal message passing. A TGN-style persistent memory scope, fused as a fourth input to the same stacker, gated specifically on the scenarios most likely to need real time-ordering: the dwell pair (A7/A8) and D1 (two independent attackers interleaved in time on one shared identity).</li>
+</ul>
+<hr>
+<h2 id="round-1-results">Round 1 results</h2>
+<h3 id="what-auprc-actually-measures">What AUPRC actually measures?</h3>
+<p>AUPRC or Area Under the Precision-Recall Curve to it&rsquo;s friends summarizes, across every possible alert threshold at once, the tradeoff between precision (of the things you flagged, what fraction were actually malicious) and recall (of the things that were actually malicious, what fraction did you flag). It&rsquo;s the best metric here specifically <em>because</em> of the class imbalance this project keeps running into: in these graphs, malicious nodes and edges are routinely under 0.3% of the total, so a metric like plain accuracy would report 99.7% by predicting &ldquo;benign&rdquo; for everything and be worthless.</p>
+<h3 id="the-results">The results</h3>
+<p>Comparing M1 (single whole-graph GNN) against M2 (three-scope treatment + fusion stacker):</p>
+<table>
+	<thead>
+			<tr>
+					<th>system</th>
+					<th>edge_auprc mean (range)</th>
+					<th>node_auprc mean (range)</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>M1 control</td>
+					<td>0.1005 (0.03-0.17)</td>
+					<td>0.1832 (0.12-0.25)</td>
+			</tr>
+			<tr>
+					<td>M2 average-of-3-scopes</td>
+					<td>0.5755</td>
+					<td>0.3224</td>
+			</tr>
+			<tr>
+					<td>M2 MLP stacker (best node arm)</td>
+					<td>0.4791</td>
+					<td>0.3660</td>
+			</tr>
+	</tbody>
+</table>
+<p>To suprise no one as I spoiled it at the start The central thesis held, cleanly, in every fold with roughly a 5.7x margin on edge level AUPRC. This ended up being the single strongest, result in the whole study to date. In plain terms: given the same graph, the same
+features, and the same training budget, three GNNs looking at the same data through different windows and combined by a simple average substantially outperformed one GNN looking at everything everywhere all at once.</p>
+<p>One potential suprise however was that simple Averaging beat learned fusion, for edges. The ablation table (control vs. naive average-of-3 vs. logistic stacker vs. MLP stacker) found that for edge level prediction, plain averaging (0.5755) beat <em>both</em> the
+logistic stacker (0.5487) and the MLP stacker (0.4791).</p>
+<p>This flew in my naive assumption that a learned combination should always beat a fixed one, reported as such rather than routed around. (For node-level prediction the opposite held: the MLP stacker was the best arm. The two tasks disagreed on which fusion strategy won, which turned out to be an early sign of the per-fold volatility which the later Round 2 changes attempted to reduce.)</p>
+<p>The three-scope approach fixes structural complexity. A per scenario breakdown answered the question from M1&quot; &ldquo;why are D1 and A10 the weakest scenarios&rdquo; with a sharper distinction than &ldquo;M2 helps on hard scenarios.&rdquo; D1 improved dramatically under M2 edge_auprc 0.020 (M1) to 0.455 (average-of-3), ensemble synergy that beat every individual scope. A10 (same attack as A9, but with ~12x the background noise - a <em>scale</em> problem, rather than a <em>structure</em> problem) did not improve: average of 3 (0.049) was actually worse than M1&rsquo;s own control (0.088) there, because the maximal context scope specifically drowns in the extra noise volume. The three-scope architecture, in other words, is a fix for a specific kind of difficulty, but by no means can be viewed as a simple unilateral resolution.</p>
+<h3 id="a-secondary-check-does-nodeedge-localization-beat-a-cheap-whole-graph-detector">A secondary check: does node/edge localization beat a cheap whole-graph detector?</h3>
+<h2 id="m25-compared-m1-and-m2-reduced-to-one-graph-level-score-per-scenario-against-a-cheap-weisfeiler-lehman-structural-sketch-baseline-on-graph-level-auroc-round-1s-result-was-mixednegative-the-cheap-sketch-auroc-07969-beat-both-of-the-projects-own-systems-m1-05625-m2-07344-digging-into-this-found-it-was-almost-entirely-one-scenarios-fault-b2-deliberately-constructed-hard-negative-busy-suspicious-looking-but-entirely-benign-activity-excluding-b2-alone-m2s-auroc-jumped-to-09792-this-appears-it-was-likely-due-to-the-fragility-of-a-crude-top-k-mean-graph-level-reduction-against-one-adversarially-hard-benign-graph">M2.5 compared M1 and M2 (reduced to one graph-level score per scenario) against a cheap Weisfeiler-Lehman structural sketch baseline, on graph-level AUROC. Round 1&rsquo;s result was mixed/negative: the cheap sketch (AUROC 0.7969) beat <em>both</em> of the project&rsquo;s own systems (M1: 0.5625, M2: 0.7344). Digging into this found it was almost entirely one scenario&rsquo;s fault: B2, deliberately constructed &ldquo;hard negative&rdquo; (busy, suspicious-looking, but entirely benign activity). Excluding B2 alone, M2&rsquo;s AUROC jumped to 0.9792. This appears it was likely due to the fragility of a crude top-k-mean graph level reduction against one adversarially hard benign graph.</h2>
+<h3 id="round-2---further-literature-reviews">Round 2 - Further literature reviews</h3>
+<p>After Round 1 closed, a second round of literature reviews checked this project&rsquo;s own empirically found bugs and open threads against published work in the same problem domain.</p>
+<p>Interestingly something unexpected popped up during this second lit review. Which shook me to my very core.</p>
+<p>To back up slightly this project was first conceived around late march early April. Thats when the initial research and discovery phase brought me to the idea of the three stacked models. Mid April I was very fortunate to take a lovely holiday away which meant I made very little progress besides a bit of studying around GNN&rsquo;s and the art of the possible. During this time a fantastic paper &ldquo;Beyond Nodes vs. Edges: A Multi-View Fusion Framework for Provenance-Based Intrusion Detection&rdquo; apparently came to a similar hypothesis:</p>
+<p>&ldquo;PROVFUSION: a multi-
+view anomaly fusion and voting-based detection frame-
+work. To avoid conflating signals, we treat attributes and
+structure as separate views (details in §4.2). Specifically,
+PROVFUSION characterizes each system entity from three
+distinct views: (i) an attribute view that captures deviations
+in an entity’s intrinsic features, (ii) a structural view that
+identifies abnormalities in the entity’s role and structure
+patterns, and (iii) a causal view that evaluates the plau-
+sibility of interactions (i.e., edges) the entity participates
+in. We quantify each view independently, fuse them across
+seven anomaly dimensions, and finalize decisions via a
+voting-based mechanism, yielding stable performance across
+heterogeneous score scales.&rdquo;</p>
+<p>The core idea follows the same principal. A single monolithic view of a provenance graph misses signal that a combination of narrower, complementary views recovers. PROVFUSION frames this as &ldquo;beyond nodes vs. edges&rdquo; where as  this project frames it as &ldquo;three windows beat one.&rdquo;</p>
+<p>To be clear however, they are quite different in a few ways. This project&rsquo;s three scopes are the same model looking at three different amounts of the graph. PROVFUSION&rsquo;s three views are three genuinely different models, each looking at (roughly) the same neighborhood but scoring a different property of it. Whilst we&rsquo;re both suggesting that looking at three aspects of the graph is better than just a single view, the method is different. I am however very glad of diving back into literature. We&rsquo;re in such a fast paced world with publications these days that something incredibly relevant can be reviewed and cited within a projects lifecycle.</p>
+<p>As an aside as this isn&rsquo;t an academic research project just a curiosity learning project I do feel very validated that the idea is both novel but is under active research by academic institutions.</p>
+<p>Reflecting on Round 1 results and from our exciting finding of the PROVFUSION paper I prioritized six-item list for Round 2 updates.</p>
+<ul>
+<li>Dropout + per-layer residual connections and degree-aware re-injection (both models)</li>
+<li>Pre-norm placement (M2 only, since M1 had no diagnosed logit-magnitude gap to target)</li>
+<li>A voting/rank fusion arm (testing PROVFUSION&rsquo;s finding directly)</li>
+<li>An M2.5 re-run plus a more robust median-of-top-k graph-level reduction;</li>
+<li>A larger stacker-fit subset</li>
+<li>A cheap, targeted M3 probe varying the temporal batch size specifically on D1, to test the batch-staleness hypothesis without paying for a full retrain.</li>
+</ul>
+<h3 id="round-3---pipeline-level-changes">Round 3 - pipeline-level changes</h3>
+<p>Round 3 moved one tier up in cost: changes that require regenerating the stored feature artifacts for all 20 scenarios. Four items: an <code>os=linux|windows</code> node feature; log1p-scaling the stored degree columns (specifically aimed at closing M2&rsquo;s still-unresolved logit-magnitude gap); a graph-relative normalized timestamp added at the data-loader level (<code>abs_ts_norm</code>, alongside the existing raw timestamp, non-destructively); and replacing the old fixed, fold-wide class-imbalance correction (a <code>pos_weight</code> scalar in the 878x-3119x range) with a much gentler, per-scenario, per-epoch 20:1 negative sub-sampling scheme.</p>
+<hr>
+<h2 id="round-2--round-3-results-compared-to-round-1">Round 2 + Round 3 results: compared to Round 1</h2>
+<h3 id="round-2-a-clean-architectural-win">Round 2: a clean architectural win.</h3>
+<table>
+	<thead>
+			<tr>
+					<th>system</th>
+					<th>Round 1 edge_auprc</th>
+					<th>Round 2 edge_auprc</th>
+					<th>Round 1 node_auprc</th>
+					<th>Round 2 node_auprc</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>M1 control</td>
+					<td>0.1005</td>
+					<td>0.4123 (~4.1x)</td>
+					<td>0.1832</td>
+					<td>0.4522 (~2.5x)</td>
+			</tr>
+			<tr>
+					<td>M2 average-of-3</td>
+					<td>0.5755</td>
+					<td>0.7858 (+37%)</td>
+					<td>0.3224</td>
+					<td>0.6996 (+117%)</td>
+			</tr>
+	</tbody>
+</table>
+<p>Good news everyone? The results show every fold improved on both metrics for M1, no exceptions. For M2, every fusion arm improved on both axes except logistic-stacker edge AUPRC, which was flat. The logit-saturation guard (max edge logit under a ~36.0 float64 sigmoid-saturation threshold) improved substantially for M2 - from failing on all 4 folds under Round 1 to failing on 2 of 4 - though it did not fully close.</p>
+<p><img src="/images/gnn-post2/04_auprc_by_round.svg" alt="alt text" style="max-width: 100%; height: auto; display: block;">
+(Round based Results)</p>
+<p>The central thesis held cleanly, edge-level, on all 4 folds under Round 2&rsquo;s shared architecture generation. But the margin did narrowed substantially  from ~5.7x under Round 1 to ~1.9x under Round 2. This narrowing turned out not to have a simple explanation. M1&rsquo;s absolute gain (+0.3118 edge_auprc) actually exceeded M2&rsquo;s (+0.2103), which rules out the convenient story (&ldquo;M2 just had less headroom left before a ceiling of 1.0&rdquo; - M2 had 0.42 of headroom remaining. This would be more than enough to match M1&rsquo;s gain if the same mechanism applied equally to both). Two hypotheses were left open with the available data:</p>
+<p>M1, as a single unrestricted whole-graph encoder, may lean more heavily on coarse global degree signal than M2&rsquo;s narrower, relation-type-restricted scopes do, so the degree-reinjection change was a bigger relative unlock for M1 specifically;</p>
+<p>M2 received an extra change (pre-norm placement) that M1 did not, there is the potential that change&rsquo;s own known stability-vs-peak-performance tradeoff cost M2 some ceiling.</p>
+<p>Node-level, the picture had one characterized exception: M2 beat M1 on 3 of 4 folds, with fold 2 (which includes B2, the study&rsquo;s own deliberately hard negative) going the other way, however this has not been confirmed as the culprit.</p>
+<p>A follow-up pass on the same round&rsquo;s already-saved logits tested two more ideas from the literature review and both came back negative-to-mixed, reported in full rather than smoothed over. Voting/rank fusion (testing PROVFUSION&rsquo;s finding directly): a naive vote-count arm was the clear worst of five arms tried, because with only 3 scopes it produces just 4 distinct values, which is far too coarse a ranking signal for this domain&rsquo;s extreme class imbalance; a rank-average arm was respectable but still didn&rsquo;t beat plain averaging.</p>
+<p>A larger stacker-fit subset (8 scenarios instead of 4). It helped the logistic stacker broadly, but <em>hurt</em> the MLP stacker, including one absolutely catastrophic single-fold collapse. Model complexity interacts with fit set size non-uniformly; more data is not a universal fix for stacker instability. Average-of-3 remained the recommended, most stable fusion arm on both axes throughout.</p>
+<p>One clean reversal did land: M2.5&rsquo;s Round 1 finding (&ldquo;the cheap sketch beats both our systems on graph-level AUROC&rdquo;) flipped entirely under Round 2. Both M1-reduced and M2-reduced now beat the sketch on both AUPRC and AUROC (M2: AUROC 0.9688 vs. the sketch&rsquo;s 0.7969).</p>
+<p>The <em>deliberate fix</em> built specifically to address the B2-driven fragility behind the Round 1 result (a median-of-top-k reduction, meant to be more robust to one outlier high-confidence false-positive edge) turned out to be unnecessary and was itself rejected the results being uniformly worse than the simple top-k-mean it was meant to replace, most plausibly because Round 2&rsquo;s other changes had already fixed
+B2&rsquo;s specific fragility as a side effect.</p>
+<p>The targeted M3 batch-size probe (varying only <code>BATCH_EVENTS</code>, re-training only the temporal scope on D1&rsquo;s own saved static logits) produced a striking but inconclusive result. At the finest granularity tested (<code>BATCH_EVENTS=20</code>), the temporal scope reversed and actually <em>helped</em> D1 for the first time in the study (delta +0.0404). However the intermediate value (<code>BATCH_EVENTS=50</code>) was the <em>worst</em> of the three values tested (delta -0.0796), which does not fit a simple &ldquo;smaller batches monotonically reduce staleness&rdquo; narrative.</p>
+<p>Single-seed, single-run at each value.  This was found that it cannot separate a real effect from training-run noise, and is flagged as the most promising unexplained thread in the whole probe rather than either adopted or dismissed.</p>
+<h3 id="round-3-m1-improves-cleanly-m2s-picture-gets-more-complicated">Round 3: M1 improves cleanly; M2&rsquo;s picture gets more complicated</h3>
+<table>
+	<thead>
+			<tr>
+					<th>metric</th>
+					<th>Round 1</th>
+					<th>Round 2</th>
+					<th>Round 3</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>M1 edge_auprc mean</td>
+					<td>0.1005</td>
+					<td>0.4123</td>
+					<td>0.6535</td>
+			</tr>
+			<tr>
+					<td>M1 node_auprc mean</td>
+					<td>0.1832</td>
+					<td>0.4522</td>
+					<td>0.6193</td>
+			</tr>
+			<tr>
+					<td>M2 edge_auprc mean (avg-of-3)</td>
+					<td>0.5755</td>
+					<td>0.7858</td>
+					<td>0.7568</td>
+			</tr>
+			<tr>
+					<td>M2 node_auprc mean (avg-of-3)</td>
+					<td>0.3224</td>
+					<td>0.6996</td>
+					<td>0.6521</td>
+			</tr>
+			<tr>
+					<td>Central thesis (edge)</td>
+					<td>holds, ~5.7x</td>
+					<td>holds, ~1.4x-2.5x</td>
+					<td>holds, ~1.02x-1.29x</td>
+			</tr>
+			<tr>
+					<td>Central thesis (node)</td>
+					<td>holds, most folds</td>
+					<td>3 of 4 folds</td>
+					<td>2 of 4 folds</td>
+			</tr>
+			<tr>
+					<td>M2 saturation guard (&lt;36.0)</td>
+					<td>n/a (pre-fix)</td>
+					<td>2 of 4 folds exceed</td>
+					<td>ALL 4 folds exceed</td>
+			</tr>
+	</tbody>
+</table>
+<p>M1 improved cleanly across the board, every fold, both metrics. The most plausible driver being the new negative-subsampling scheme. A ~20:1 ratio replacing the old 878x-3119x fixed <code>pos_weight</code>, a roughly two-orders-of- magnitude gentler imbalance correction.</p>
+<p>M2&rsquo;s picture is&hellip; mixed:</p>
+<ul>
+<li>Edge-level, the central thesis still holds on all 4 folds M2 beats M1 in every fold. But the margin narrowed <em>again</em>, past Round 2&rsquo;s own narrowing: from ~5.7x (Round 1) to ~1.4x-2.5x (Round 2) to ~1.02x-1.29x (Round 3). Fold 4&rsquo;s margin, 1.02x, is barely above parity, the smallest edge-level margin recorded anywhere in this study.</li>
+<li>Node-level, the win rate regressed: M2 beat M1 on only 2 of 4 folds (down from Round 2&rsquo;s 3 of 4). Round 2 had one characterized exception in fold 2. Round 3 adds a <em>second</em> exception (fold 4) with no established cause yet.</li>
+<li>The logit-saturation guard, the exact thing the log1p feature-scaling change was aimed at fixing. This turns out WORSE, not better. Round 2 had 2 of 4 folds exceed the 36.0 threshold; Round 3 has all 4 (36.00-52.41), the worst logit-magnitude result recorded for M2 in the entire study. The negative subsampling change, is the most plausible driver, since a far gentler imbalance correction plausibly lets the optimizer reach sharper, higher-magnitude decision boundaries without the old extreme <code>pos_weight</code>&rsquo;s implicit damping effect. While there&rsquo;s no obvious mechanism by which log1p-scaling raw features would <em>increase</em> logit magnitude.</li>
+</ul>
+<h3 id="tldr">TLDR</h3>
+<p>The summary for a reader who wants the state of the central thesis in one sentence: three-scope beats single-scope, edge-level, in every fold, across all three rounds so far. That being said the margin has shrunk each round, and the node-level half of the same claim is the weakest and least settled part of the whole study right now.</p>
+<h3 id="translating-auprc">Translating AUPRC</h3>
+<p>A single AUPRC number, doesn&rsquo;t answer the question a SOC analyst actually has: &ldquo;if I deployed this, what would my alert queue look like?&rdquo; Precision at fixed recall, computed directly from the real held-out predictions (pooled across all 4 folds - all 20 scenarios, each scored out-of-sample exactly once), answers that more concretely:</p>
+<p>Edge-level (241,553 pooled edges, 242 positives, base rate 0.10%):</p>
+<table>
+	<thead>
+			<tr>
+					<th>recall</th>
+					<th>M1 precision</th>
+					<th>M2 precision</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>50%</td>
+					<td>71.2%</td>
+					<td>85.2% (M2 ahead)</td>
+			</tr>
+			<tr>
+					<td>70%</td>
+					<td>56.9%</td>
+					<td>59.4% (M2 ahead, slim)</td>
+			</tr>
+			<tr>
+					<td>80%</td>
+					<td>39.4%</td>
+					<td>49.6% (M2 ahead)</td>
+			</tr>
+			<tr>
+					<td>90%</td>
+					<td>22.8%</td>
+					<td>9.4% (M1 ahead)</td>
+			</tr>
+			<tr>
+					<td>95%</td>
+					<td>10.1%</td>
+					<td>3.1% (M1 ahead)</td>
+			</tr>
+	</tbody>
+</table>
+<p>This is a somewhat counterintuitive finding: M1 has better precision than M2 at 90-95% recall, despite M2&rsquo;s much higher overall AUPRC. AUPRC integrates over the <em>whole</em> curve and rewards M2&rsquo;s substantially stronger middle band even though M1 wins the tail. In practical terms: if the deployment goal is &ldquo;keep the analyst&rsquo;s review queue clean, catch most things,&rdquo; M2 is the clear win. If the goal is &ldquo;catch nearly everything, and accept the noise that comes with it,&rdquo; M1 is not obviously the worse choice, despite its much lower headline number a nuance the single AUPRC figure hides completely.</p>
+<p>A separate, more reassuring check: for every attack scenario, how deep would a SOC reviewing one combined, pooled queue have to go before that incident&rsquo;s <em>first</em> real alert appears? Both models surface nearly every incident (worst non-outlier case: M1 rank 55, M2 rank 26, out of ~241,000 pooled edges). F2 - the deliberately subtle, contained-before-lateral-movement scenario - is a hard outlier for <em>both</em> models (ranks 740 and 207 respectively), which is arguably the expected, not the alarming, result: F2 was built specifically to be the hardest case in the study. The practical reading: the three-scope treatment&rsquo;s real value-add isn&rsquo;t &ldquo;catches
+incidents the single-GNN control misses entirely&rdquo;  - both catch nearly everything. The real advantage is the cleaner mid-recall queue shown in the precision table above.</p>
+<hr>
+<h2 id="detect-then-reconstruct">Detect, then reconstruct?</h2>
+<p>A recurring pattern in published provenance-graph intrusion detection (KAIROS, ORTHRUS, and similar systems) is &ldquo;detect, then reconstruct&rdquo;: don&rsquo;t try to score every node and edge with equal confidence - catch <em>one</em> suspicious anomaly, then use graph structure to walk outward from it and recover the rest of the causal chain.</p>
+<p><img src="/images/gnn-post2/09_detect_then_reconstruct.svg" alt="alt text" style="max-width: 100%; height: auto; display: block;">
+(Detect Then Reconstruct)</p>
+<p>If we think about it this maps naturally onto how a SOC actually works: an analyst doesn&rsquo;t need the model to flag all thirteen malicious edges in an incident, they need <em>one</em> alert to trigger an investigation, after which normal incident-response process (following identifiers, pivoting on hosts and sessions) does the rest.</p>
+<p>This project tested that pattern empirically on its own real held-out predictions.</p>
+<h3 id="step-1-does-at-least-one-alert-fire">Step 1: does at least one alert fire?</h3>
+<p>Yes, almost always, for both models, covered above in the first-alert-rank table. Whilst I am repeating myself here it&rsquo;s important to
+note it&rsquo;s the necessary precondition for everything that follows: if the first alert never fires, there&rsquo;s nothing to expand from.</p>
+<h3 id="step-2-does-one-alerts-neighborhood-recover-the-entire-malicious-subgraph">Step 2: does one alert&rsquo;s neighborhood recover the entire malicious subgraph?</h3>
+<p>Essentially no,  when seeding from each scenario&rsquo;s own single highest-scoring true-positive edge, and doing a pure structural breadth-first search outward over the observed graph only the scenario F2 reaches 100% coverage from a single seed. Every other scenario plateaus well short of full coverage.</p>
+<p>A4 makes a good case study for <em>why</em>. Direct inspection of its malicious-
+adjacent edges shows its 7 malicious nodes split into 5 structurally
+disjoint clusters &ndash; the DCSync process and its immediate neighbors form
+one cluster; a session/process/socket/service hub forms a second; a second,
+entirely separate session forms a third; and two individual nodes are
+isolated, their only edges leading to non-malicious neighbors. The root
+cause: EvidenceForge mints a fresh session or process identity per
+<em>anchoring event</em>, rather than reusing one identity across a whole authored
+narrative, so what a human analyst would naturally call &ldquo;one attacker
+session&rdquo; can show up as two or three entirely separate graph nodes with no
+edge connecting them, even within a single scenario&rsquo;s own ground truth. This
+is the identical mechanism already documented for D1&rsquo;s two independent
+attackers sharing one compromised identity
+shown to occur <em>within</em> one attack&rsquo;s own footprint.</p>
+<h3 id="step-3-seeding-from-the-models-own-top-k-alerts">Step 3: Seeding from the model&rsquo;s own top-K alerts</h3>
+<p>The single-seed BFS is a useful diagnostic, but it&rsquo;s not how a SOC
+actually works: a real alert queue mixes true and false positives, and an
+analyst expands from however many alerts the top of the queue actually
+contains, not from a hand-picked perfect seed. Re-running the same
+expansion from the top-K ranked edges (true or false positive, K increasing
+from 1) and finding the smallest K at which BFS recovers the <em>full</em>
+malicious node set produces a bimodal result:</p>
+<ul>
+<li>8 of 16 attack scenarios converge at K=1-3, at 100% precision &ndash; every
+seed alert used is a real true positive, zero false-positive budget spent.
+These are the scenarios where the malicious footprint is already one tight
+structural cluster.</li>
+<li>6 of 16 converge only at K=41-69, with precision collapsed to 24-64% &ndash;
+dozens of false-positive alerts have to be absorbed before one happens to
+land near the missing structural island.</li>
+<li>2 of 16 (A12, F1) never converge even at K=80.</li>
+</ul>
+<p>The critical finding here: whether seed-and-expand works at all is
+predictable from graph structure, not from model confidence. The scenarios
+that fail don&rsquo;t fail because the model scored them poorly &ndash; many of the
+&ldquo;Regime B&rdquo; scenarios&rsquo; true positives are ranked well inside the top 20. They fail because the ground-truth
+malicious footprint itself is structurally fragmented, so no amount of
+<em>additional high-confidence</em> alerts helps once every already-connected
+cluster&rsquo;s own alerts are exhausted &ndash; only a coincidental false positive
+landing near the missing island bridges the gap.</p>
+<h3 id="next-steps">Next Steps</h3>
+<p>I still have a laundry list of things I want to do with this project. The three major ones are:</p>
+<ul>
+<li>Build a lot more varied scenarios,</li>
+<li>More deeply explore the possibilities and capabilities behind the idea of detect then reconstruct</li>
+<li>Work out how the data pipeline could be migrated to ingest real world datasets rather than being tied to EvidenceForge output</li>
+</ul>
+<p>My plan was a two part project but largely because i&rsquo;ve been enjoying ths process of learning and exploring so much I want to continue to improve and iterate and expand the capabilities. I&rsquo;m delighted that my core hypothesis was confirmed although either result would have been educational and I am also happy a second round of literature reviews show academic research as recently as April (after this project started) is also exploring a very similar 3 scope PIDS idea.</p>
+<h2 id="references">References</h2>
+<ul>
+<li>Hu, Z., Dong, Y., Wang, K., Sun, Y. &ldquo;Heterogeneous Graph Transformer.&rdquo;
+WWW 2020. arXiv:2003.01332 (the model family this project builds on
+directly via PyTorch Geometric&rsquo;s <code>HGTConv</code>)</li>
+<li>Han, X., Pasquier, T., Bates, A., Mickens, J., Seltzer, M. &ldquo;UNICORN:
+Runtime Provenance-Based Detector for Advanced Persistent Threats.&rdquo; NDSS
+2020. <a href="https://arxiv.org/abs/2001.01525">https://arxiv.org/abs/2001.01525</a></li>
+<li>Goyal, A., Wang, G., Bates, A. &ldquo;R-CAID: Embedding Root Cause Analysis
+within Provenance-based Intrusion Detection.&rdquo; IEEE S&amp;P 2024.
+<a href="https://gangw.cs.illinois.edu/rcaid-sp24.pdf">https://gangw.cs.illinois.edu/rcaid-sp24.pdf</a></li>
+<li>Cheng, Z. et al. &ldquo;KAIROS: Practical Intrusion Detection and Investigation
+using Whole-system Provenance.&rdquo; arXiv:2308.05034</li>
+<li>&ldquo;ORTHRUS: Achieving High Quality of Attribution in Provenance-based
+Intrusion Detection Systems.&rdquo; USENIX Security 2025.
+tfjmp.org/publications/2025-usenixsec.pdf (also the source for the VELOX
+comparison, per that same body of work)</li>
+<li>&ldquo;MAGIC: Detecting Advanced Persistent Threats via Masked Graph
+Representation Learning.&rdquo; USENIX Security 2024. arXiv:2310.09831</li>
+<li>&ldquo;Beyond Nodes vs. Edges: A Multi-View Fusion Framework for Provenance-Based
+Intrusion Detection&rdquo; (PROVFUSION). arXiv:2604.14685</li>
+<li>&ldquo;PIDSMaker: Building and Evaluating Provenance-based Intrusion Detection
+Systems.&rdquo; arXiv:2601.22983</li>
+<li>&ldquo;Are we really making much progress? Revisiting, benchmarking, and
+refining heterogeneous graph neural networks.&rdquo; arXiv:2112.14936</li>
+<li>&ldquo;GRANOLA: Adaptive Normalization for Graph Neural Networks.&rdquo;
+arXiv:2404.13344</li>
+<li>EvidenceForge: <a href="https://github.com/Cisco-Talos/EvidenceForge">https://github.com/Cisco-Talos/EvidenceForge</a></li>
+</ul>
+
+      </div>
+
+      
+
+
+      <nav class="post-navigation" aria-label="Post navigation">
+        
+          <a
+            href="/posts/new-post-here/"
+            class="nav-link nav-prev"
+            aria-label="Previous post: Provenance based Graph Neural Networks using Heterogeneous Graph Transformers">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">Provenance based Graph Neural Networks using Heterogeneous Graph Transformers</span>
+          </a>
+        
+
+        
+      </nav>
+    </article>
+
+    
+  <aside class="post-toc" id="post-toc" aria-label="Table of contents">
+    <button
+      class="toc-toggle"
+      id="toc-toggle"
+      aria-expanded="true"
+      aria-controls="toc-content"
+      aria-label="Toggle table of contents">
+      <svg
+        class="toc-burger-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true">
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+      <span class="toc-toggle-text">Table of Contents</span>
+      <svg
+        class="toc-chevron-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true">
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </button>
+    <div class="toc-content" id="toc-content">
+      <nav class="toc-nav" aria-label="Table of contents">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#provenance-based-graph-neural-networks-using-heterogeneous-graph-transformers---part-2">Provenance-based Graph Neural Networks using Heterogeneous Graph Transformers - Part 2</a>
+      <ul>
+        <li><a href="#a-recap-for-readers-who-somehow-ended-up-here-without-bothering-to-read-part-1">A recap (for readers who somehow ended up here without bothering to read Part 1)</a></li>
+        <li><a href="#data-pipeline-scenario-generation-and-validation">Data pipeline, scenario generation, and validation</a>
+          <ul>
+            <li><a href="#from-one-scenario-to-twenty">From one scenario to twenty</a></li>
+            <li><a href="#the-matched-pair-method">The matched-pair method</a></li>
+            <li><a href="#where-evidenceforge-itself-had-to-be-extended">Where EvidenceForge itself had to be extended</a></li>
+            <li><a href="#f1-when-the-correlator-has-to-synthesize-a-node-from-nothing">F1: when the correlator has to synthesize a node from nothing</a></li>
+            <li><a href="#validation">Validation</a></li>
+          </ul>
+        </li>
+        <li><a href="#feature-engineering">Feature engineering</a>
+          <ul>
+            <li><a href="#why-this-is-harder-than-it-sounds">Why this is harder than it sounds</a></li>
+            <li><a href="#the-abused-node-concept-9c">The &ldquo;abused node&rdquo; concept (9C)</a></li>
+            <li><a href="#round-3s-feature-layer-additions-os-and-log1p">Round 3&rsquo;s feature-layer additions: os and log1p</a></li>
+          </ul>
+        </li>
+        <li><a href="#the-three-scope-architecture">The three-scope architecture</a>
+          <ul>
+            <li><a href="#scope-1---process-subtree">Scope 1 - process-subtree</a></li>
+            <li><a href="#scope-2---cross-domain-boundary">Scope 2 - cross-domain-boundary</a></li>
+            <li><a href="#scope-3---maximal-context">Scope 3 - maximal-context</a></li>
+            <li><a href="#why-fuse-three-verdicts">Why fuse three verdicts?</a></li>
+            <li><a href="#the-model-doing-the-seeing-hgtconv">The model doing the seeing: HGTConv</a></li>
+          </ul>
+        </li>
+        <li><a href="#model-build-test-and-validation">Model build, test, and validation</a>
+          <ul>
+            <li><a href="#the-4-fold-split">The 4-fold split</a></li>
+            <li><a href="#the-m0-m4-build-sequence">The M0-M4 build sequence</a></li>
+          </ul>
+        </li>
+        <li><a href="#round-1-results">Round 1 results</a>
+          <ul>
+            <li><a href="#what-auprc-actually-measures">What AUPRC actually measures?</a></li>
+            <li><a href="#the-results">The results</a></li>
+            <li><a href="#a-secondary-check-does-nodeedge-localization-beat-a-cheap-whole-graph-detector">A secondary check: does node/edge localization beat a cheap whole-graph detector?</a></li>
+          </ul>
+        </li>
+        <li><a href="#m25-compared-m1-and-m2-reduced-to-one-graph-level-score-per-scenario-against-a-cheap-weisfeiler-lehman-structural-sketch-baseline-on-graph-level-auroc-round-1s-result-was-mixednegative-the-cheap-sketch-auroc-07969-beat-both-of-the-projects-own-systems-m1-05625-m2-07344-digging-into-this-found-it-was-almost-entirely-one-scenarios-fault-b2-deliberately-constructed-hard-negative-busy-suspicious-looking-but-entirely-benign-activity-excluding-b2-alone-m2s-auroc-jumped-to-09792-this-appears-it-was-likely-due-to-the-fragility-of-a-crude-top-k-mean-graph-level-reduction-against-one-adversarially-hard-benign-graph">M2.5 compared M1 and M2 (reduced to one graph-level score per scenario) against a cheap Weisfeiler-Lehman structural sketch baseline, on graph-level AUROC. Round 1’s result was mixed/negative: the cheap sketch (AUROC 0.7969) beat <em>both</em> of the project’s own systems (M1: 0.5625, M2: 0.7344). Digging into this found it was almost entirely one scenario’s fault: B2, deliberately constructed “hard negative” (busy, suspicious-looking, but entirely benign activity). Excluding B2 alone, M2’s AUROC jumped to 0.9792. This appears it was likely due to the fragility of a crude top-k-mean graph level reduction against one adversarially hard benign graph.</a>
+          <ul>
+            <li><a href="#round-2---further-literature-reviews">Round 2 - Further literature reviews</a></li>
+            <li><a href="#round-3---pipeline-level-changes">Round 3 - pipeline-level changes</a></li>
+          </ul>
+        </li>
+        <li><a href="#round-2--round-3-results-compared-to-round-1">Round 2 + Round 3 results: compared to Round 1</a>
+          <ul>
+            <li><a href="#round-2-a-clean-architectural-win">Round 2: a clean architectural win.</a></li>
+            <li><a href="#round-3-m1-improves-cleanly-m2s-picture-gets-more-complicated">Round 3: M1 improves cleanly; M2&rsquo;s picture gets more complicated</a></li>
+            <li><a href="#tldr">TLDR</a></li>
+            <li><a href="#translating-auprc">Translating AUPRC</a></li>
+          </ul>
+        </li>
+        <li><a href="#detect-then-reconstruct">Detect, then reconstruct?</a>
+          <ul>
+            <li><a href="#step-1-does-at-least-one-alert-fire">Step 1: does at least one alert fire?</a></li>
+            <li><a href="#step-2-does-one-alerts-neighborhood-recover-the-entire-malicious-subgraph">Step 2: does one alert&rsquo;s neighborhood recover the entire malicious subgraph?</a></li>
+            <li><a href="#step-3-seeding-from-the-models-own-top-k-alerts">Step 3: Seeding from the model&rsquo;s own top-K alerts</a></li>
+            <li><a href="#next-steps">Next Steps</a></li>
+          </ul>
+        </li>
+        <li><a href="#references">References</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+      </nav>
+    </div>
+  </aside>
+
+
+  </div>
+
+    </main>
+
+    <footer>
+      <footer class="site-footer">
+  <div class="footer-content">
+    <p class="footer-text">
+      &copy;
+      
+      2026
+      
+      Blog.
+      
+    </p>
+    
+      <div class="footer-social">
+        <div class="social-links">
+  
+    <a
+      href="https://github.com/Pr0kythera"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="social-link"
+      aria-label="GitHub">
+      <svg fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          fill-rule="evenodd"
+          d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+          clip-rule="evenodd"></path>
+      </svg>
+    </a>
+  
+
+  
+    <a
+      href="https://www.linkedin.com/in/martin-t-16225580/"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="social-link"
+      aria-label="LinkedIn">
+      <svg fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"></path>
+      </svg>
+    </a>
+  
+
+  
+    <a href="mailto:contact.prokythera@gmail.com" class="social-link" aria-label="Email">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+      </svg>
+    </a>
+  
+</div>
+
+      </div>
+    
+  </div>
+</footer>
+
+    </footer>
+
+    <div id="search-modal" class="search-modal" aria-hidden="true" role="dialog" aria-label="Search">
+  <div class="search-modal-backdrop" id="search-modal-backdrop"></div>
+  <div class="search-modal-container">
+    <div class="search-input-wrapper">
+      <svg class="search-input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+      </svg>
+      <input
+        type="search"
+        id="search-input"
+        class="search-input"
+        placeholder="Search..."
+        autocomplete="off"
+        aria-label="Search input">
+      <button class="search-input-clear" id="search-input-clear" aria-label="Clear search">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+        </svg>
+      </button>
+      <button class="search-modal-close" id="search-modal-close" aria-label="Close search">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    <div id="search-results" class="search-results"></div>
+  </div>
+</div>
+
+    
+  <script
+    data-name="BMC-Widget"
+    data-cfasync="false"
+    src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js"
+    data-id="yourwidgetid"
+    data-description="Support me on Buy me a coffee!"
+    data-message=""
+    data-color="#BD5FFF"
+    data-position="Right"
+    data-x_margin="18"
+    data-y_margin="18"></script>
+
+
+    <button id="scroll-to-top" class="scroll-to-top" aria-label="Scroll to top" type="button">
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+  </svg>
+</button>
+
+
+    
+
+
+
+
+
+
+
+
+
+
+<script src="/js/main.min.e60ab79dca7b920b4dc5cf3163ad5ce8794839b60f27778db65782f087be3e27.js" defer></script>
+
+  </body>
+</html>

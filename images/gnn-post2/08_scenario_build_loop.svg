@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 700" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .surface { fill: #fcfcfb; }
+    .ink-primary { fill: #0b0b0b; }
+    .ink-secondary { fill: #52514e; }
+    .ink-muted { fill: #898781; }
+    .node-circle { fill: #2a78d6; stroke: #fcfcfb; stroke-width: 3; }
+    .node-num { fill: #fcfcfb; font-size: 17px; font-weight: 700; }
+    .step-label { font-size: 13px; font-weight: 600; }
+    .arrow { stroke: #0b0b0b; stroke-width: 2; fill: none; marker-end: url(#arrowhead2); }
+    .loop-arrow { stroke: #eb6834; stroke-width: 2.5; fill: none; stroke-dasharray: 5 4; marker-end: url(#arrowhead3); }
+    .cap { font-size: 12.5px; }
+  </style>
+  <defs>
+    <marker id="arrowhead2" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#0b0b0b"/>
+    </marker>
+    <marker id="arrowhead3" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#eb6834"/>
+    </marker>
+  </defs>
+
+  <rect class="surface" x="0" y="0" width="900" height="700"/>
+
+  <text x="30" y="36" class="ink-primary" font-size="20" font-weight="700">The scenario build loop: seven steps, repeated for every scenario</text>
+  <text x="30" y="58" class="ink-secondary" font-size="13">Author -&gt; validate -&gt; generate -&gt; inspect -&gt; adapt pipeline -&gt; verify -&gt; record -- then loop.</text>
+
+  <!-- connecting arrows -->
+  <path class="arrow" d="M449.8,199.5 L520.2,233.5"/>
+  <path class="arrow" d="M552.2,267.9 L569.6,344.1"/>
+  <path class="arrow" d="M562.5,390.6 L513.8,451.7"/>
+  <path class="arrow" d="M473.1,475.1 L394.9,475.1"/>
+  <path class="arrow" d="M351.2,457.9 L302.5,396.8"/>
+  <path class="arrow" d="M288.7,351.9 L306.0,275.7"/>
+  <!-- loop-back arrow, step 7 -> step 1 -->
+  <path class="loop-arrow" d="M332.5,236.9 L403.0,203.0"/>
+
+  <!-- center annotations, inside the loop where it's empty -->
+  <text x="430" y="318" text-anchor="middle" class="ink-secondary" font-size="11.5">YAML = the reproducibility boundary</text>
+  <text x="430" y="333" text-anchor="middle" class="ink-muted" font-size="10.5">every file committed with its sha256</text>
+  <line x1="370" y1="345" x2="490" y2="345" stroke="#e1e0d9" stroke-width="1"/>
+  <text x="430" y="364" text-anchor="middle" class="ink-secondary" font-size="11.5">Fix the scenario, never the pipeline</text>
+  <text x="430" y="379" text-anchor="middle" class="ink-muted" font-size="10.5">step 4 mismatch -&gt; back to step 1</text>
+
+  <!-- Step nodes -->
+  <g>
+    <circle class="node-circle" cx="430" cy="190" r="22"/>
+    <text class="node-num" x="430" y="196" text-anchor="middle">1</text>
+  </g>
+  <g>
+    <circle class="node-circle" cx="547.3" cy="246.5" r="22"/>
+    <text class="node-num" x="547.3" y="252.5" text-anchor="middle">2</text>
+  </g>
+  <g>
+    <circle class="node-circle" cx="576.2" cy="373.4" r="22"/>
+    <text class="node-num" x="576.2" y="379.4" text-anchor="middle">3</text>
+  </g>
+  <g>
+    <circle class="node-circle" cx="495.1" cy="475.1" r="22"/>
+    <text class="node-num" x="495.1" y="481.1" text-anchor="middle">4</text>
+  </g>
+  <g>
+    <circle class="node-circle" cx="364.9" cy="475.1" r="22"/>
+    <text class="node-num" x="364.9" y="481.1" text-anchor="middle">5</text>
+  </g>
+  <g>
+    <circle class="node-circle" cx="283.8" cy="373.4" r="22"/>
+    <text class="node-num" x="283.8" y="379.4" text-anchor="middle">6</text>
+  </g>
+  <g>
+    <circle class="node-circle" cx="312.7" cy="246.5" r="22"/>
+    <text class="node-num" x="312.7" y="252.5" text-anchor="middle">7</text>
+  </g>
+
+  <!-- labels -->
+  <text class="step-label ink-primary" x="430" y="112" text-anchor="middle">Author YAML</text>
+  <text class="ink-muted" font-size="10.5" x="430" y="128" text-anchor="middle">evidence primitives only</text>
+
+  <text class="step-label ink-primary" x="590.3" y="197" text-anchor="start">eforge validate</text>
+  <text class="ink-muted" font-size="10.5" x="590.3" y="212" text-anchor="start">static schema check</text>
+
+  <text class="step-label ink-primary" x="629.9" y="385" text-anchor="start">generate + eval</text>
+  <text class="ink-muted" font-size="10.5" x="629.9" y="400" text-anchor="start">4 hard quality gates</text>
+
+  <text class="step-label ink-primary" x="518.9" y="536" text-anchor="start">Inspect raw output</text>
+  <text class="ink-muted" font-size="10.5" x="518.9" y="551" text-anchor="start">pin oracle to identifiers</text>
+
+  <text class="step-label ink-primary" x="341.1" y="536" text-anchor="end">Run / adapt pipeline</text>
+  <text class="ink-muted" font-size="10.5" x="341.1" y="551" text-anchor="end">parse -&gt; correlate -&gt; label</text>
+
+  <text class="step-label ink-primary" x="230.1" y="385" text-anchor="end">Verify vs. ground truth</text>
+  <text class="ink-muted" font-size="10.5" x="230.1" y="400" text-anchor="end">entity-by-entity</text>
+
+  <text class="step-label ink-primary" x="269.7" y="197" text-anchor="end">Record, close loop</text>
+  <text class="ink-muted" font-size="10.5" x="269.7" y="212" text-anchor="end">update project state</text>
+
+  <text x="30" y="654" class="ink-secondary cap">Figure 8. The same fixed loop, run once per scenario, all 20 times -- most scenarios are matched pairs sharing steps 1-3's seed.</text>
+  <text x="30" y="672" class="ink-secondary cap">The two invariants that carried the most weight in practice: fix problems upstream, and treat the YAML as ground truth for reproducibility.</text>
+</svg>

@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 495" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <style>
+    .surface { fill: #fcfcfb; }
+    .ink-primary { fill: #0b0b0b; }
+    .ink-secondary { fill: #52514e; }
+    .ink-muted { fill: #898781; }
+    .grid { stroke: #e1e0d9; stroke-width: 1; }
+    .axis { stroke: #c3c2b7; stroke-width: 1; }
+    .row-label { font-size: 13.5px; font-weight: 700; }
+    .tick { font-size: 12px; }
+    .good-dot { fill: #0ca30c; stroke: #fcfcfb; stroke-width: 2; }
+    .warn-dot { fill: #ec835a; stroke: #fcfcfb; stroke-width: 2; }
+  </style>
+
+  <rect class="surface" x="0" y="0" width="860" height="495"/>
+
+  <text x="30" y="32" class="ink-primary" font-size="19" font-weight="700">Seed-and-expand is bimodal, not a smooth cost curve</text>
+  <text x="30" y="52" class="ink-secondary" font-size="12.5">Smallest K (top-ranked alerts) needed to recover the full malicious node set, per attack scenario. 16 scenarios total.</text>
+
+  <!-- x axis -->
+  <line class="axis" x1="100" y1="400" x2="780" y2="400"/>
+  <line class="grid" x1="100" y1="80" x2="100" y2="400"/>
+  <text x="100" y="424" text-anchor="middle" class="ink-muted tick">0</text>
+  <text x="252" y="424" text-anchor="middle" class="ink-muted tick">20</text>
+  <text x="404" y="424" text-anchor="middle" class="ink-muted tick">40</text>
+  <text x="556" y="424" text-anchor="middle" class="ink-muted tick">60</text>
+  <text x="708" y="424" text-anchor="middle" class="ink-muted tick">80</text>
+  <text x="440" y="450" text-anchor="middle" class="ink-secondary" font-size="12.5">K -- number of top-ranked alerts seeded</text>
+
+  <!-- never-converge zone -->
+  <rect x="720" y="80" width="60" height="320" fill="#d03b3b" opacity="0.07"/>
+
+  <!-- Row A -->
+  <text class="row-label ink-primary" x="30" y="140">Regime A</text>
+  <text class="ink-muted" font-size="11" x="30" y="156">8 of 16 scenarios</text>
+  <line class="grid" x1="100" y1="180" x2="780" y2="180"/>
+  <g>
+    <circle class="good-dot" cx="107" cy="180" r="6" opacity="0.85"/>
+    <circle class="good-dot" cx="110" cy="176" r="6" opacity="0.85"/>
+    <circle class="good-dot" cx="112" cy="184" r="6" opacity="0.85"/>
+    <circle class="good-dot" cx="114" cy="178" r="6" opacity="0.85"/>
+    <circle class="good-dot" cx="116" cy="182" r="6" opacity="0.85"/>
+    <circle class="good-dot" cx="118" cy="176" r="6" opacity="0.85"/>
+    <circle class="good-dot" cx="120" cy="184" r="6" opacity="0.85"/>
+    <circle class="good-dot" cx="122" cy="180" r="6" opacity="0.85"/>
+  </g>
+  <text x="140" y="184" class="ink-secondary" font-size="12.5">K=1-3, <tspan font-weight="700">100% precision</tspan> -- every seed a true positive</text>
+
+  <!-- Row B -->
+  <text class="row-label ink-primary" x="30" y="260">Regime B</text>
+  <text class="ink-muted" font-size="11" x="30" y="276">6 of 16 scenarios</text>
+  <line class="grid" x1="100" y1="300" x2="780" y2="300"/>
+  <g>
+    <circle class="warn-dot" cx="410" cy="300" r="6"/>
+    <circle class="warn-dot" cx="448" cy="300" r="6"/>
+    <circle class="warn-dot" cx="493" cy="300" r="6"/>
+    <circle class="warn-dot" cx="531" cy="300" r="6"/>
+    <circle class="warn-dot" cx="576" cy="300" r="6"/>
+    <circle class="warn-dot" cx="622" cy="300" r="6"/>
+  </g>
+  <text x="410" y="284" class="ink-secondary" font-size="12.5">K=41-69, <tspan font-weight="700">precision collapses to 24-64%</tspan></text>
+  <text x="410" y="322" class="ink-muted" font-size="11">dozens of false positives absorbed before one lands near the missing island</text>
+
+  <!-- Row C -->
+  <text class="row-label ink-primary" x="30" y="380">Never</text>
+  <text class="ink-muted" font-size="11" x="30" y="396">2 of 16 (A12, F1)</text>
+  <g stroke="#d03b3b" stroke-width="2.5">
+    <line x1="734" y1="373" x2="746" y2="385"/>
+    <line x1="746" y1="373" x2="734" y2="385"/>
+    <line x1="764" y1="373" x2="776" y2="385"/>
+    <line x1="776" y1="373" x2="764" y2="385"/>
+  </g>
+  <text x="722" y="357" text-anchor="middle" class="ink-secondary" font-size="11">no convergence</text>
+  <text x="722" y="345" text-anchor="middle" class="ink-secondary" font-size="11">tested to K=80</text>
+
+  <text x="30" y="460" class="ink-secondary" font-size="12.5">Figure 6. A cliff, not a gradual cost -- and predictable from graph structure (section 3.8),</text>
+  <text x="30" y="476" class="ink-secondary" font-size="12.5">not from how well the model ranked the true positives.</text>
+</svg>
