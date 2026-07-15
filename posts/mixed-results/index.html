@@ -284,7 +284,7 @@
             stroke-width="2"
             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
         </svg>
-        6817 words
+        6815 words
       </span>
     
 
@@ -298,7 +298,7 @@
             stroke-width="2"
             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
-        33 min
+        32 min
       </span>
     
   </div>
@@ -483,8 +483,9 @@ features, and the same training budget, three GNNs looking at the same data thro
 logistic stacker (0.5487) and the MLP stacker (0.4791).</p>
 <p>This flew in my naive assumption that a learned combination should always beat a fixed one, reported as such rather than routed around. (For node-level prediction the opposite held: the MLP stacker was the best arm. The two tasks disagreed on which fusion strategy won, which turned out to be an early sign of the per-fold volatility which the later Round 2 changes attempted to reduce.)</p>
 <p>The three-scope approach fixes structural complexity. A per scenario breakdown answered the question from M1&quot; &ldquo;why are D1 and A10 the weakest scenarios&rdquo; with a sharper distinction than &ldquo;M2 helps on hard scenarios.&rdquo; D1 improved dramatically under M2 edge_auprc 0.020 (M1) to 0.455 (average-of-3), ensemble synergy that beat every individual scope. A10 (same attack as A9, but with ~12x the background noise - a <em>scale</em> problem, rather than a <em>structure</em> problem) did not improve: average of 3 (0.049) was actually worse than M1&rsquo;s own control (0.088) there, because the maximal context scope specifically drowns in the extra noise volume. The three-scope architecture, in other words, is a fix for a specific kind of difficulty, but by no means can be viewed as a simple unilateral resolution.</p>
-<h3 id="a-secondary-check-does-nodeedge-localization-beat-a-cheap-whole-graph-detector">A secondary check: does node/edge localization beat a cheap whole-graph detector?</h3>
-<h2 id="m25-compared-m1-and-m2-reduced-to-one-graph-level-score-per-scenario-against-a-cheap-weisfeiler-lehman-structural-sketch-baseline-on-graph-level-auroc-round-1s-result-was-mixednegative-the-cheap-sketch-auroc-07969-beat-both-of-the-projects-own-systems-m1-05625-m2-07344-digging-into-this-found-it-was-almost-entirely-one-scenarios-fault-b2-deliberately-constructed-hard-negative-busy-suspicious-looking-but-entirely-benign-activity-excluding-b2-alone-m2s-auroc-jumped-to-09792-this-appears-it-was-likely-due-to-the-fragility-of-a-crude-top-k-mean-graph-level-reduction-against-one-adversarially-hard-benign-graph">M2.5 compared M1 and M2 (reduced to one graph-level score per scenario) against a cheap Weisfeiler-Lehman structural sketch baseline, on graph-level AUROC. Round 1&rsquo;s result was mixed/negative: the cheap sketch (AUROC 0.7969) beat <em>both</em> of the project&rsquo;s own systems (M1: 0.5625, M2: 0.7344). Digging into this found it was almost entirely one scenario&rsquo;s fault: B2, deliberately constructed &ldquo;hard negative&rdquo; (busy, suspicious-looking, but entirely benign activity). Excluding B2 alone, M2&rsquo;s AUROC jumped to 0.9792. This appears it was likely due to the fragility of a crude top-k-mean graph level reduction against one adversarially hard benign graph.</h2>
+<h3 id="does-node-edge-localization-beat-a-cheap-whole-graph-detector">Does node edge localization beat a cheap whole-graph detector?</h3>
+<p>M2.5 compared M1 and M2 (reduced to one graph-level score per scenario) against a cheap Weisfeiler-Lehman structural sketch baseline, on graph-level AUROC. Round 1&rsquo;s result was mixed/negative: the cheap sketch (AUROC 0.7969) beat <em>both</em> of the project&rsquo;s own systems (M1: 0.5625, M2: 0.7344). Digging into this found it was almost entirely one scenario&rsquo;s fault: B2, deliberately constructed &ldquo;hard negative&rdquo; (busy, suspicious-looking, but entirely benign activity). Excluding B2 alone, M2&rsquo;s AUROC jumped to 0.9792. This appears it was likely due to the fragility of a crude top-k-mean graph level reduction against one adversarially hard benign graph.</p>
+<hr>
 <h3 id="round-2---further-literature-reviews">Round 2 - Further literature reviews</h3>
 <p>After Round 1 closed, a second round of literature reviews checked this project&rsquo;s own empirically found bugs and open threads against published work in the same problem domain.</p>
 <p>Interestingly something unexpected popped up during this second lit review. Which shook me to my very core.</p>
@@ -853,11 +854,7 @@ arXiv:2404.13344</li>
           <ul>
             <li><a href="#what-auprc-actually-measures">What AUPRC actually measures?</a></li>
             <li><a href="#the-results">The results</a></li>
-            <li><a href="#a-secondary-check-does-nodeedge-localization-beat-a-cheap-whole-graph-detector">A secondary check: does node/edge localization beat a cheap whole-graph detector?</a></li>
-          </ul>
-        </li>
-        <li><a href="#m25-compared-m1-and-m2-reduced-to-one-graph-level-score-per-scenario-against-a-cheap-weisfeiler-lehman-structural-sketch-baseline-on-graph-level-auroc-round-1s-result-was-mixednegative-the-cheap-sketch-auroc-07969-beat-both-of-the-projects-own-systems-m1-05625-m2-07344-digging-into-this-found-it-was-almost-entirely-one-scenarios-fault-b2-deliberately-constructed-hard-negative-busy-suspicious-looking-but-entirely-benign-activity-excluding-b2-alone-m2s-auroc-jumped-to-09792-this-appears-it-was-likely-due-to-the-fragility-of-a-crude-top-k-mean-graph-level-reduction-against-one-adversarially-hard-benign-graph">M2.5 compared M1 and M2 (reduced to one graph-level score per scenario) against a cheap Weisfeiler-Lehman structural sketch baseline, on graph-level AUROC. Round 1’s result was mixed/negative: the cheap sketch (AUROC 0.7969) beat <em>both</em> of the project’s own systems (M1: 0.5625, M2: 0.7344). Digging into this found it was almost entirely one scenario’s fault: B2, deliberately constructed “hard negative” (busy, suspicious-looking, but entirely benign activity). Excluding B2 alone, M2’s AUROC jumped to 0.9792. This appears it was likely due to the fragility of a crude top-k-mean graph level reduction against one adversarially hard benign graph.</a>
-          <ul>
+            <li><a href="#does-node-edge-localization-beat-a-cheap-whole-graph-detector">Does node edge localization beat a cheap whole-graph detector?</a></li>
             <li><a href="#round-2---further-literature-reviews">Round 2 - Further literature reviews</a></li>
             <li><a href="#round-3---pipeline-level-changes">Round 3 - pipeline-level changes</a></li>
           </ul>
