@@ -284,7 +284,7 @@
             stroke-width="2"
             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
         </svg>
-        11531 words
+        11076 words
       </span>
     
 
@@ -298,7 +298,7 @@
             stroke-width="2"
             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
-        55 min
+        52 min
       </span>
     
   </div>
@@ -731,48 +731,28 @@ incidents the single-GNN control misses entirely&rdquo;  - both catch nearly eve
 note it&rsquo;s the necessary precondition for everything that follows: if the first alert never fires, there&rsquo;s nothing to expand from.</p>
 <h3 id="step-2-does-one-alerts-neighborhood-recover-the-entire-malicious-subgraph">Step 2: does one alert&rsquo;s neighborhood recover the entire malicious subgraph?</h3>
 <h3 id="structural-bfs">Structural BFS</h3>
-<p>Breadth-first search (BFS) here just means: starting from one flagged edge, walk outward to its directly connected nodes, then their neighbors, and so on, adding each new node to the &ldquo;recovered&rdquo; set as you reach it. This is the automated version of exactly what an IR analyst does by hand when they pivot from one IOC to related hosts, accounts, and processes in a SIEM or EDR console. The question this project is really asking is: if the model gives you one solid starting point, does that manual-pivoting process &ndash; done automatically over the whole graph &ndash; get you the rest of the incident for free?</p>
-<p>Essentially no,  when seeding from each scenario&rsquo;s own single highest-scoring true-positive edge, and doing a pure structural breadth-first search outward over the observed graph only the scenario F2 reaches 100% coverage from a single seed. Every other scenario plateaus well short of full coverage.</p>
-<p>A4 makes a good case study for <em>why</em>. Direct inspection of its malicious-
-adjacent edges shows its 7 malicious nodes split into 5 structurally
-disjoint clusters &ndash; the DCSync process and its immediate neighbors form
-one cluster; a session/process/socket/service hub forms a second; a second,
-entirely separate session forms a third; and two individual nodes are
-isolated, their only edges leading to non-malicious neighbors. The root
-cause: EvidenceForge mints a fresh session or process identity per
-<em>anchoring event</em>, rather than reusing one identity across a whole authored
-narrative, so what a human analyst would naturally call &ldquo;one attacker
-session&rdquo; can show up as two or three entirely separate graph nodes with no
-edge connecting them, even within a single scenario&rsquo;s own ground truth. This
-is the identical mechanism already documented for D1&rsquo;s two independent
-attackers sharing one compromised identity
-shown to occur <em>within</em> one attack&rsquo;s own footprint.</p>
+<p>Breadth-first search (BFS) here just means: starting from one flagged edge, walk outward to its directly connected nodes, then their neighbors, and so on, adding each new node to the &ldquo;recovered&rdquo; set as you reach it. This is the automated version of exactly what an IR analyst does by hand when they pivot from one IOC to related hosts, accounts, and processes in a SIEM or EDR console. The question this project is really asking is: if the model gives you one solid starting point, does that manual-pivoting process get you the rest of the incident for free?</p>
+<p>Essentially no, when seeding from each scenario&rsquo;s own single highest-scoring true-positive edge, and doing a pure structural breadth-first search outward over the observed graph only the scenario F2 reaches 100% coverage from a single seed. Every other scenario plateaus well short of full coverage.</p>
+<p>A4 makes a good case study for <em>why</em>. Direct inspection of its malicious-adjacent edges shows its 7 malicious nodes split into 5 structurally disjoint clusters.</p>
+<p>The DCSync process and its immediate neighbors form one cluster; a session/process/socket/service hub forms a second;
+a second, entirely separate session forms a third;
+and two individual nodes are isolated, their only edges leading to non-malicious neighbors.</p>
+<p>The root cause:</p>
+<p>EvidenceForge mints a fresh session or process identity per <em>anchoring event</em>, rather than reusing one identity across a whole authored narrative, so what an analyst would naturally call &ldquo;one attacker session&rdquo; can show up as two or three entirely separate graph nodes with no edge connecting them, even within a single scenario&rsquo;s own ground truth. This is the identical mechanism already documented for D1&rsquo;s two independent attackers sharing one compromised identity shown to occur <em>within</em> one attack&rsquo;s own footprint.</p>
 <h3 id="step-3-seeding-from-the-models-own-top-k-alerts">Step 3: Seeding from the model&rsquo;s own top-K alerts</h3>
-<p>The single-seed BFS is a useful diagnostic, but it&rsquo;s not how a SOC
-actually works: a real alert queue mixes true and false positives, and an
-analyst expands from however many alerts the top of the queue actually
-contains, not from a hand-picked perfect seed. Re-running the same
-expansion from the top-K ranked edges (true or false positive, K increasing
-from 1) and finding the smallest K at which BFS recovers the <em>full</em>
-malicious node set produces a bimodal result:</p>
+<p>The single-seed BFS is a useful diagnostic, but it&rsquo;s not how a SOC actually works: a real alert queue mixes true and false positives, and an analyst expands from however many alerts the top of the queue actually contains, not from a hand-picked perfect seed. Re-running the same expansion from the top-K ranked edges (true or false positive, K increasing from 1) and finding the smallest K at which BFS recovers the <em>full</em> malicious node set produces a bimodal result:</p>
 <ul>
-<li>8 of 16 attack scenarios converge at K=1-3, at 100% precision &ndash; every
+<li>8 of 16 attack scenarios converge at K=1-3, at 100% precision - every
 seed alert used is a real true positive, zero false-positive budget spent.
 These are the scenarios where the malicious footprint is already one tight
 structural cluster.</li>
-<li>6 of 16 converge only at K=41-69, with precision collapsed to 24-64% &ndash;
+<li>6 of 16 converge only at K=41-69, with precision collapsed to 24-64% -
 dozens of false-positive alerts have to be absorbed before one happens to
 land near the missing structural island.</li>
 <li>2 of 16 (A12, F1) never converge even at K=80.</li>
 </ul>
-<p>The critical finding here: whether seed-and-expand works at all is
-predictable from graph structure, not from model confidence. The scenarios
-that fail don&rsquo;t fail because the model scored them poorly &ndash; many of the
-&ldquo;Regime B&rdquo; scenarios&rsquo; true positives are ranked well inside the top 20. They fail because the ground-truth
-malicious footprint itself is structurally fragmented, so no amount of
-<em>additional high-confidence</em> alerts helps once every already-connected
-cluster&rsquo;s own alerts are exhausted &ndash; only a coincidental false positive
-landing near the missing island bridges the gap.</p>
+<p>The most critical finding here: whether seed-and-expand works at all and is it predictable from graph structure, not just from model confidence. The scenarios that fail don&rsquo;t fail because the model scored them poorly. Many of the &ldquo;Regime B&rdquo; scenarios&rsquo; true positives are ranked well inside the top 20. They fail because the ground-truth malicious footprint itself is structurally fragmented, so no amount of <em>additional high-confidence</em> alerts helps once every already-connected
+cluster&rsquo;s own alerts are exhausted. In this instance only a coincidental false positive landing near the missing island bridges the gap.</p>
 <h3 id="next-steps">Next Steps</h3>
 <p>I still have a laundry list of things I want to do with this project. The three major ones are:</p>
 <ul>
@@ -785,8 +765,8 @@ landing near the missing island bridges the gap.</p>
 <h2 id="phase-3---a-new-set-of-scenarios-and-the-results">Phase 3 - A new set of scenarios and the results</h2>
 <p>Part 2 was meant to stop at that Next Steps list. Then I did the first item, and it turned into enough work - and enough of a result - to be worth writing down. This section is that: a big round of new scenario generation that roughly doubled the dataset, a deliberately large &ldquo;enterprise&rdquo; scenario, and a final retrain that put the whole thesis through its hardest test yet. The one-line version: the thesis didn&rsquo;t just survive the harder test, it came through it more convincingly than at any point in Part 2.</p>
 <h3 id="from-twenty-to-forty-nine">From twenty to forty-nine</h3>
-<p>The single biggest weakness of the Part 2 study was breadth. Twenty scenarios, six attack families. A skeptical reader (me, mostly) could reasonably ask whether &ldquo;three windows beat one&rdquo; was a real property or an artifact of the specific handful of attacks I happened to build. So the goal for this round was more variety - especially attack stages the original twenty never touched (command-and-control, exfiltration, initial access, defense evasion) - and enough benign hard-negatives alongside them that the model can&rsquo;t cheat by learning &ldquo;this technique&rsquo;s tools = bad.&rdquo;</p>
-<p>The corpus went from 20 to 49 scenarios. The new arrivals, grouped by what they were for:</p>
+<p>The single biggest weakness of the Part 2 study was breadth. Twenty scenarios, six attack families. A skeptical reader (myself included) could reasonably ask whether &ldquo;three windows beat one&rdquo; was a real property or an artifact of the specific handful of attacks I just so happened to build. So the goal for this round was a lot more more variety. Wspecially attack stages the original twenty never touched (command-and-control, exfiltration, initial access, defense evasion). Add into the mix enough benign hard-negatives alongside them that the model can&rsquo;t cheat by learning &ldquo;this technique&rsquo;s tools = bad.&rdquo;</p>
+<p>The corpus went from 20 to 49 scenarios. The new arrivals, which are grouped by what they were for:</p>
 <table>
 	<thead>
 			<tr>
@@ -873,29 +853,27 @@ landing near the missing island bridges the gap.</p>
 			</tr>
 	</tbody>
 </table>
-<p>These were built the same way as the original twenty - the repeatable author/validate/generate/inspect loop from earlier in this post, the matched-pair method wherever an axis could be isolated, and the same additive local-fork approach where a technique needed a capability stock EvidenceForge didn&rsquo;t have (kerberoasting and group-membership each added a new relation or node type to the schema, taking it to 10 node types and 18 relations). As before, some pairs are &ldquo;true&rdquo; matched pairs that differ in a single field, and some are partial - close enough for the contrast, not byte-identical.</p>
+<p>These were built the same way as the original twenty. A repeatable and largely reliable author/validate/generate/inspect loop from earlier in this post, creating a the matched-pair wherever an axis could be isolated. In a couple of cases also I ended up with an additive local-fork approach where a technique needed a capability stock EvidenceForge didn&rsquo;t have (kerberoasting and group-membership each added a new relation or node type to the schema, taking it to 10 node types and 18 relations). As before, some pairs are &ldquo;true&rdquo; matched pairs that differ in a single field, and some are partial.</p>
 <h3 id="the-million-node-scenario-and-the-wall-i-hit">The million-node scenario, and the wall I hit</h3>
-<p>w1 is the odd one out. Every other scenario is a single incident - one attacker, one chain, a few thousand to a few tens of thousands of nodes. w1 is a deliberately different beast: one enterprise of 993,464 nodes and 905,578 edges (call it ~1.0M), 77 hosts across 6 subnets, 213 users, and 7 completely separate attack campaigns running concurrently (SMB lateral + service, WMI + scheduled task, DCSync, kerberoast, spray, insider, and a C2/DNS-exfil pair), each drawn from the repertoire above. It is not a controlled experiment - it&rsquo;s a confounded kitchen-sink on purpose. It&rsquo;s a stress test: does the pipeline hold, and does the three-scope advantage survive at a scale that looks more like a real network than a single lab incident.</p>
-<p>Getting there is where I hit an actual wall, and it&rsquo;s worth a paragraph because it&rsquo;s the kind of thing nobody writes down. The pipeline itself is comfortably linear - roughly 17 KiB of peak memory per node - so it scales predictably. The trouble is that &ldquo;predictably&rdquo; times a million nodes is a lot of memory, and this whole project runs on WSL (Windows Subsystem for Linux), whose default memory allocation was nowhere near enough. Building w1&rsquo;s feature artifact peaked around 16.5 GiB, and I had to raise the WSL memory cap (up to 24 GiB) before it would finish without the kernel killing the process outright. Generation is its own separate animal - CPU-and-time-bound rather than memory-bound, and single-core - so just producing w1&rsquo;s logs took 1 hour 22 minutes. And a lesson I learned the annoying way: a long run started in the foreground dies the instant the SSH session drops. My first w1 attempt got killed about 62 minutes in when my connection blipped. The fix is unglamorous - launch it fully detached so it outlives the session - but it&rsquo;s the difference between a wasted evening and a finished scenario.</p>
+<p>w1 is the odd one out. Every other scenario is a single incident. Consisting of the one attacker, one chain, a few thousand to a few tens of thousands of nodes. w1 is a deliberately different beast: one enterprise of 993,464 nodes and 905,578 edges (call it ~1.0M), 77 hosts across 6 subnets, 213 users, and 7 completely separate attack campaigns running concurrently (SMB lateral + service, WMI + scheduled task, DCSync, kerberoast, spray, insider, and a C2/DNS-exfil pair), each drawn from the repertoire above. This was designed as a stress test: does the pipeline hold, and does the three-scope advantage survive at a scale that looks more like a real network than a single lab incident.</p>
 <h3 id="the-new-folds-and-a-harder-test-than-part-2s">The new folds, and a harder test than Part 2&rsquo;s</h3>
-<p>Part 2 evaluated on a 4-fold rotation over 20 scenarios, and - this matters - it deliberately put each matched pair&rsquo;s two arms in DIFFERENT folds, so whenever one arm was held out for testing, its partner was still in training. That&rsquo;s a fair test of &ldquo;does the axis contrast generalize,&rdquo; but a soft test of &ldquo;can the model handle an attack family it has never seen,&rdquo; because a near-identical sibling is always present.</p>
-<p>For the final Phase 3 result I ran the cross-validation two ways, on purpose:</p>
+<p>Part 2 evaluated on a 4-fold rotation over 20 scenarios, deliberately putting each matched pair&rsquo;s two arms in DIFFERENT folds, so whenever one arm was held out for testing, its partner was still in training. Designed to test &ldquo;does the axis contrast generalize,&rdquo; and in addition test &ldquo;can the model handle an attack family it has never seen,&rdquo; because a near-identical sibling is always present.</p>
+<p>For the final Phase 3 result I ran the cross-validation two ways:</p>
 <ul>
 <li>Grouped (the headline). Every scenario that shares an attack family tests together in the same fold. When kerberoast is the held-out fold, NEITHER kerberoast scenario is in training. This is the genuine &ldquo;unseen family&rdquo; test.</li>
 <li>Split (the secondary). The old Part 2 arrangement - partner arm always in training. Tests generalization across the controlled axis.</li>
 </ul>
-<p>The full 49 got folded into a 7-fold cross-validation (there are exactly 7 benign scenarios, so one anchors each fold - the same logic Part 2 used for 4 folds with 4 benigns). Two sets of scenarios were pulled out of the rotation entirely and kept as standing benchmarks, scored by every fold&rsquo;s model but never trained on: the noise-scale trio (a14/a15/a16) and the million-node w1. And for the final number I ran three random seeds instead of one and reported the spread - Part 2&rsquo;s single-seed runs left an honest &ldquo;is this just luck&rdquo; question open, and three seeds closes it.</p>
+<p>The full 49 got folded into a 7-fold cross-validation (there are exactly 7 benign scenarios, so one anchors each fold, 4 folds with 4 benigns). Two sets of scenarios were pulled out of the rotation entirely and kept as standing benchmarks, scored by every fold&rsquo;s model but never trained on: the noise-scale trio (a14/a15/a16) and the million-node w1. And for the final number I ran three random seeds instead of one and reported the spread.</p>
 <h3 id="grouped-vs-split-holdout">&ldquo;grouped&rdquo; vs &ldquo;split&rdquo; holdout</h3>
-<p>Think of it as two ways to grade detection coverage. The &ldquo;split&rdquo; grade is: you built and tuned a rule against one SMB lateral-movement sample, and I now test it against a <em>different</em> SMB lateral-movement sample in the same environment - fair, but you&rsquo;ve seen this kind of thing before. The &ldquo;grouped&rdquo; grade is harder and more honest about the real world: I test your coverage against an entire technique family you have never tuned against at all - the first time this class of attack has crossed your desk. A detection approach that only holds up under &ldquo;split&rdquo; grading generalizes across small variations; one that holds up under &ldquo;grouped&rdquo; stands a chance against genuinely novel tradecraft. Phase 3 reports both, and leads with the harder one.</p>
-<p>Two runs, back to back, launched overnight and detached so a dropped connection couldn&rsquo;t kill them:</p>
+<p>Think of it as two ways to grade detection coverage. The &ldquo;split&rdquo; grade is: you built and tuned a rule against one SMB lateral-movement sample, and I now test it against a <em>different</em> SMB lateral-movement sample in the same environment. The &ldquo;grouped&rdquo; grade is harder and more true to the real world: I test your coverage against an entire technique family you have never tuned against at all. The first time this class of attack has crossed your desk. A detection approach that only holds up under &ldquo;split&rdquo; grading generalizes across small variations; one that holds up under &ldquo;grouped&rdquo; stands a chance against genuinely novel tradecraft. Phase 3 reports both, and leads with the harder one.</p>
 <ul>
 <li>M1 (the single-GNN control): started 00:08, finished 03:13 - 3 hours 5 minutes.</li>
 <li>M2 (PARALLAX, three scopes + fusion): started 03:13, finished 16:19 - 13 hours 6 minutes.</li>
 <li>Total: about 16 hours.</li>
 </ul>
-<p>M2 costs roughly 4x M1 because it&rsquo;s training three encoders plus a fusion layer per fold instead of a single encoder - times seven folds, times three seeds. Worth it, as it turns out.</p>
+<p>M2 costs roughly 4x M1 because it&rsquo;s training three encoders plus a fusion layer per fold instead of a single encoder.</p>
 <h3 id="the-results-1">The results</h3>
-<p>This is the part I was nervous about. A bigger, more varied corpus with genuinely unseen attack families is a much harder test than Part 2&rsquo;s, and it would have been entirely reasonable for the barely-above-parity margins from Round 3 to collapse to nothing. They didn&rsquo;t. On the headline (grouped) regime, averaged over three seeds and seven folds:</p>
+<p>A bigger, more varied corpus with genuinely unseen attack families is a much harder test than Part 2&rsquo;s, and it would have been entirely reasonable for the barely-above-parity margins from Round 3 to collapse to nothing. They didn&rsquo;t. On the headline (grouped) regime, averaged over three seeds and seven folds:</p>
 <table>
 	<thead>
 			<tr>
@@ -920,9 +898,9 @@ landing near the missing island bridges the gap.</p>
 			</tr>
 	</tbody>
 </table>
-<p>M2 beat M1 on every single fold, both metrics, in both regimes - 28 out of 28 fold-by-fold comparisons. And the separation isn&rsquo;t marginal: M2&rsquo;s WORST fold (edge 0.5352) still beat M1&rsquo;s BEST fold (0.4202). This is comfortably the strongest result in the whole project, and it&rsquo;s on the hardest test I&rsquo;ve built.</p>
-<p>One number needs a caveat before anyone panics: M1&rsquo;s headline here (0.2534) is a lot lower than the 0.6535 it scored in Part 2&rsquo;s Round 3. That is NOT M1 getting worse - it&rsquo;s the test getting much harder (49 scenarios instead of 20, with unseen-family holdout). The only fair comparison is M1 vs M2 on the same footing, and there M2 is 2.82x ahead. Comparing across the two studies would be comparing a harder exam to an easier one.</p>
-<p>The two standing benchmarks told the same story, more starkly:</p>
+<p>M2 beat M1 on every single fold, both metrics, in both regimes - 28 out of 28 fold-by-fold comparisons. And the separation isn&rsquo;t marginal: M2&rsquo;s WORST fold (edge 0.5352) still beat M1&rsquo;s BEST fold (0.4202). This is comfortably the strongest result in the whole project, and it&rsquo;s on the hardest test that was built.</p>
+<p>One number needs a caveat: M1&rsquo;s headline here (0.2534) is a lot lower than the 0.6535 it scored in Part 2&rsquo;s Round 3. That is NOT M1 getting worse, it&rsquo;s the test getting much harder (49 scenarios instead of 20, with unseen-family holdout). The only fair comparison is M1 vs M2 on the same footing, and there M2 is 2.82x ahead. Comparing across the two studies would be comparing a harder exam to an easier one.</p>
+<p>The two standing benchmarks:</p>
 <table>
 	<thead>
 			<tr>
@@ -944,16 +922,14 @@ landing near the missing island bridges the gap.</p>
 			</tr>
 	</tbody>
 </table>
-<p>The noise-scale result is the one I find most satisfying, because it&rsquo;s the direct, at-scale rebuttal to the old &ldquo;the wide scope drowns in noise&rdquo; story from Part 2&rsquo;s Round 1: the same small attack buried in graphs from 14k to 141k nodes, and M2 recovers it almost perfectly (0.907) where the single GNN mostly can&rsquo;t (0.310). The enterprise w1 is the widest relative margin of all (over 3x), even if the absolute numbers are lower - a million-node, seven-campaign graph is a genuinely hard problem, and honestly I&rsquo;d have settled for &ldquo;doesn&rsquo;t fall over.&rdquo; And the standing method call from Part 2 held up a fourth time: plain averaging of the three scopes still beat both the learned (logistic and MLP) fusion stackers, across the board.</p>
-<h3 id="two-things-that-didnt-go-the-way-i-expected">Two things that didn&rsquo;t go the way I expected</h3>
-<p>Honesty section, because these are the interesting bits.</p>
-<p>First, a prediction I got wrong. Before the run I bet that the grouped regime (unseen family) would score noticeably WORSE than the split regime (partner in training) - it seemed obvious that yanking the near-identical sibling out of training would hurt. At the headline level, it basically didn&rsquo;t: grouped and split came out level (edge 0.7154 vs 0.7225). Looking closer, per-scenario there IS a small, consistent penalty for holding a whole family out - and it&rsquo;s cleanest exactly where I&rsquo;d expect, on the handful of &ldquo;true&rdquo; pairs that share the most malicious structure (all six of those arms scored lower with their partner absent). It&rsquo;s just small enough that the big, easy, high-volume scenarios wash it out of the pooled average. The honest read: at ~45 training scenarios, the model has seen enough related attacks that any one family&rsquo;s specific partner is close to redundant. Which - once I got over being annoyed at being wrong - is actually a good sign: it means the model isn&rsquo;t leaning on a memorized sibling.</p>
-<p>There&rsquo;s a sharper version of this worth one more sentence. Under the grouped regime, two folds hold out an ENTIRE capability - kerberoasting, and group-membership privesc - so the model has to score a technique whose distinctive edge type it literally never saw in training. It still won those folds. It manages this because it recognizes the malicious PROCESS driving the technique (which looks like every other attack&rsquo;s foothold and recon activity), and the novel edge inherits suspicion from its malicious source. That&rsquo;s a genuinely encouraging property for detection: it generalizes to techniques it wasn&rsquo;t trained on, as long as the surrounding chain is familiar.</p>
-<p>Second, the counterexample. There&rsquo;s exactly one attack family the whole approach is bad at, and it&rsquo;s worth naming because it marks a real boundary of the thesis: the insider threat (i1/i2), and especially the after-hours arm (i2), which the model scores at essentially zero (edge AUPRC 0.006). None of the three scopes see it. And once you look at what i2 actually is, that isn&rsquo;t surprising - it&rsquo;s a legitimate user, on their own machine, using only built-in Windows tools, collecting files and uploading them over normal HTTPS. There is no structural anomaly. Every process looks like admin work; every connection looks like ordinary web traffic. The ONLY thing separating the malicious activity from the benign background is timing (it happens at 9pm) and intent - and a model built to detect malicious STRUCTURE is, correctly, blind to both.</p>
-<p>This is the honest boundary of &ldquo;attack signal lives in causal chains.&rdquo; i2 IS a causal chain (collect -&gt; stage -&gt; exfiltrate), but a chain made entirely of individually-innocent steps by a trusted user, so structure alone can&rsquo;t catch it. Digging in, I also found a concrete, fixable contributor: the timestamp feature I&rsquo;d built specifically to expose exactly this kind of timing signal (a graph-relative normalized time) wasn&rsquo;t actually being fed into the scope models in this run - it&rsquo;s computed and stored, but the models never see it. So part of i2&rsquo;s failure is &ldquo;the model can&rsquo;t see time,&rdquo; and part is &ldquo;the one time feature we have wasn&rsquo;t plumbed in.&rdquo; Either way, the principled answer is the temporal-scope idea (M3) that Part 1 floated and I keep parking - the insider case is now the concrete target that would justify actually building it.</p>
-<h3 id="where-this-leaves-things">Where this leaves things</h3>
-<p>Phase 3 did what I hoped: it took the central result off the small, tidy 20-scenario bench and put it on a much messier, more realistic 49-scenario one - including a million-node enterprise and attack families the model had never seen - and the three-scope approach won more decisively than before, not less. The margin didn&rsquo;t shrink this time; on the hardest test in the project it widened back out to nearly 3x. The node-level half of the claim, which I flagged in Part 2 as the weakest and least settled, also came through cleanly here, with M2 ahead in every fold.</p>
-<p>It also drew the boundary of the thesis in a way I couldn&rsquo;t before: PARALLAX detects malicious structure, and where malice has no structure - the trusted insider using trusted tools at an odd hour - it needs a sense of time it currently doesn&rsquo;t have. That&rsquo;s the clearest single pointer to what Part 3, or whatever I build next, should go after.</p>
+<p>The noise-scale result is the one I find most satisfying, because it&rsquo;s the direct, at-scale rebuttal to the old &ldquo;the wide scope drowns in noise&rdquo; story from Part 2&rsquo;s Round 1: the same small attack buried in graphs from 14k to 141k nodes, and M2 recovers it almost perfectly (0.907) where the single GNN mostly can&rsquo;t (0.310). The enterprise w1 is the widest relative margin of all (over 3x), even if the absolute numbers are lower. A million-node, seven-campaign graph is a genuinely hard problem, and honestly I&rsquo;d have settled for &ldquo;doesn&rsquo;t fall over.&rdquo; And the standing method call from Part 2 held up a fourth time: plain averaging of the three scopes still beat both the learned (logistic and MLP) fusion stackers, across the board.</p>
+<h3 id="focusing-on-two-aspects-of-the-results">Focusing on two aspects of the results</h3>
+<p>The grouped and split came out level (edge 0.7154 vs 0.7225). Looking closer, per-scenario there IS a small, consistent penalty for holding a whole family out. It&rsquo;s cleanest exactly where I&rsquo;d expect, on the handful of &ldquo;true&rdquo; pairs that share the most malicious structure (all six of those arms scored lower with their partner absent). It&rsquo;s just small enough that the big, easy, high-volume scenarios wash it out of the pooled average. At ~45 training scenarios, the model has seen enough related attacks that any one family&rsquo;s specific partner is close to redundant. Meaning the model isn&rsquo;t simply just leaning on a memorized sibling.</p>
+<p>Under the grouped regime, two folds hold out an ENTIRE capability: kerberoasting, and group-membership privesc. The model has to score a technique whose distinctive edge type it literally never saw in training. It still won those folds. It manages this because it recognizes the malicious PROCESS driving the technique (which looks like every other attack&rsquo;s foothold and recon activity), and the novel edge inherits suspicion from its malicious source. That&rsquo;s a rather encouraging property for detection: it manages generalise onto techniques it wasn&rsquo;t trained on, as long as the surrounding chain is familiar.</p>
+<p>Second, the counterexample. It turned out there is at least exactly one attack family the whole approach is bad at, the insider threat (i1/i2), and especially the after-hours arm (i2), which the model scores at essentially zero (edge AUPRC 0.006). None of the three scopes see it. A legitimate user, on their own machine, using only built-in Windows tools, collecting files and uploading them over normal HTTPS. There is no structural anomaly. Every process looks like admin work; every connection looks like ordinary web traffic. The ONLY thing separating the malicious activity from the benign background is timing (it happens at 9pm) and intent. These happen to be the attacks traditional detection engineers and SOC&rsquo;s strugle with the most and so I hope to revist this to see if any improvements can be made. Anyone who&rsquo;s naievley trued to build an anomaly detection for logins or activity out of hours for anything but the most locked down environments know it&rsquo;s basically a non starter.</p>
+<p>Whilst this boundary of &ldquo;attack signal lives in causal chains.&rdquo; i2 IS a causal chain (collect -&gt; stage -&gt; exfiltrate), but a chain made entirely of individually-innocent steps by a trusted user, so structure alone can&rsquo;t catch it. Digging in, I also found a concrete, fixable contributor: the timestamp feature I&rsquo;d built specifically to expose exactly this kind of timing signal (a graph-relative normalized time) wasn&rsquo;t actually being fed into the scope models in this run.. It&rsquo;s computed and stored, but the models never see it, incompetance on my behalf. So part of i2&rsquo;s failure is &ldquo;the model can&rsquo;t see time,&rdquo; and part is &ldquo;the one time feature we have wasn&rsquo;t plumbed in.&rdquo;</p>
+<h3 id="where-this-leaves-things">Where this leaves things?</h3>
+<p>Phase 3 did what I hoped: it took the central result off the small, tidy 20-scenario bench and put it on a much messier, more realistic 49-scenario one. This was including a million-node enterprise and attack families the model had never seen. Consistently the three-scope approach won more decisively than before, not less. The margin didn&rsquo;t shrink this time; on the hardest test in the project it widened back out to nearly 3x. The node-level half of the claim, which I flagged in Part 2 as the weakest and least settled, also came through cleanly here, with M2 ahead in every fold.</p>
 <h2 id="references">References</h2>
 <ul>
 <li>Hu, Z., Dong, Y., Wang, K., Sun, Y. &ldquo;Heterogeneous Graph Transformer.&rdquo;
@@ -1121,8 +1097,8 @@ arXiv:2404.13344</li>
             <li><a href="#the-new-folds-and-a-harder-test-than-part-2s">The new folds, and a harder test than Part 2&rsquo;s</a></li>
             <li><a href="#grouped-vs-split-holdout">&ldquo;grouped&rdquo; vs &ldquo;split&rdquo; holdout</a></li>
             <li><a href="#the-results-1">The results</a></li>
-            <li><a href="#two-things-that-didnt-go-the-way-i-expected">Two things that didn&rsquo;t go the way I expected</a></li>
-            <li><a href="#where-this-leaves-things">Where this leaves things</a></li>
+            <li><a href="#focusing-on-two-aspects-of-the-results">Focusing on two aspects of the results</a></li>
+            <li><a href="#where-this-leaves-things">Where this leaves things?</a></li>
           </ul>
         </li>
         <li><a href="#references">References</a></li>
