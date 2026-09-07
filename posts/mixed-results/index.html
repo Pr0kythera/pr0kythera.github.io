@@ -143,8 +143,8 @@
 
 <link
   rel="stylesheet"
-  href="/css/bundle.min.783a79746a859af9be598cbc33fba2a1087434b23768524277b07ef28336f113.css"
-  integrity="sha256-eDp5dGqFmvm&#43;WYy8M/uioQh0NLI3aFJCd7B&#43;8oM28RM=">
+  href="/css/bundle.min.948f22fa5116b6eb619af6ddf3f031cb443efd254975d5d5c20832145ef0c86c.css"
+  integrity="sha256-lI8i&#43;lEWtuthmvbd8/Axy0Q&#43;/SVJddXVwggyFF7wyGw=">
 
 
 
@@ -284,7 +284,7 @@
             stroke-width="2"
             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
         </svg>
-        6815 words
+        11531 words
       </span>
     
 
@@ -298,7 +298,7 @@
             stroke-width="2"
             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
-        32 min
+        55 min
       </span>
     
   </div>
@@ -313,11 +313,15 @@
 <p>In this post we directly continue from Part 1 (<a href="https://blog.pr0kythera.com/posts/new-post-here/)">https://blog.pr0kythera.com/posts/new-post-here/)</a>, we ended up with: a single minimal test HGT (hetrogeneous graph transformer) which worked but could tell us nothing besides the pipeline was a success, and three hopes and dreams: more scenarios, a temporal feature, and an A/B test of the three-scope idea against a single GNN (the control) to determine if my hypothesis that 3 differently scoped approaches out performs a single GNN that looks over the entire graph.</p>
 <p>I somewhat apologise that the following is very long. I&rsquo;ve also decided to commit to hopefully a shorter part 3 with the aim to make the project a bit more in the realm of real world application rather than solely one focused on research. Once I have something a bit more generalisable i&rsquo;m really keen to release the whole project. But currently everything is built against Evidence Forge output and also only the specific scenarios at that.</p>
 <p>For a tldr headline. We successfully proved hypothesis! what I am calling &ldquo;PARALLAX&rdquo; a multi-scope Heterogeneous Graph Transformer ensemble out performed a control HGTConv encoder trained over the whole graph. What follows is how we got to that point, the problems encountered along the way and the iterative improvements that drastically improved out output over 2 rounds of modifications.</p>
-<p>To be complete transparent Claude Opus 5.8 and Sonnet 5.0 were heavily utilised in this project. The design, direction and this writeup is all my own. But as you can imagine authoring everything by hand would be months or years worth of work for a team. A GNN detection project like this has been rattling around in my head for a long time but the advent of frontier models over the past 12 months make something with this scope actually achievable in my afternoons and weekends. With that in mind i&rsquo;m trying to be very cogent not to be just producing slop. My personal take is as long as there is heavy human involvement in the input, process and output LLM&rsquo;s are a fantastic enabler. The problems lie with overreliance and a lack of understanding and engagement Rubbish in Rubbish out isn&rsquo;t by any means a new concept and it&rsquo;s being amplified by LLM&rsquo;s.</p>
+<p>To be complete transparent Claude Opus 5.8 and Sonnet 5.0 were heavily utilised in this project. And while I understand to dismiss entirely as AI Slop as with everything published in 2026. The design, direction and this writeup is all my own. I dislike reading the inane unfiltered load bearing ramblings of recent model writeups as much as all of you. But as you can imagine creating everything in this project by hand would be months or years worth of work for a team. A GNN detection project like this has been rattling around in my head for a long time but the advent of more advanced frontier models over the past 12 months make something with this scope actually achievable in my evenings and weekends. With that in mind i&rsquo;m trying to be very cognizant not to be just producing slop. My personal take is as long as there is heavy human involvement in the input, process and output LLM&rsquo;s are a fantastic enabler. The problems lie with overreliance and a lack of understanding and engagement/ Rubbish in Rubbish out isn&rsquo;t by any means a new concept and it&rsquo;s being undeniably amplified by LLM&rsquo;s.</p>
 <hr>
 <h2 id="a-recap-for-readers-who-somehow-ended-up-here-without-bothering-to-read-part-1">A recap (for readers who somehow ended up here without bothering to read Part 1)</h2>
 <p>My fundamental thesis is as follows: attack signals in enterprise telemetry lives in causal CHAINS across log sources, for example: a login that created a new process, that process reads LSASS, and then wrote the output to a file, the process went on and crossed a network boundary, on the new host it then installed a service.</p>
 <p>Part 1 framed this as a provenance-graph learning problem, we chose a Heterogeneous Graph Transformer (HGT) as the model family because it keeps per-node-type (a service is treated differently to a process) and per-edge-type semantics distinct instead of flattening everything into one generic type. Most importantly I proposed that three GNNs looking at the same graph through three different windows (a process-subtree scope, a cross-domain-boundary scope, a whole-graph scope), fused by a fourth model. It also introduced EvidenceForge (Cisco Talos), the synthetic multi-source log generator this entire project depends on.</p>
+<h3 id="for-the-non-ml-reader-what-is-a-graph-neural-network-actually-doing">For the non-ML reader what is a graph neural network actually doing?</h3>
+<p>A GNN doesn&rsquo;t look at one entity in isolation the way a simple classifier would (is this file hash bad, oh yes, it is). Instead, at each step it lets every node update its own representation by pooling information gathered from its next door neighbors. By literally &ldquo;passing messages&rdquo; along edges, like those game you may have played at school. Now, if you do that a few times the node&rsquo;s final representation reflects not just its own attributes, but the shape of everything which is a few hops around it!</p>
+<p>To describe this in detection-engineering terms, it could be described as automated version of what an analyst already does by eyeballing a process tree or a connection graph: you don&rsquo;t decide &ldquo;process X is bad&rdquo; purely from its own command line, you factor in what spawned it, what it touched, and where it connected. A GNN just does that same neighborhood-aware reasoning at scale, over every node in the graph, learned from data rather than hand-written rules.</p>
+<p>Everyone I&rsquo;ve worked with in Security understands implicitly how important this context is. Even a very junior analyst will know the first question to ask when a user triggers an alert for a blocked Network Connection is something along the lines of &ldquo;What process generated the connection, Powershell? Now that is strange, Chrome due to some dodgy advertising redirect? A bit Less of a concern&rdquo;</p>
 <hr>
 <h2 id="data-pipeline-scenario-generation-and-validation">Data pipeline, scenario generation, and validation</h2>
 <h3 id="from-one-scenario-to-twenty">From one scenario to twenty</h3>
@@ -364,7 +368,7 @@
 </span></span><span style="display:flex;"><span><span style="color:#f92672">storyline</span>:
 </span></span><span style="display:flex;"><span>  - <span style="color:#f92672">step</span>: <span style="color:#ae81ff">remote_logon</span>
 </span></span><span style="display:flex;"><span>    <span style="color:#f92672">event</span>: <span style="color:#ae81ff">logon</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">network_transport: wmi   # the only diff</span>: <span style="color:#ae81ff">DCOM/RPC 135 instead of SMB 445</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">network_transport</span>: <span style="color:#ae81ff">wmi  </span> <span style="color:#75715e"># the only diff: DCOM/RPC 135 instead of SMB 445</span>
 </span></span></code></pre></div><p>Due to some issues which I won&rsquo;t get into not every pair is this closely aligned. But they&rsquo;re close enough to meet our goal to be able to compare them.</p>
 <h3 id="where-evidenceforge-itself-had-to-be-extended">Where EvidenceForge itself had to be extended</h3>
 <p>Two of the six pairs needed a capability stock EvidenceForge 1.9.0 didn&rsquo;t have. Rather than give up on them we created an additive local fork patch.</p>
@@ -397,6 +401,9 @@
 <p>The script <code>feature_config.py</code> created one fixed global schema for all 9 node types (process, socket, session, file, service, registry, module, account, scheduled_task) and all 16 edge/relation types, shared by every one of the 20 scenarios. Each node type gets a fixed-width feature block: one-hot encodings over static, hand crafted vocabularies (hostnames, origins, Zeek service names), multi-hot encodings for things like &ldquo;which merge stages enriched this node,&rdquo; and scalar structural features (in-degree, out-degree, total degree, and per-edge-type degree breakdowns). Every node and every edge in every scenario&rsquo;s graph gets a stable index which is globally shared, This allows the three differently scoped GNNs agree on which embedding belongs to which entity.</p>
 <p>One schema decision worth calling out for the non-ML reader: usernames and persona names are deliberately NOT features. Only structural and derived values go into the tensors. This matters because personas rotate across scenarios specifically so that no single name is consistently &ldquo;the attacker&rdquo;. If a name leaked into the feature vector, the model could trivially learn:</p>
 <p>&ldquo;this specific username = malicious,&rdquo; which would be a shortcut that says nothing about the general provenance-graph thesis.</p>
+<h3 id="one-hot-and-multi-hot-encoding-in-siem-terms">One-hot and multi-hot encoding, in SIEM terms</h3>
+<p>As clever as they may be a neural network can&rsquo;t read the string &ldquo;sysmon&rdquo; or &ldquo;SRV-FILE-01&rdquo;. Everything, much like our place the the world has to become a number. One-hot encoding is the ML equivalent of normalizing a free-text field into a fixed set of yes/no flags: instead of a string column <code>origin: sysmon</code>, you get a set of columns <code>[origin_ecar, origin_windows, origin_sysmon, ...]</code> with exactly one flipped to 1.</p>
+<p>It&rsquo;s the same concept behind mapping raw vendor-specific alert names onto  MITRE ATT&amp;CK technique IDs, so a correlation rule can compare &ldquo;did this happen&rdquo; across sources that describe the same thing differently. Multi-hot is the same idea but allows more than one flag on at once. This is used here for &ldquo;which sensors saw this entity&rdquo; (a node can be enriched by both eCAR and Sysmon simultaneously, so both flags get set).</p>
 <h3 id="the-abused-node-concept-9c">The &ldquo;abused node&rdquo; concept (9C)</h3>
 <p>One label-design decision to call out is. A node can be benign (node label 0) while still being the target of a malicious edge. A3&rsquo;s LSASS process is a real, legitimate Windows process. It did nothing wrong by existing, but the edge representing an attacker&rsquo;s process opening it with <code>0x1FFFFF</code> access is malicious. The project tracks this explicitly as an <code>abused</code> metadata flag: a benign node with at least one malicious incident edge. It&rsquo;s the concept that makes A3&rsquo;s LSASS and A4&rsquo;s krbtgt account symmetric rather than looking like two unrelated one off decisions.</p>
 <h3 id="round-3s-feature-layer-additions-os-and-log1p">Round 3&rsquo;s feature-layer additions: os and log1p</h3>
@@ -422,10 +429,14 @@ overfit to a technique rather than to the boundary-crossing structure itself. Th
 <h3 id="why-fuse-three-verdicts">Why fuse three verdicts?</h3>
 <p>Different scopes are expected to win on different scenario shapes. A fixed choice of scope would mean picking a single trade off point and living with it across every scenario shape in the study, from a single host LSASS dump to a 70,000-node noisy background to a two-attacker D1. A per instance combination of scopes can in principle do better than any one fixed view.</p>
 <p>Fusion is a small stacker (logistic regression, with an MLP tried as an ablation arm) over <code>{scope1_logit, scope2_logit, scope3_logit, regime features}</code>, fit with explicit anti-leakage discipline: an inner held out subset of each fold&rsquo;s <em>training</em> scenarios generates the out of sample logits the stacker is actually fit on, so it can never simply learn to trust whichever scope happened to overfit hardest on data it had already seen.</p>
-<p>One finding worth flagging:</p>
+<p>One finding that I felt worth flagging:</p>
 <p>A directly comparable paper in this same problem space, PROVFUSION (arXiv:2604.14685), reports that simple <em>voting-based</em> fusion of multiple provenance-graph views beats a learned stacker across nine benchmark datasets. A result this project&rsquo;s own Round 2 work tested against its own data, and which came back with rather mixed results.. More on that later!</p>
+<h3 id="logits-stackers-and-fusion">Logits, stackers, and fusion</h3>
+<p>A &ldquo;logit&rdquo; is just a raw, unbounded confidence score before it gets squashed into a 0-100% probability. Try to think of it as a raw risk score from a single detection engine before it&rsquo;s normalized into your SIEM&rsquo;s severity scale. &ldquo;Fusion&rdquo; (via a &ldquo;stacker&rdquo;) is the modeling equivalent of a correlation layer that takes several different detection engines&rsquo; outputs &ndash; say an EDR score, a network IDS score, and a UEBA score &ndash; and combines them into one verdict. Sometimes that combination is a simple average; sometimes it&rsquo;s a smarter, trained weighting (a &ldquo;stacker,&rdquo; here tried as both logistic regression and a small neural network/MLP). One of this project&rsquo;s more interesting findings: the simple average beat the &ldquo;smarter&rdquo; trained combiner on edge-level detection &ndash; a result that will feel familiar to anyone who&rsquo;s watched a hand-tuned correlation rule outperform a more complex ML-based alert-triage layer in practice.</p>
 <h3 id="the-model-doing-the-seeing-hgtconv">The model doing the seeing: HGTConv</h3>
 <p>A Heterogeneous Graph Transformer (<code>HGTConv</code> in PyTorch Geometric) is a transformer-style attention mechanism that is &ldquo;type-aware&rdquo; - a login node attends differently to a neighboring process node than to a neighboring socket node, using separate learned weights for each (source-type, relation-type, destination-type) combination, instead of just treating every edge in the graph as interchangeable the way a plain GNN would. It was chosen specifically because it preserves per-node-type and per-edge-type semantics through attention rather than collapsing everything to one generic type, which matters here because the schema&rsquo;s 9 node types and 16 edge relations (<code>dc_replication</code>, <code>scheduled_task_create</code>, <code>session_installs_service</code>, and so on).</p>
+<h3 id="attention-and-why-type-aware-is-the-important-part">Attention, and why &ldquo;type-aware&rdquo; is the important part</h3>
+<p>&ldquo;Attention&rdquo; is the mechanism a GNN uses to decide how much weight to give each neighbor when forming a node&rsquo;s updated representation &ndash; not every connected event should count equally. That maps directly onto something an analyst does instinctively: when reconstructing a timeline, a parent-child process relationship gets weighted far more heavily than two processes that just happen to share a host at the same time. &ldquo;Type-aware&rdquo; means the model doesn&rsquo;t apply that same weighting logic to a socket connection as it does to a registry write &ndash; it learns separate attention weights per (source-type, relation-type, destination-type) combination. That&rsquo;s the modeling equivalent of a correlation rule that treats a DNS query and a process-injection event as different categories of evidence, rather than lumping every log line into one undifferentiated stream.</p>
 <hr>
 <h2 id="model-build-test-and-validation">Model build, test, and validation</h2>
 <h3 id="the-4-fold-split">The 4-fold split</h3>
@@ -437,6 +448,9 @@ Fold 4 test: B4, A7, A11, F1, A13
 </code></pre><p>We Verified all 20 scenarios appear in exactly one fold&rsquo;s test set; all six matched pairs land in <em>different</em> folds so whenever either arm is held out, its partner is in that fold&rsquo;s training set. Meaning that the axis contrast itself is always evaluated out-of-sample. Every fold&rsquo;s test set contains exactly one benign anchor and at least one attack scenario; the three largest graphs (A10, D1, B2) land in three different folds rather than stacking them together.</p>
 <p><img src="/images/gnn-post2/02_matched_pair_method.svg" alt="alt text" style="max-width: 100%; height: auto; display: block;">
 (Matched Pair Scenarios)</p>
+<h3 id="folds-and-held-out-data">Folds and held-out data</h3>
+<p>A model that&rsquo;s only ever evaluated on the same scenarios it trained on can&rsquo;t tell you anything about whether it generalizes &ndash; it might just be memorizing. A &ldquo;fold&rdquo; is a rotating group of scenarios deliberately hidden from training so the reported score reflects real detection capability on things the model has never seen, not recall of the training set. It&rsquo;s the same reason you&rsquo;d never grade a blue team&rsquo;s detection coverage using the exact environment and attack chain they built and tuned their rules against &ndash; you&rsquo;d test them against a scenario they haven&rsquo;t seen, run by a red team they don&rsquo;t control. Four folds here means the whole 20-scenario set gets rotated through as the &ldquo;unseen test&rdquo; exactly once each, so every scenario gets evaluated fairly.</p>
+<p>Keep this in mind for later: keeping each pair&rsquo;s partner in the training fold makes this a fair test of &ldquo;does the axis generalize,&rdquo; but a <em>soft</em> test of &ldquo;can the model handle an attack family it has never seen&rdquo; - a near-identical sibling is always present. Phase 3 (the final section) re-runs the whole thing with families kept <em>together</em> instead, so a held-out fold is genuinely unseen, and reports both.</p>
 <h3 id="the-m0-m4-build-sequence">The M0-M4 build sequence</h3>
 <ul>
 <li>M0 - sampling-equivalence gate. Before trusting any sampled training run, prove that sampled and full batch forward passes on a frozen model produce matching logits. Run first on F2 (smallest scenario with real malicious labels. The smaller B1 has <em>zero</em> positives, making its AUPRC degenerate and useless for this check).</li>
@@ -449,6 +463,8 @@ Fold 4 test: B4, A7, A11, F1, A13
 <h2 id="round-1-results">Round 1 results</h2>
 <h3 id="what-auprc-actually-measures">What AUPRC actually measures?</h3>
 <p>AUPRC or Area Under the Precision-Recall Curve to it&rsquo;s friends summarizes, across every possible alert threshold at once, the tradeoff between precision (of the things you flagged, what fraction were actually malicious) and recall (of the things that were actually malicious, what fraction did you flag). It&rsquo;s the best metric here specifically <em>because</em> of the class imbalance this project keeps running into: in these graphs, malicious nodes and edges are routinely under 0.3% of the total, so a metric like plain accuracy would report 99.7% by predicting &ldquo;benign&rdquo; for everything and be worthless.</p>
+<h3 id="precision-recall-and-auprc">Precision, recall, and AUPRC</h3>
+<p>Precision and recall aren&rsquo;t new ideas to anyone who&rsquo;s tuned a detection rule &ndash; precision is &ldquo;of everything my rule fired on, how much was actually real&rdquo; (the inverse of alert fatigue), and recall is &ldquo;of everything actually malicious, how much did I catch&rdquo; (detection coverage). AUPRC is a single number that summarizes that entire tradeoff across every possible alert threshold at once, rather than at the one specific sensitivity you&rsquo;d actually deploy at. That makes it a good tool for comparing two whole architectures, but &ndash; as this project found the hard way in the &ldquo;Translating AUPRC&rdquo; section further down &ndash; it can genuinely hide which one you&rsquo;d actually want running in production at the threshold you&rsquo;d pick.</p>
 <h3 id="the-results">The results</h3>
 <p>Comparing M1 (single whole-graph GNN) against M2 (three-scope treatment + fusion stacker):</p>
 <table>
@@ -478,12 +494,35 @@ Fold 4 test: B4, A7, A11, F1, A13
 	</tbody>
 </table>
 <hr>
-<p>To suprise no one as I spoiled it at the start The central thesis held, cleanly, in every fold with roughly a 5.7x margin on edge level AUPRC. This ended up being the single strongest, result in the whole study to date. In plain terms: given the same graph, the same
-features, and the same training budget, three GNNs looking at the same data through different windows and combined by a simple average substantially outperformed one GNN looking at everything everywhere all at once.</p>
-<p>One potential suprise however was that simple Averaging beat learned fusion, for edges. The ablation table (control vs. naive average-of-3 vs. logistic stacker vs. MLP stacker) found that for edge level prediction, plain averaging (0.5755) beat <em>both</em> the
-logistic stacker (0.5487) and the MLP stacker (0.4791).</p>
+<p>As to suprise no one as I spoiled it at the start The central thesis held, cleanly, in every fold with roughly a 5.7x margin on edge level AUPRC. This ended up being the single strongest, result in the whole study to date. In plain terms: given the same graph, the same features, and the same training budget, three GNNs looking at the same data through different windows and combined by a simple average substantially outperformed one GNN looking at everything everywhere all at once.</p>
+<p>One potential suprise however was that simple Averaging beat learned fusion, for edges. The ablation table (control vs. naive average-of-3 vs. logistic stacker vs. MLP stacker) found that for edge level prediction, plain averaging (0.5755) beat <em>both</em> the logistic stacker (0.5487) and the MLP stacker (0.4791).</p>
 <p>This flew in my naive assumption that a learned combination should always beat a fixed one, reported as such rather than routed around. (For node-level prediction the opposite held: the MLP stacker was the best arm. The two tasks disagreed on which fusion strategy won, which turned out to be an early sign of the per-fold volatility which the later Round 2 changes attempted to reduce.)</p>
-<p>The three-scope approach fixes structural complexity. A per scenario breakdown answered the question from M1&quot; &ldquo;why are D1 and A10 the weakest scenarios&rdquo; with a sharper distinction than &ldquo;M2 helps on hard scenarios.&rdquo; D1 improved dramatically under M2 edge_auprc 0.020 (M1) to 0.455 (average-of-3), ensemble synergy that beat every individual scope. A10 (same attack as A9, but with ~12x the background noise - a <em>scale</em> problem, rather than a <em>structure</em> problem) did not improve: average of 3 (0.049) was actually worse than M1&rsquo;s own control (0.088) there, because the maximal context scope specifically drowns in the extra noise volume. The three-scope architecture, in other words, is a fix for a specific kind of difficulty, but by no means can be viewed as a simple unilateral resolution.</p>
+<p>The three-scope approach fixes structural complexity, but not scale - or so it looked at the time. A per scenario breakdown answered the question from M1, &ldquo;why are D1 and A10 the weakest scenarios&rdquo;, with what seemed like a sharper distinction than &ldquo;M2 helps on hard scenarios&rdquo;. D1 improved dramatically under M2, edge_auprc 0.020 (M1) to 0.455 (average-of-3), ensemble synergy that beat every individual scope. A10 (same attack as A9, but with ~12x the background noise - a <em>scale</em> problem, rather than a <em>structure</em> problem) did not improve: average of 3 (0.049) was actually worse than M1&rsquo;s own control (0.088) there, with the maximal context scope scoring a near-useless 0.007 on its own. The conclusion wrote itself, and it agreed with the intuition I opened this whole section with: the widest scope drowns in noise volume, so three-scope fixes structure but not scale.</p>
+<p>That conclusion was wrong, and <em>how</em> it was wrong is more useful than the finding it replaced. Those numbers came from an early iteration, before a fix that landed later in Round 1 - and the thing being fixed was that the model&rsquo;s confidence scaled with how <strong>busy</strong> a graph was rather than how <strong>malicious</strong> it was. A10 is the busiest attack graph in the study, ~12x A9. So the one scenario singled out as M2&rsquo;s failure case was precisely the one that flaw hit hardest: the breakdown was measuring the bug, not the architecture. Anyone who has shipped a rule that fires disproportionately on the noisiest hosts, then concluded those hosts were a blind spot, has made this exact mistake.</p>
+<p>Re-running the same breakdown on the Round 3 models reverses it outright:</p>
+<table>
+	<thead>
+			<tr>
+					<th>A10, edge_auprc</th>
+					<th>M1 control</th>
+					<th>M2 average-of-3</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>early iteration (pre-fix - the artifact)</td>
+					<td>0.088</td>
+					<td>0.049</td>
+			</tr>
+			<tr>
+					<td>Round 3 (iterations 20/21)</td>
+					<td>0.7843</td>
+					<td><strong>0.9565</strong></td>
+			</tr>
+	</tbody>
+</table>
+<p>The maximal-context scope that supposedly drowned at 0.007 now scores 0.6677 there, and <em>adds</em> value to the ensemble rather than dragging it down. Measured on the current models, M2&rsquo;s improvement on A10 (+0.172) is in fact <em>larger</em> than its improvement on D1 (+0.097) - the exact opposite of the original reading, and on both halves of it, since D1&rsquo;s old numbers came from the same corrupted generation.</p>
+<p>The lesson here isn&rsquo;t really about A10. A plausible, mechanistic-sounding story - &ldquo;the wide scope drowns in noise&rdquo; - survived exactly as long as nobody re-measured it against a fixed pipeline. It got written into a review document, carried forward into planning, and came within one diagnostic of justifying a substantial piece of engineering aimed at a problem that had already stopped existing.</p>
 <h3 id="does-node-edge-localization-beat-a-cheap-whole-graph-detector">Does node edge localization beat a cheap whole-graph detector?</h3>
 <p>M2.5 compared M1 and M2 (reduced to one graph-level score per scenario) against a cheap Weisfeiler-Lehman structural sketch baseline, on graph-level AUROC. Round 1&rsquo;s result was mixed/negative: the cheap sketch (AUROC 0.7969) beat <em>both</em> of the project&rsquo;s own systems (M1: 0.5625, M2: 0.7344). Digging into this found it was almost entirely one scenario&rsquo;s fault: B2, deliberately constructed &ldquo;hard negative&rdquo; (busy, suspicious-looking, but entirely benign activity). Excluding B2 alone, M2&rsquo;s AUROC jumped to 0.9792. This appears it was likely due to the fragility of a crude top-k-mean graph level reduction against one adversarially hard benign graph.</p>
 <hr>
@@ -517,8 +556,12 @@ heterogeneous score scales.&rdquo;</p>
 <li>A larger stacker-fit subset</li>
 <li>A cheap, targeted M3 probe varying the temporal batch size specifically on D1, to test the batch-staleness hypothesis without paying for a full retrain.</li>
 </ul>
+<h3 id="round-2s---tuning-changes">Round 2&rsquo;s - tuning changes</h3>
+<p>A few of the terms in that list are pure deep-learning plumbing, worth a one-line translation each. Dropout randomly ignores part of the signal during training, so the model can&rsquo;t become over-reliant on any one path through the graph &ndash; similar to deliberately rotating detection coverage across log sources during tuning so you don&rsquo;t end up dependent on one sensor that might go dark. Residual connections keep a copy of the original, less-processed signal available alongside the heavily-transformed one at every layer, so useful information can&rsquo;t get fully washed out as it flows deeper &ndash; the modeling equivalent of keeping the raw log line attached alongside its enriched/normalized version, so an enrichment bug can&rsquo;t destroy the original evidence. Normalization (&ldquo;pre-norm&rdquo;) rescales wildly different-sized numbers onto a comparable range before the model compares them &ndash; necessary here because one scenario&rsquo;s raw connection-count feature could be 1000, while every other feature in the same row was under 215; without rescaling, that one feature would dominate everything else, the same distortion you&rsquo;d get threat-hunting on raw event counts without normalizing per-host baseline activity first.</p>
 <h3 id="round-3---pipeline-level-changes">Round 3 - pipeline-level changes</h3>
 <p>Round 3 moved one tier up in cost: changes that require regenerating the stored feature artifacts for all 20 scenarios. Four items: an <code>os=linux|windows</code> node feature; log1p-scaling the stored degree columns (specifically aimed at closing M2&rsquo;s still-unresolved logit-magnitude gap); a graph-relative normalized timestamp added at the data-loader level (<code>abs_ts_norm</code>, alongside the existing raw timestamp, non-destructively); and replacing the old fixed, fold-wide class-imbalance correction (a <code>pos_weight</code> scalar in the 878x-3119x range) with a much gentler, per-scenario, per-epoch 20:1 negative sub-sampling scheme.</p>
+<h3 id="why-negative-sub-sampling---the-class-imbalance-problem">Why &ldquo;negative sub-sampling&rdquo; - the class-imbalance problem</h3>
+<p>In these graphs, well under 1% of nodes and edges are actually malicious &ndash; so training on every single benign example every round means the overwhelming, boring majority drowns out the rare signal, and it&rsquo;s also just slow. Negative sub-sampling means showing the model a smaller, freshly-resampled slice of the benign examples each training round instead of all of them. It&rsquo;s the training-time equivalent of a SOC deliberately reviewing a representative sample of benign traffic while tuning a new rule, rather than requiring an analyst to manually eyeball every single benign event in the full firehose before the rule is considered tuned.</p>
 <hr>
 <h2 id="round-2--round-3-results-compared-to-round-1">Round 2 + Round 3 results: compared to Round 1</h2>
 <h3 id="round-2-a-clean-architectural-win">Round 2: a clean architectural win.</h3>
@@ -558,6 +601,7 @@ heterogeneous score scales.&rdquo;</p>
 <p>M2 received an extra change (pre-norm placement) that M1 did not, there is the potential that change&rsquo;s own known stability-vs-peak-performance tradeoff cost M2 some ceiling.</p>
 <p>Node-level, the picture had one characterized exception: M2 beat M1 on 3 of 4 folds, with fold 2 (which includes B2, the study&rsquo;s own deliberately hard negative) going the other way, however this has not been confirmed as the culprit.</p>
 <p>A follow-up pass on the same round&rsquo;s already-saved logits tested two more ideas from the literature review and both came back negative-to-mixed, reported in full rather than smoothed over. Voting/rank fusion (testing PROVFUSION&rsquo;s finding directly): a naive vote-count arm was the clear worst of five arms tried, because with only 3 scopes it produces just 4 distinct values, which is far too coarse a ranking signal for this domain&rsquo;s extreme class imbalance; a rank-average arm was respectable but still didn&rsquo;t beat plain averaging.</p>
+<p>PROVFUSION doesn&rsquo;t vote across three raw view scores the way this arm did. It calibrates a set of separate threshold detectors built from those scores: single-view, pairs, and all-three. Then it takes a majority vote across all of those. So this arm tested the general intuition that voting might beat averaging, and found that it didn&rsquo;t here.</p>
 <p>A larger stacker-fit subset (8 scenarios instead of 4). It helped the logistic stacker broadly, but <em>hurt</em> the MLP stacker, including one absolutely catastrophic single-fold collapse. Model complexity interacts with fit set size non-uniformly; more data is not a universal fix for stacker instability. Average-of-3 remained the recommended, most stable fusion arm on both axes throughout.</p>
 <p>One clean reversal did land: M2.5&rsquo;s Round 1 finding (&ldquo;the cheap sketch beats both our systems on graph-level AUROC&rdquo;) flipped entirely under Round 2. Both M1-reduced and M2-reduced now beat the sketch on both AUPRC and AUROC (M2: AUROC 0.9688 vs. the sketch&rsquo;s 0.7969).</p>
 <p>The <em>deliberate fix</em> built specifically to address the B2-driven fragility behind the Round 1 result (a median-of-top-k reduction, meant to be more robust to one outlier high-confidence false-positive edge) turned out to be unnecessary and was itself rejected the results being uniformly worse than the simple top-k-mean it was meant to replace, most plausibly because Round 2&rsquo;s other changes had already fixed
@@ -627,8 +671,11 @@ B2&rsquo;s specific fragility as a side effect.</p>
 <li>Node-level, the win rate regressed: M2 beat M1 on only 2 of 4 folds (down from Round 2&rsquo;s 3 of 4). Round 2 had one characterized exception in fold 2. Round 3 adds a <em>second</em> exception (fold 4) with no established cause yet.</li>
 <li>The logit-saturation guard, the exact thing the log1p feature-scaling change was aimed at fixing. This turns out WORSE, not better. Round 2 had 2 of 4 folds exceed the 36.0 threshold; Round 3 has all 4 (36.00-52.41), the worst logit-magnitude result recorded for M2 in the entire study. The negative subsampling change, is the most plausible driver, since a far gentler imbalance correction plausibly lets the optimizer reach sharper, higher-magnitude decision boundaries without the old extreme <code>pos_weight</code>&rsquo;s implicit damping effect. While there&rsquo;s no obvious mechanism by which log1p-scaling raw features would <em>increase</em> logit magnitude.</li>
 </ul>
+<h3 id="what-logit-saturation-means-without-the-math">What &ldquo;logit saturation&rdquo; means, without the math</h3>
+<p>Picture a confidence dial that&rsquo;s supposed to range smoothly from &ldquo;not suspicious&rdquo; to &ldquo;extremely suspicious.&rdquo; A bug in this project caused that dial to slam all the way to maximum for almost everything - benign hosts included - because a handful of badly-scaled features (a raw connection count in the thousands, sitting next to features valued in the tens) blew the model&rsquo;s internal math past the point where its output function can still tell scores apart. Once every score reads &ldquo;maximum confidence,&rdquo; you&rsquo;ve lost the ability to rank anything by how suspicious it actually is. It&rsquo;s the modeling equivalent of a correlation rule that fires at maximum severity on both a real incident and routine background noise - technically &ldquo;detecting&rdquo; both, but useless for triage.</p>
 <h3 id="tldr">TLDR</h3>
 <p>The summary for a reader who wants the state of the central thesis in one sentence: three-scope beats single-scope, edge-level, in every fold, across all three rounds so far. That being said the margin has shrunk each round, and the node-level half of the same claim is the weakest and least settled part of the whole study right now.</p>
+<p><strong>Update from Phase 3 (final section of this post):</strong> both of those caveats turned out to be Round-3-specific, not a trend. On the much larger 49-scenario corpus the edge margin did not keep shrinking - it widened back out to roughly 2.8x - and the node-level claim, the part called &ldquo;least settled&rdquo; above, held cleanly in every fold. So read that &ldquo;shrinking margin, unsettled node-level&rdquo; worry as the state of play at the end of Round 3, not the final word.</p>
 <h3 id="translating-auprc">Translating AUPRC</h3>
 <p>A single AUPRC number, doesn&rsquo;t answer the question a SOC analyst actually has: &ldquo;if I deployed this, what would my alert queue look like?&rdquo; Precision at fixed recall, computed directly from the real held-out predictions (pooled across all 4 folds - all 20 scenarios, each scored out-of-sample exactly once), answers that more concretely:</p>
 <p>Edge-level (241,553 pooled edges, 242 positives, base rate 0.10%):</p>
@@ -683,6 +730,8 @@ incidents the single-GNN control misses entirely&rdquo;  - both catch nearly eve
 <p>Yes, almost always, for both models, covered above in the first-alert-rank table. Whilst I am repeating myself here it&rsquo;s important to
 note it&rsquo;s the necessary precondition for everything that follows: if the first alert never fires, there&rsquo;s nothing to expand from.</p>
 <h3 id="step-2-does-one-alerts-neighborhood-recover-the-entire-malicious-subgraph">Step 2: does one alert&rsquo;s neighborhood recover the entire malicious subgraph?</h3>
+<h3 id="structural-bfs">Structural BFS</h3>
+<p>Breadth-first search (BFS) here just means: starting from one flagged edge, walk outward to its directly connected nodes, then their neighbors, and so on, adding each new node to the &ldquo;recovered&rdquo; set as you reach it. This is the automated version of exactly what an IR analyst does by hand when they pivot from one IOC to related hosts, accounts, and processes in a SIEM or EDR console. The question this project is really asking is: if the model gives you one solid starting point, does that manual-pivoting process &ndash; done automatically over the whole graph &ndash; get you the rest of the incident for free?</p>
 <p>Essentially no,  when seeding from each scenario&rsquo;s own single highest-scoring true-positive edge, and doing a pure structural breadth-first search outward over the observed graph only the scenario F2 reaches 100% coverage from a single seed. Every other scenario plateaus well short of full coverage.</p>
 <p>A4 makes a good case study for <em>why</em>. Direct inspection of its malicious-
 adjacent edges shows its 7 malicious nodes split into 5 structurally
@@ -732,6 +781,179 @@ landing near the missing island bridges the gap.</p>
 <li>Work out how the data pipeline could be migrated to ingest real world datasets rather than being tied to EvidenceForge output</li>
 </ul>
 <p>My plan was a two part project but largely because i&rsquo;ve been enjoying ths process of learning and exploring so much I want to continue to improve and iterate and expand the capabilities. I&rsquo;m delighted that my core hypothesis was confirmed although either result would have been educational and I am also happy a second round of literature reviews show academic research as recently as April (after this project started) is also exploring a very similar 3 scope PIDS idea.</p>
+<p>&hellip;and, as it happens, the first of those three - &ldquo;build a lot more varied scenarios&rdquo; - is what I went and did next, along with a full retrain on top of it. So Part 2 doesn&rsquo;t quite end here after all. The rest of this post is that work.</p>
+<h2 id="phase-3---a-new-set-of-scenarios-and-the-results">Phase 3 - A new set of scenarios and the results</h2>
+<p>Part 2 was meant to stop at that Next Steps list. Then I did the first item, and it turned into enough work - and enough of a result - to be worth writing down. This section is that: a big round of new scenario generation that roughly doubled the dataset, a deliberately large &ldquo;enterprise&rdquo; scenario, and a final retrain that put the whole thesis through its hardest test yet. The one-line version: the thesis didn&rsquo;t just survive the harder test, it came through it more convincingly than at any point in Part 2.</p>
+<h3 id="from-twenty-to-forty-nine">From twenty to forty-nine</h3>
+<p>The single biggest weakness of the Part 2 study was breadth. Twenty scenarios, six attack families. A skeptical reader (me, mostly) could reasonably ask whether &ldquo;three windows beat one&rdquo; was a real property or an artifact of the specific handful of attacks I happened to build. So the goal for this round was more variety - especially attack stages the original twenty never touched (command-and-control, exfiltration, initial access, defense evasion) - and enough benign hard-negatives alongside them that the model can&rsquo;t cheat by learning &ldquo;this technique&rsquo;s tools = bad.&rdquo;</p>
+<p>The corpus went from 20 to 49 scenarios. The new arrivals, grouped by what they were for:</p>
+<table>
+	<thead>
+			<tr>
+					<th>Scenario(s)</th>
+					<th>What it is</th>
+					<th>Why it earned a place</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>a14 / a15 / a16</td>
+					<td>Noise-volume sweep - the same small attack buried in progressively busier graphs (14k, 32k, 141k nodes)</td>
+					<td>Fill the gap between the original quiet point (a9, ~6k nodes) and noisy one (a10, ~70k), plus an extra-large one, so &ldquo;does the wide scope drown in noise&rdquo; can be answered across a controlled scale sweep instead of a single data point</td>
+			</tr>
+			<tr>
+					<td>e1 / e2</td>
+					<td>C2 beacon vs DNS-tunnel exfiltration</td>
+					<td>A whole attack STAGE the original 20 never covered - command-and-control and data egress. Axis = the egress channel</td>
+			</tr>
+			<tr>
+					<td>s1 / s2</td>
+					<td>Credential spray that succeeds vs one contained before it does</td>
+					<td>Password spray is one of the most common real-world initial-access techniques and had zero representation</td>
+			</tr>
+			<tr>
+					<td>s3 / s4</td>
+					<td>Spray (one password, many accounts) vs brute-force (many passwords, one account)</td>
+					<td>Same outcome, opposite shape - a clean test of whether the model keys on the attack <em>pattern</em></td>
+			</tr>
+			<tr>
+					<td>s5 / s6</td>
+					<td>Spray from an external internet IP vs from an already-compromised internal host</td>
+					<td>Source axis - does the model care where the spray originates</td>
+			</tr>
+			<tr>
+					<td>l1 / l2</td>
+					<td>Living-off-the-land (System32 built-ins) vs a dropped, named tool</td>
+					<td>The fileless-vs-dropped-binary distinction every detection engineer knows matters</td>
+			</tr>
+			<tr>
+					<td>k1 / k2</td>
+					<td>Kerberoasting, targeted vs mass</td>
+					<td>A classic Active Directory credential technique - and it forced a brand-new edge type into the schema</td>
+			</tr>
+			<tr>
+					<td>g1 / g2</td>
+					<td>Group-membership privilege escalation, used vs dormant</td>
+					<td>T1098; added an entirely new node type (a security group)</td>
+			</tr>
+			<tr>
+					<td>i1 / i2</td>
+					<td>Insider threat, business hours vs after hours</td>
+					<td>The study&rsquo;s FIRST no-compromise attack: a legitimate user, own session, no malware, no exploit - malice is the pattern and the timing. This one becomes the interesting counterexample later</td>
+			</tr>
+			<tr>
+					<td>p1</td>
+					<td>Phishing delivery -&gt; foothold</td>
+					<td>One of only two INITIAL-ACCESS scenarios; everything before it started post-compromise</td>
+			</tr>
+			<tr>
+					<td>x1</td>
+					<td>External remote services (stolen creds -&gt; external RDP -&gt; fileless foothold)</td>
+					<td>The other initial-access case, and the hardest to signature - no malware at all</td>
+			</tr>
+			<tr>
+					<td>v1 / v2</td>
+					<td>EDR disablement vs Windows event-log clearing</td>
+					<td>Defense evasion (MITRE TA0005), a whole tactic the original 20 skipped</td>
+			</tr>
+			<tr>
+					<td>y1 / y2</td>
+					<td>Bring-your-own-vulnerable-driver, persistent vs load-then-unload</td>
+					<td>Kernel-driver abuse, another gap in coverage</td>
+			</tr>
+			<tr>
+					<td>b5 / b6 / b7</td>
+					<td>Three new benign hard-negatives</td>
+					<td>Specificity controls: a benign admin using the same built-in tools as l1, a benign noisy-DNS host that looks like e2&rsquo;s tunnel, and a benign auth-failure storm that looks like a spray. So the model learns the difference rather than a shortcut</td>
+			</tr>
+			<tr>
+					<td>w1</td>
+					<td>A ~1 million-node enterprise (its own subsection below)</td>
+					<td>Does any of this hold at realistic enterprise scale</td>
+			</tr>
+	</tbody>
+</table>
+<p>These were built the same way as the original twenty - the repeatable author/validate/generate/inspect loop from earlier in this post, the matched-pair method wherever an axis could be isolated, and the same additive local-fork approach where a technique needed a capability stock EvidenceForge didn&rsquo;t have (kerberoasting and group-membership each added a new relation or node type to the schema, taking it to 10 node types and 18 relations). As before, some pairs are &ldquo;true&rdquo; matched pairs that differ in a single field, and some are partial - close enough for the contrast, not byte-identical.</p>
+<h3 id="the-million-node-scenario-and-the-wall-i-hit">The million-node scenario, and the wall I hit</h3>
+<p>w1 is the odd one out. Every other scenario is a single incident - one attacker, one chain, a few thousand to a few tens of thousands of nodes. w1 is a deliberately different beast: one enterprise of 993,464 nodes and 905,578 edges (call it ~1.0M), 77 hosts across 6 subnets, 213 users, and 7 completely separate attack campaigns running concurrently (SMB lateral + service, WMI + scheduled task, DCSync, kerberoast, spray, insider, and a C2/DNS-exfil pair), each drawn from the repertoire above. It is not a controlled experiment - it&rsquo;s a confounded kitchen-sink on purpose. It&rsquo;s a stress test: does the pipeline hold, and does the three-scope advantage survive at a scale that looks more like a real network than a single lab incident.</p>
+<p>Getting there is where I hit an actual wall, and it&rsquo;s worth a paragraph because it&rsquo;s the kind of thing nobody writes down. The pipeline itself is comfortably linear - roughly 17 KiB of peak memory per node - so it scales predictably. The trouble is that &ldquo;predictably&rdquo; times a million nodes is a lot of memory, and this whole project runs on WSL (Windows Subsystem for Linux), whose default memory allocation was nowhere near enough. Building w1&rsquo;s feature artifact peaked around 16.5 GiB, and I had to raise the WSL memory cap (up to 24 GiB) before it would finish without the kernel killing the process outright. Generation is its own separate animal - CPU-and-time-bound rather than memory-bound, and single-core - so just producing w1&rsquo;s logs took 1 hour 22 minutes. And a lesson I learned the annoying way: a long run started in the foreground dies the instant the SSH session drops. My first w1 attempt got killed about 62 minutes in when my connection blipped. The fix is unglamorous - launch it fully detached so it outlives the session - but it&rsquo;s the difference between a wasted evening and a finished scenario.</p>
+<h3 id="the-new-folds-and-a-harder-test-than-part-2s">The new folds, and a harder test than Part 2&rsquo;s</h3>
+<p>Part 2 evaluated on a 4-fold rotation over 20 scenarios, and - this matters - it deliberately put each matched pair&rsquo;s two arms in DIFFERENT folds, so whenever one arm was held out for testing, its partner was still in training. That&rsquo;s a fair test of &ldquo;does the axis contrast generalize,&rdquo; but a soft test of &ldquo;can the model handle an attack family it has never seen,&rdquo; because a near-identical sibling is always present.</p>
+<p>For the final Phase 3 result I ran the cross-validation two ways, on purpose:</p>
+<ul>
+<li>Grouped (the headline). Every scenario that shares an attack family tests together in the same fold. When kerberoast is the held-out fold, NEITHER kerberoast scenario is in training. This is the genuine &ldquo;unseen family&rdquo; test.</li>
+<li>Split (the secondary). The old Part 2 arrangement - partner arm always in training. Tests generalization across the controlled axis.</li>
+</ul>
+<p>The full 49 got folded into a 7-fold cross-validation (there are exactly 7 benign scenarios, so one anchors each fold - the same logic Part 2 used for 4 folds with 4 benigns). Two sets of scenarios were pulled out of the rotation entirely and kept as standing benchmarks, scored by every fold&rsquo;s model but never trained on: the noise-scale trio (a14/a15/a16) and the million-node w1. And for the final number I ran three random seeds instead of one and reported the spread - Part 2&rsquo;s single-seed runs left an honest &ldquo;is this just luck&rdquo; question open, and three seeds closes it.</p>
+<h3 id="grouped-vs-split-holdout">&ldquo;grouped&rdquo; vs &ldquo;split&rdquo; holdout</h3>
+<p>Think of it as two ways to grade detection coverage. The &ldquo;split&rdquo; grade is: you built and tuned a rule against one SMB lateral-movement sample, and I now test it against a <em>different</em> SMB lateral-movement sample in the same environment - fair, but you&rsquo;ve seen this kind of thing before. The &ldquo;grouped&rdquo; grade is harder and more honest about the real world: I test your coverage against an entire technique family you have never tuned against at all - the first time this class of attack has crossed your desk. A detection approach that only holds up under &ldquo;split&rdquo; grading generalizes across small variations; one that holds up under &ldquo;grouped&rdquo; stands a chance against genuinely novel tradecraft. Phase 3 reports both, and leads with the harder one.</p>
+<p>Two runs, back to back, launched overnight and detached so a dropped connection couldn&rsquo;t kill them:</p>
+<ul>
+<li>M1 (the single-GNN control): started 00:08, finished 03:13 - 3 hours 5 minutes.</li>
+<li>M2 (PARALLAX, three scopes + fusion): started 03:13, finished 16:19 - 13 hours 6 minutes.</li>
+<li>Total: about 16 hours.</li>
+</ul>
+<p>M2 costs roughly 4x M1 because it&rsquo;s training three encoders plus a fusion layer per fold instead of a single encoder - times seven folds, times three seeds. Worth it, as it turns out.</p>
+<h3 id="the-results-1">The results</h3>
+<p>This is the part I was nervous about. A bigger, more varied corpus with genuinely unseen attack families is a much harder test than Part 2&rsquo;s, and it would have been entirely reasonable for the barely-above-parity margins from Round 3 to collapse to nothing. They didn&rsquo;t. On the headline (grouped) regime, averaged over three seeds and seven folds:</p>
+<table>
+	<thead>
+			<tr>
+					<th></th>
+					<th>M1 control</th>
+					<th>M2 (PARALLAX)</th>
+					<th>ratio</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>edge AUPRC</td>
+					<td>0.2534</td>
+					<td>0.7154</td>
+					<td>2.82x</td>
+			</tr>
+			<tr>
+					<td>node AUPRC</td>
+					<td>0.2904</td>
+					<td>0.5226</td>
+					<td>1.80x</td>
+			</tr>
+	</tbody>
+</table>
+<p>M2 beat M1 on every single fold, both metrics, in both regimes - 28 out of 28 fold-by-fold comparisons. And the separation isn&rsquo;t marginal: M2&rsquo;s WORST fold (edge 0.5352) still beat M1&rsquo;s BEST fold (0.4202). This is comfortably the strongest result in the whole project, and it&rsquo;s on the hardest test I&rsquo;ve built.</p>
+<p>One number needs a caveat before anyone panics: M1&rsquo;s headline here (0.2534) is a lot lower than the 0.6535 it scored in Part 2&rsquo;s Round 3. That is NOT M1 getting worse - it&rsquo;s the test getting much harder (49 scenarios instead of 20, with unseen-family holdout). The only fair comparison is M1 vs M2 on the same footing, and there M2 is 2.82x ahead. Comparing across the two studies would be comparing a harder exam to an easier one.</p>
+<p>The two standing benchmarks told the same story, more starkly:</p>
+<table>
+	<thead>
+			<tr>
+					<th>held-out benchmark</th>
+					<th>M1</th>
+					<th>M2</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>noise-scale (a14/a15/a16)</td>
+					<td>0.310</td>
+					<td>0.907</td>
+			</tr>
+			<tr>
+					<td>enterprise (w1, ~1M nodes)</td>
+					<td>0.160</td>
+					<td>0.541</td>
+			</tr>
+	</tbody>
+</table>
+<p>The noise-scale result is the one I find most satisfying, because it&rsquo;s the direct, at-scale rebuttal to the old &ldquo;the wide scope drowns in noise&rdquo; story from Part 2&rsquo;s Round 1: the same small attack buried in graphs from 14k to 141k nodes, and M2 recovers it almost perfectly (0.907) where the single GNN mostly can&rsquo;t (0.310). The enterprise w1 is the widest relative margin of all (over 3x), even if the absolute numbers are lower - a million-node, seven-campaign graph is a genuinely hard problem, and honestly I&rsquo;d have settled for &ldquo;doesn&rsquo;t fall over.&rdquo; And the standing method call from Part 2 held up a fourth time: plain averaging of the three scopes still beat both the learned (logistic and MLP) fusion stackers, across the board.</p>
+<h3 id="two-things-that-didnt-go-the-way-i-expected">Two things that didn&rsquo;t go the way I expected</h3>
+<p>Honesty section, because these are the interesting bits.</p>
+<p>First, a prediction I got wrong. Before the run I bet that the grouped regime (unseen family) would score noticeably WORSE than the split regime (partner in training) - it seemed obvious that yanking the near-identical sibling out of training would hurt. At the headline level, it basically didn&rsquo;t: grouped and split came out level (edge 0.7154 vs 0.7225). Looking closer, per-scenario there IS a small, consistent penalty for holding a whole family out - and it&rsquo;s cleanest exactly where I&rsquo;d expect, on the handful of &ldquo;true&rdquo; pairs that share the most malicious structure (all six of those arms scored lower with their partner absent). It&rsquo;s just small enough that the big, easy, high-volume scenarios wash it out of the pooled average. The honest read: at ~45 training scenarios, the model has seen enough related attacks that any one family&rsquo;s specific partner is close to redundant. Which - once I got over being annoyed at being wrong - is actually a good sign: it means the model isn&rsquo;t leaning on a memorized sibling.</p>
+<p>There&rsquo;s a sharper version of this worth one more sentence. Under the grouped regime, two folds hold out an ENTIRE capability - kerberoasting, and group-membership privesc - so the model has to score a technique whose distinctive edge type it literally never saw in training. It still won those folds. It manages this because it recognizes the malicious PROCESS driving the technique (which looks like every other attack&rsquo;s foothold and recon activity), and the novel edge inherits suspicion from its malicious source. That&rsquo;s a genuinely encouraging property for detection: it generalizes to techniques it wasn&rsquo;t trained on, as long as the surrounding chain is familiar.</p>
+<p>Second, the counterexample. There&rsquo;s exactly one attack family the whole approach is bad at, and it&rsquo;s worth naming because it marks a real boundary of the thesis: the insider threat (i1/i2), and especially the after-hours arm (i2), which the model scores at essentially zero (edge AUPRC 0.006). None of the three scopes see it. And once you look at what i2 actually is, that isn&rsquo;t surprising - it&rsquo;s a legitimate user, on their own machine, using only built-in Windows tools, collecting files and uploading them over normal HTTPS. There is no structural anomaly. Every process looks like admin work; every connection looks like ordinary web traffic. The ONLY thing separating the malicious activity from the benign background is timing (it happens at 9pm) and intent - and a model built to detect malicious STRUCTURE is, correctly, blind to both.</p>
+<p>This is the honest boundary of &ldquo;attack signal lives in causal chains.&rdquo; i2 IS a causal chain (collect -&gt; stage -&gt; exfiltrate), but a chain made entirely of individually-innocent steps by a trusted user, so structure alone can&rsquo;t catch it. Digging in, I also found a concrete, fixable contributor: the timestamp feature I&rsquo;d built specifically to expose exactly this kind of timing signal (a graph-relative normalized time) wasn&rsquo;t actually being fed into the scope models in this run - it&rsquo;s computed and stored, but the models never see it. So part of i2&rsquo;s failure is &ldquo;the model can&rsquo;t see time,&rdquo; and part is &ldquo;the one time feature we have wasn&rsquo;t plumbed in.&rdquo; Either way, the principled answer is the temporal-scope idea (M3) that Part 1 floated and I keep parking - the insider case is now the concrete target that would justify actually building it.</p>
+<h3 id="where-this-leaves-things">Where this leaves things</h3>
+<p>Phase 3 did what I hoped: it took the central result off the small, tidy 20-scenario bench and put it on a much messier, more realistic 49-scenario one - including a million-node enterprise and attack families the model had never seen - and the three-scope approach won more decisively than before, not less. The margin didn&rsquo;t shrink this time; on the hardest test in the project it widened back out to nearly 3x. The node-level half of the claim, which I flagged in Part 2 as the weakest and least settled, also came through cleanly here, with M2 ahead in every fold.</p>
+<p>It also drew the boundary of the thesis in a way I couldn&rsquo;t before: PARALLAX detects malicious structure, and where malice has no structure - the trusted insider using trusted tools at an odd hour - it needs a sense of time it currently doesn&rsquo;t have. That&rsquo;s the clearest single pointer to what Part 3, or whatever I build next, should go after.</p>
 <h2 id="references">References</h2>
 <ul>
 <li>Hu, Z., Dong, Y., Wang, K., Sun, Y. &ldquo;Heterogeneous Graph Transformer.&rdquo;
@@ -822,7 +1044,11 @@ arXiv:2404.13344</li>
   <ul>
     <li><a href="#provenance-based-graph-neural-networks-using-heterogeneous-graph-transformers---part-2">Provenance-based Graph Neural Networks using Heterogeneous Graph Transformers - Part 2</a>
       <ul>
-        <li><a href="#a-recap-for-readers-who-somehow-ended-up-here-without-bothering-to-read-part-1">A recap (for readers who somehow ended up here without bothering to read Part 1)</a></li>
+        <li><a href="#a-recap-for-readers-who-somehow-ended-up-here-without-bothering-to-read-part-1">A recap (for readers who somehow ended up here without bothering to read Part 1)</a>
+          <ul>
+            <li><a href="#for-the-non-ml-reader-what-is-a-graph-neural-network-actually-doing">For the non-ML reader what is a graph neural network actually doing?</a></li>
+          </ul>
+        </li>
         <li><a href="#data-pipeline-scenario-generation-and-validation">Data pipeline, scenario generation, and validation</a>
           <ul>
             <li><a href="#from-one-scenario-to-twenty">From one scenario to twenty</a></li>
@@ -835,6 +1061,7 @@ arXiv:2404.13344</li>
         <li><a href="#feature-engineering">Feature engineering</a>
           <ul>
             <li><a href="#why-this-is-harder-than-it-sounds">Why this is harder than it sounds</a></li>
+            <li><a href="#one-hot-and-multi-hot-encoding-in-siem-terms">One-hot and multi-hot encoding, in SIEM terms</a></li>
             <li><a href="#the-abused-node-concept-9c">The &ldquo;abused node&rdquo; concept (9C)</a></li>
             <li><a href="#round-3s-feature-layer-additions-os-and-log1p">Round 3&rsquo;s feature-layer additions: os and log1p</a></li>
           </ul>
@@ -845,28 +1072,35 @@ arXiv:2404.13344</li>
             <li><a href="#scope-2---cross-domain-boundary">Scope 2 - cross-domain-boundary</a></li>
             <li><a href="#scope-3---maximal-context">Scope 3 - maximal-context</a></li>
             <li><a href="#why-fuse-three-verdicts">Why fuse three verdicts?</a></li>
+            <li><a href="#logits-stackers-and-fusion">Logits, stackers, and fusion</a></li>
             <li><a href="#the-model-doing-the-seeing-hgtconv">The model doing the seeing: HGTConv</a></li>
+            <li><a href="#attention-and-why-type-aware-is-the-important-part">Attention, and why &ldquo;type-aware&rdquo; is the important part</a></li>
           </ul>
         </li>
         <li><a href="#model-build-test-and-validation">Model build, test, and validation</a>
           <ul>
             <li><a href="#the-4-fold-split">The 4-fold split</a></li>
+            <li><a href="#folds-and-held-out-data">Folds and held-out data</a></li>
             <li><a href="#the-m0-m4-build-sequence">The M0-M4 build sequence</a></li>
           </ul>
         </li>
         <li><a href="#round-1-results">Round 1 results</a>
           <ul>
             <li><a href="#what-auprc-actually-measures">What AUPRC actually measures?</a></li>
+            <li><a href="#precision-recall-and-auprc">Precision, recall, and AUPRC</a></li>
             <li><a href="#the-results">The results</a></li>
             <li><a href="#does-node-edge-localization-beat-a-cheap-whole-graph-detector">Does node edge localization beat a cheap whole-graph detector?</a></li>
             <li><a href="#round-2---further-literature-reviews">Round 2 - Further literature reviews</a></li>
+            <li><a href="#round-2s---tuning-changes">Round 2&rsquo;s - tuning changes</a></li>
             <li><a href="#round-3---pipeline-level-changes">Round 3 - pipeline-level changes</a></li>
+            <li><a href="#why-negative-sub-sampling---the-class-imbalance-problem">Why &ldquo;negative sub-sampling&rdquo; - the class-imbalance problem</a></li>
           </ul>
         </li>
         <li><a href="#round-2--round-3-results-compared-to-round-1">Round 2 + Round 3 results: compared to Round 1</a>
           <ul>
             <li><a href="#round-2-a-clean-architectural-win">Round 2: a clean architectural win.</a></li>
             <li><a href="#round-3-m1-improves-cleanly-m2s-picture-gets-more-complicated">Round 3: M1 improves cleanly; M2&rsquo;s picture gets more complicated</a></li>
+            <li><a href="#what-logit-saturation-means-without-the-math">What &ldquo;logit saturation&rdquo; means, without the math</a></li>
             <li><a href="#tldr">TLDR</a></li>
             <li><a href="#translating-auprc">Translating AUPRC</a></li>
           </ul>
@@ -875,8 +1109,20 @@ arXiv:2404.13344</li>
           <ul>
             <li><a href="#step-1-does-at-least-one-alert-fire">Step 1: does at least one alert fire?</a></li>
             <li><a href="#step-2-does-one-alerts-neighborhood-recover-the-entire-malicious-subgraph">Step 2: does one alert&rsquo;s neighborhood recover the entire malicious subgraph?</a></li>
+            <li><a href="#structural-bfs">Structural BFS</a></li>
             <li><a href="#step-3-seeding-from-the-models-own-top-k-alerts">Step 3: Seeding from the model&rsquo;s own top-K alerts</a></li>
             <li><a href="#next-steps">Next Steps</a></li>
+          </ul>
+        </li>
+        <li><a href="#phase-3---a-new-set-of-scenarios-and-the-results">Phase 3 - A new set of scenarios and the results</a>
+          <ul>
+            <li><a href="#from-twenty-to-forty-nine">From twenty to forty-nine</a></li>
+            <li><a href="#the-million-node-scenario-and-the-wall-i-hit">The million-node scenario, and the wall I hit</a></li>
+            <li><a href="#the-new-folds-and-a-harder-test-than-part-2s">The new folds, and a harder test than Part 2&rsquo;s</a></li>
+            <li><a href="#grouped-vs-split-holdout">&ldquo;grouped&rdquo; vs &ldquo;split&rdquo; holdout</a></li>
+            <li><a href="#the-results-1">The results</a></li>
+            <li><a href="#two-things-that-didnt-go-the-way-i-expected">Two things that didn&rsquo;t go the way I expected</a></li>
+            <li><a href="#where-this-leaves-things">Where this leaves things</a></li>
           </ul>
         </li>
         <li><a href="#references">References</a></li>
