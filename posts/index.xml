@@ -10,9 +10,16 @@
 		
 		
 		
-			<lastBuildDate>Sun, 11 Oct 2026 14:30:00 +0000</lastBuildDate>
+			<lastBuildDate>Wed, 21 Oct 2026 21:54:51 +0000</lastBuildDate>
 		
 			<atom:link href="https://Pr0kythera.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>Why Mario inspired me to poke around genetic regex evolution</title>
+				<link>https://Pr0kythera.github.io/posts/genetic-regex/</link>
+				<pubDate>Wed, 21 Oct 2026 21:54:51 +0000</pubDate>
+				<guid>https://Pr0kythera.github.io/posts/genetic-regex/</guid>
+				<description>&lt;h1 id=&#34;can-we-get-a-model-to-evolve-its-own-detection-rules&#34;&gt;Can we get a Model to Evolve Its Own Detection Rules?&lt;/h1&gt;&#xA;&lt;hr&gt;&#xA;&lt;h2 id=&#34;prologue-mario-inspiration&#34;&gt;Prologue: MarI/O inspiration&lt;/h2&gt;&#xA;&lt;p&gt;Many moons ago I along with 11m other people watched a fascinating video on teaching a computer to play Mario by itself. Or to be more accurate the computer evolving itself to learn how to play Mario.&#xA;(SethBling, 2015youtube.com/watch?v=qv6UVOQ0F44).&lt;/p&gt;&#xA;&lt;p&gt;The computer was handed the controls to Super Mario World and then instructed that in this scenario: going further to the right is a good thing. No details about enemies, jumping, or how the game works. At first it twitches and dies at the first Goomba. But determined it runs thousands of attempts across many generations, keeping and combining whatever got a little furtherand after enough generations, it plays the level. Nobody programmed it how. It &lt;em&gt;evolved&lt;/em&gt; the skill.&lt;/p&gt;</description>
+			</item>
 			<item>
 				<title>Provenance-based Graph Neural Networks using Heterogeneous Graph Transformers - Part 2</title>
 				<link>https://Pr0kythera.github.io/posts/mixed-results/</link>
