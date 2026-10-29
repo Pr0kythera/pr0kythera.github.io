@@ -92,13 +92,13 @@
 
 <link
     rel="stylesheet"
-    href="/css/syntax-dark.min.b01037e5609e6260b74d6fcdd6d5131e8dcbc4d46d6ef4bfbe5a60bdfc1a9f30.css"
-    integrity="sha256-sBA35WCeYmC3TW/N1tUTHo3LxNRtbvS/vlpgvfwanzA="
+    href="/css/syntax-dark.min.1f07fd37e9832c4c84c7cf2208a59a801f4706c3d9287985ddb9b72bef5dee68.css"
+    integrity="sha256-Hwf9N&#43;mDLEyEx88iCKWagB9HBsPZKHmF3bm3K&#43;9d7mg="
     id="syntax-dark-theme"
     class="syntax-theme"><link
     rel="stylesheet"
-    href="/css/syntax-light.min.9602bc2fcef52b4c62e05eae14b48ba428e114f116e993e504d83ed5a3aeda98.css"
-    integrity="sha256-lgK8L871K0xi4F6uFLSLpCjhFPEW6ZPlBNg&#43;1aOu2pg="
+    href="/css/syntax-light.min.001fa7f600e6f8ad413241835f3963f379d3d1d4c41d3975232727e6f2a44ae9.css"
+    integrity="sha256-AB&#43;n9gDm&#43;K1BMkGDXzlj83nT0dTEHTl1Iycn5vKkSuk="
     id="syntax-light-theme"
     class="syntax-theme"
     disabled><script>
@@ -310,7 +310,7 @@
 
       <div class="post-content-main">
         <h1 id="provenance-based-graph-neural-networks-using-heterogeneous-graph-transformers---part-2">Provenance-based Graph Neural Networks using Heterogeneous Graph Transformers - Part 2</h1>
-<p>In this post we directly continue from Part 1 (<a href="https://blog.pr0kythera.com/posts/new-post-here/)">https://blog.pr0kythera.com/posts/new-post-here/)</a>, we ended up with: a single minimal test HGT (hetrogeneous graph transformer) which worked but could tell us nothing besides the pipeline was a success, and three hopes and dreams: more scenarios, a temporal feature, and an A/B test of the three-scope idea against a single GNN (the control) to determine if my hypothesis that 3 differently scoped approaches out performs a single GNN that looks over the entire graph.</p>
+<p>In this post we directly continue from Part 1 (<a href="https://blog.pr0kythera.com/posts/new-post-here/">https://blog.pr0kythera.com/posts/new-post-here/</a>), we ended up with: a single minimal test HGT (hetrogeneous graph transformer) which worked but could tell us nothing besides the pipeline was a success, and three hopes and dreams: more scenarios, a temporal feature, and an A/B test of the three-scope idea against a single GNN (the control) to determine if my hypothesis that 3 differently scoped approaches out performs a single GNN that looks over the entire graph.</p>
 <p>I somewhat apologise that the following is very long. I&rsquo;ve also decided to commit to hopefully a shorter part 3 with the aim to make the project a bit more in the realm of real world application rather than one solely one focused on research. Once I have something a bit more generalisable i&rsquo;m really keen to release the whole project. But currently everything is built against Evidence Forge output and also only the specific scenarios at that.</p>
 <p>For a tldr headline. My idea actually held up. What I am calling &ldquo;PARALLAX&rdquo; a multi-scope Heterogeneous Graph Transformer ensemble out performed a control HGTConv encoder trained over the whole graph. What follows is how we got to that point, the problems encountered along the way and the iterative improvements that drastically improved out output over some rounds of modifications and eventually generating a new corpus of test scenarios.</p>
 <p>To be complete transparent Claude Opus 4.8 and Sonnet 5.0 were utilised in this project. And while I understand to dismiss entirely as AI Slop as with almost everything published in 2026. The design, direction and this writeup is all my own. I dislike reading the inane unfiltered load bearing ramblings of recent writeup&rsquo;s as much as all of you. But as you can imagine creating everything in this project by hand would be months or years worth of work for a team. A GNN detection project like this has been rattling around in my head for a long time but the advent of more advanced frontier models over the past 12 months make something with this scope actually achievable in my evenings and weekends. With that in mind i&rsquo;m trying to be very cognizant not to be just producing slop.</p>
