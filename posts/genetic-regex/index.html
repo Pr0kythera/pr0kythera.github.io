@@ -284,7 +284,7 @@
             stroke-width="2"
             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
         </svg>
-        5635 words
+        6591 words
       </span>
     
 
@@ -298,7 +298,7 @@
             stroke-width="2"
             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
-        27 min
+        32 min
       </span>
     
   </div>
@@ -432,6 +432,71 @@ the <strong>fitness function</strong> it&rsquo;s the judge, and <em>everything</
 <p><img src="/images/genetic-regex/evolution.gif?width=200px" alt="Resize" style="max-width: 100%; height: auto; display: block;"></p>
 <p>This is our own MarI/O-style time-lapse, but the creature is a regex and the &ldquo;score&rdquo; is how much malicious text it catches. It flails, plateaus for
 dozens of generations matching useless fragments, then suddenly breaks through, the same struggle as shown in the Mario run, although arguably less cute.</p>
+<h3 id="31-the-core-algorithm">3.1 The core algorithm</h3>
+<p>If the horse-racing is the analogy then is how that would look in the projects implementation. It is the main loop of the project, <code>run_gp()</code> in <code>gp.py</code>, which I have condensed down for this writeup. Removing the caching, the logging, the validation tracking and the options for different building blocks, so what is left is the part that <em>is</em> the core genetic algorithm.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> random
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">run_gp</span>(train_task, cfg):
+</span></span><span style="display:flex;"><span>    rng <span style="color:#f92672">=</span> random<span style="color:#f92672">.</span>Random(cfg<span style="color:#f92672">.</span>seed) <span style="color:#75715e"># fixed seed: every run can be replayed exactly</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># The &#34;building bricks&#34; the regexes are built from (fragments of real malicious text,</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># plus a few generic pieces such as \w). Evolution can only rearrange these.</span>
+</span></span><span style="display:flex;"><span>    terminals <span style="color:#f92672">=</span> harvested_terminals(train_task)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Generation 0: a field of random regex trees, some shallow, some deep.</span>
+</span></span><span style="display:flex;"><span>    pop <span style="color:#f92672">=</span> ramped_population(rng, terminals, cfg<span style="color:#f92672">.</span>pop_size, cfg<span style="color:#f92672">.</span>init_min_depth, cfg<span style="color:#f92672">.</span>init_max_depth)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Score every tree. A tree is turned into a regex string, then the string is</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># run over the training commands and scored on how many malicious characters it highlights.</span>
+</span></span><span style="display:flex;"><span>    evals <span style="color:#f92672">=</span> [evaluate(tree_to_regex(t), train_task) <span style="color:#66d9ef">for</span> t <span style="color:#f92672">in</span> pop]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> gen <span style="color:#f92672">in</span> range(cfg<span style="color:#f92672">.</span>generations):
+</span></span><span style="display:flex;"><span>        fits <span style="color:#f92672">=</span> [e<span style="color:#f92672">.</span>fitness <span style="color:#66d9ef">for</span> e <span style="color:#f92672">in</span> evals]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Copy the best few trees into the next generation untouched, so a lucky bit of progress can never be lost to bad luck in breeding.</span>
+</span></span><span style="display:flex;"><span>        order <span style="color:#f92672">=</span> sorted(range(len(pop)), key<span style="color:#f92672">=</span><span style="color:#66d9ef">lambda</span> i: fits[i], reverse<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>        next_pop <span style="color:#f92672">=</span> [pop[i] <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> order[:cfg<span style="color:#f92672">.</span>elitism]]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Select how a parent is chosen. This one function is the only thing Experiment 7 changed. tournament: draw a handful of trees at random, the best average score wins lexicase:   judge candidates command by command, so a specialist can win (Section 5)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> cfg<span style="color:#f92672">.</span>selection <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;lexicase&#34;</span>:
+</span></span><span style="display:flex;"><span>            pick <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span>: lexicase_select(pop, evals, rng)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>            pick <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span>: tournament_select(pop, fits, cfg<span style="color:#f92672">.</span>tournament_size, rng)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Breeding fill the rest of the next generation with children.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> len(next_pop) <span style="color:#f92672">&lt;</span> cfg<span style="color:#f92672">.</span>pop_size:
+</span></span><span style="display:flex;"><span>            parent <span style="color:#f92672">=</span> pick()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># Crossover (80% of the time): graft a random branch of a second parent onto a random spot in the first. Two decent regexes mix their parts.</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> rng<span style="color:#f92672">.</span>random() <span style="color:#f92672">&lt;</span> cfg<span style="color:#f92672">.</span>crossover_rate:
+</span></span><span style="display:flex;"><span>                child <span style="color:#f92672">=</span> crossover(parent, pick(), rng)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>                child <span style="color:#f92672">=</span> parent                       <span style="color:#75715e"># else just clone the parent</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># Mutation (30% of children): a small random edit, such as swapping one brick for another, adding a repeat, or deleting a branch. This is where new ideas appear.</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> rng<span style="color:#f92672">.</span>random() <span style="color:#f92672">&lt;</span> cfg<span style="color:#f92672">.</span>mutation_rate:
+</span></span><span style="display:flex;"><span>                child <span style="color:#f92672">=</span> mutate(child, rng, terminals)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            next_pop<span style="color:#f92672">.</span>append(child)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># The children replace the old generation, and the race runs again.</span>
+</span></span><span style="display:flex;"><span>        pop <span style="color:#f92672">=</span> next_pop
+</span></span><span style="display:flex;"><span>        evals <span style="color:#f92672">=</span> [evaluate(tree_to_regex(t), train_task) <span style="color:#66d9ef">for</span> t <span style="color:#f92672">in</span> pop]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> best_tree(pop, evals)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">tournament_select</span>(pop, fits, size, rng):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Draw `size` random trees and return the fittest. Small `size` means weak</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># trees still get chances to breed; large `size` means the leaders dominate.</span>
+</span></span><span style="display:flex;"><span>    contenders <span style="color:#f92672">=</span> [rng<span style="color:#f92672">.</span>randrange(len(pop)) <span style="color:#66d9ef">for</span> _ <span style="color:#f92672">in</span> range(size)]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> pop[max(contenders, key<span style="color:#f92672">=</span><span style="color:#66d9ef">lambda</span> i: fits[i])]
+</span></span></code></pre></div><p>Three details to point out.</p>
+<ul>
+<li>The loop never looks inside a regex or reasons about what it means: it only scores, selects and shuffles.</li>
+<li>Everything it &ldquo;knows&rdquo; about obfuscation comes from the fitness function, which is why Section 4 spent so long on getting that right.</li>
+<li>And the second half of the story (the walls in Section 5) comes from two lines of this function: which parent <code>pick()</code> returns, and which edits <code>crossover</code> and <code>mutate</code> are able to make.</li>
+</ul>
 
 
 
@@ -447,6 +512,51 @@ As ever the friends we made was the learning along the way.</p>
 
 </blockquote>
 <hr>
+<h2 id="4-the-project">4 The project</h2>
+<p>Before the details of data, scoring and hacking, here is the map. Every experiment in this post, from the first stalled run to the final team of detectors, runs through the same pipeline of small Python files. Only the settings change. Keeping this picture in mind makes the next sections easier to follow, because each one describes one box.</p>
+<pre tabindex="0"><code class="language-mermaid" data-lang="mermaid">flowchart TD
+    subgraph DATA[&#34;1. Make the data (src/regexevo/data/)&#34;]
+        T[&#34;templates.py, obfuscators.py, wrappers.py&lt;br/&gt;build malicious commands and disguise them&#34;]
+        B[&#34;benign.py, benign_v2.py&lt;br/&gt;build harmless commands&#34;]
+        D[&#34;dataset.py&lt;br/&gt;combine, de-duplicate, split into train / validation / test&lt;br/&gt;and record where the gold indicator characters are&#34;]
+        T --&gt; D
+        B --&gt; D
+    end
+
+    subgraph TASK[&#34;2. Turn it into a question&#34;]
+        S[&#34;slotdata.py&lt;br/&gt;one task per detector: &#39;highlight the characters of this indicator&#39;&#34;]
+    end
+
+    subgraph EVOLVE[&#34;3. Evolve (the genetic algorithm)&#34;]
+        GP[&#34;gp.py: run_gp()&lt;br/&gt;the main loop: select, breed, mutate, repeat&#34;]
+        GR[&#34;grammar.py&lt;br/&gt;what a valid regex tree is, and how to print it as a pattern&#34;]
+        TR[&#34;tree.py&lt;br/&gt;random starting trees, crossover, mutation&#34;]
+        FI[&#34;fitness.py&lt;br/&gt;the judge: character-level F1 minus a length penalty&#34;]
+        SM[&#34;safe_match.py&lt;br/&gt;runs the regex with a timeout (ReDoS guard)&#34;]
+        GP --&gt; TR
+        TR --&gt; GR
+        GP --&gt; FI
+        FI --&gt; SM
+    end
+
+    subgraph REPORT[&#34;4. Record and compare&#34;]
+        W[&#34;experiments/phase2_worker.py&lt;br/&gt;runs one evolution and saves a JSON file with its curve, best regex and settings&#34;]
+        R[&#34;runlog.py&lt;br/&gt;stamps the git commit, library versions and seed&#34;]
+        A[&#34;experiments/phase2_expN_*.py&lt;br/&gt;gather many runs, compare against baselines.py,&lt;br/&gt;draw the chart with plotstyle.py, write the report&#34;]
+        W --&gt; R
+        W --&gt; A
+    end
+
+    D --&gt; S
+    S --&gt; GP
+    GP --&gt; W
+</code></pre><ol>
+<li><strong>Make the data.</strong> The generator writes malicious commands, disguises them at six levels and mixes in harmless ones. It remembers exactly which characters make up each indicator, which later becomes the answer key (Section 4.1).</li>
+<li><strong>Turn it into a question.</strong> For each detector (run code, download, and so on) the commands become a task: highlight <em>these</em> characters and nothing else (Section 4.3).</li>
+<li><strong>Evolve.</strong> <code>run_gp()</code> (the function above) drives the loop. <code>tree.py</code> makes and edits regex trees, <code>grammar.py</code> guarantees every tree is a valid and safe pattern, and <code>fitness.py</code> scores each one, with <code>safe_match.py</code> stopping any pattern that runs too long.</li>
+<li><strong>Record and compare.</strong> A worker script saves each run as a small file, stamped so the run can be reproduced. A separate script per experiment then gathers many runs, compares them with the keyword and expert baselines, and draws the chart.</li>
+</ol>
+<p>For the final chapter, two more files sit after step 4: <code>scoring.py</code> combines the twelve detectors&rsquo; match counts into one weighted score, and <code>decode.py</code> unpacks base64 and compressed payloads before the detectors read them (Section 7).</p>
 <h3 id="41-generating-data">4.1 Generating data</h3>
 <p>We generated the malicious examples from templates, applying the obfuscation techniques above at <strong>six escalating levels</strong>:</p>
 <p>(L0 = untouched, up to L5 = heavily scrambled / base64).</p>
@@ -522,7 +632,7 @@ time, running <strong>7 in parallel</strong> gives you &gt;95% odds that at leas
 <p><img src="/images/genetic-regex/exp5_EXEC_escape.png?width=200px" alt="Resize" style="max-width: 100%; height: auto; display: block;"></p>
 <p>However every single successful run topped out at the same ~0.70 all of them using that <code>\w+</code> trick. And <code>\w</code>
 matches letters and digits, <strong>not</strong> the backtick/quote/<code>+</code> noise. So while it sails through case changes it&rsquo;s very much completely blind to <code>i`ex</code> and <code>('i'+'ex')</code>. That&rsquo;s the <strong>second wall</strong>, and nothing had touched it.</p>
-<h3 id="interlude---stuck-on-a-good-but-not-great-answer">Interlude - Stuck on a good but not great answer</h3>
+<h3 id="interlude-stuck-on-a-good-but-not-great-answer">Interlude: Stuck on a good but not great answer</h3>
 <p>At this point I&rsquo;d like to point out if this was a proper research paper or anything more than a series of curious experiments a proper literature review would have been the starting point. The unsatisfactory progress I was having with these experiments can be attributed to some the oldest problems in evolutionary computing, and the MarI/O video from the
 prologue is built on one of the classic answers. MarI/O used an algorithm called <strong>NEAT</strong> (2002).</p>
 
@@ -733,7 +843,7 @@ out:</p>
 <li><strong>The parts cover each other&rsquo;s blind spots.</strong> In the hard world payload detectors alone scored 0.944 and disguise detectors alone 0.913, together 0.977. A command that hides its payload is caught by the disguise, and a command that hides nothing is caught by the payload.</li>
 <li><strong>The scorer can be retuned without re-evolving anything.</strong> Move to a network with different benign habits and you re-fit twelve weights. A single regex has to be rebuilt.</li>
 </ol>
-<h3 id="75-what-to-take-away-if-you-never-plan-touch-a-genetic-algorithm">7.5 What to take away if you never plan touch a genetic algorithm</h3>
+<h3 id="75-what-to-take-away-if-you-never-plan-on-touching-a-genetic-algorithm">7.5 What to take away if you never plan on touching a genetic algorithm</h3>
 <ul>
 <li><strong>Decompose before you optimise.</strong> If a detection is hard to write as one pattern, ask whether it is really several easy patterns and a weighting.</li>
 <li><strong>Make weights readable, and let them follow the base rate.</strong> A signal that is common in your benign traffic should earn a small weight, and the weight should be flexible enough to be reviewed when the environment changes.</li>
@@ -853,6 +963,11 @@ out:</p>
         <li><a href="#2-the-tool-were-evolving-regex">2. The tool we&rsquo;re evolving: Regex</a></li>
         <li><a href="#3-evolution">3. Evolution</a>
           <ul>
+            <li><a href="#31-the-core-algorithm">3.1 The core algorithm</a></li>
+          </ul>
+        </li>
+        <li><a href="#4-the-project">4 The project</a>
+          <ul>
             <li><a href="#41-generating-data">4.1 Generating data</a></li>
             <li><a href="#42-two-measures-the-floor-and-the-ceiling">4.2 Two measures: the floor and the ceiling</a></li>
             <li><a href="#43-stopping-reward-hacking---score-the-characters-and-not-just-a-yesno">4.3 Stopping Reward Hacking - Score the characters and not just a yes/no</a></li>
@@ -863,7 +978,7 @@ out:</p>
             <li><a href="#exp-1-the-first-run-it-stalls-below-the-baseline">Exp 1 The first run: it stalls <em>below</em> the baseline</a></li>
             <li><a href="#exp-4-does-it-just-need-more-time">Exp 4 Does it just need more time?</a></li>
             <li><a href="#exp-5-can-we-make-the-breakthrough-reliable">Exp 5 Can we make the breakthrough reliable?</a></li>
-            <li><a href="#interlude---stuck-on-a-good-but-not-great-answer">Interlude - Stuck on a good but not great answer</a></li>
+            <li><a href="#interlude-stuck-on-a-good-but-not-great-answer">Interlude: Stuck on a good but not great answer</a></li>
             <li><a href="#exp-7-protecting-the-specialists-lexicase-selection">Exp 7 Protecting the specialists: lexicase selection</a></li>
           </ul>
         </li>
@@ -873,7 +988,7 @@ out:</p>
             <li><a href="#72-the-potential-solution-stop-asking-one-regex-to-do-everything">7.2 The potential solution: stop asking one regex to do everything</a></li>
             <li><a href="#73-the-challenges">7.3 The challenges</a></li>
             <li><a href="#74-final-results">7.4 Final results</a></li>
-            <li><a href="#75-what-to-take-away-if-you-never-plan-touch-a-genetic-algorithm">7.5 What to take away if you never plan touch a genetic algorithm</a></li>
+            <li><a href="#75-what-to-take-away-if-you-never-plan-on-touching-a-genetic-algorithm">7.5 What to take away if you never plan on touching a genetic algorithm</a></li>
             <li><a href="#76-conclusion">7.6 Conclusion</a></li>
           </ul>
         </li>
