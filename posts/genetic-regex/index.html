@@ -514,7 +514,7 @@ As ever the friends we made was the learning along the way.</p>
 <hr>
 <h2 id="4-the-project">4 The project</h2>
 <p>Before the details of data, scoring and hacking, here is the map. Every experiment in this post, from the first stalled run to the final team of detectors, runs through the same pipeline of small Python files. Only the settings change. Keeping this picture in mind makes the next sections easier to follow, because each one describes one box.</p>
-<pre tabindex="0"><code class="language-mermaid" data-lang="mermaid">flowchart TD
+<div class="mermaid">flowchart TD
     subgraph DATA[&#34;1. Make the data (src/regexevo/data/)&#34;]
         T[&#34;templates.py, obfuscators.py, wrappers.py&lt;br/&gt;build malicious commands and disguise them&#34;]
         B[&#34;benign.py, benign_v2.py&lt;br/&gt;build harmless commands&#34;]
@@ -550,7 +550,19 @@ As ever the friends we made was the learning along the way.</p>
     D --&gt; S
     S --&gt; GP
     GP --&gt; W
-</code></pre><ol>
+</div>
+
+
+<style>
+  .mermaid { margin: 1.5rem 0; text-align: center; overflow-x: auto; }
+  .mermaid svg { max-width: 100%; height: auto; }
+</style>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  mermaid.initialize({ startOnLoad: true, theme: isLight ? 'default' : 'dark' });
+</script>
+<ol>
 <li><strong>Make the data.</strong> The generator writes malicious commands, disguises them at six levels and mixes in harmless ones. It remembers exactly which characters make up each indicator, which later becomes the answer key (Section 4.1).</li>
 <li><strong>Turn it into a question.</strong> For each detector (run code, download, and so on) the commands become a task: highlight <em>these</em> characters and nothing else (Section 4.3).</li>
 <li><strong>Evolve.</strong> <code>run_gp()</code> (the function above) drives the loop. <code>tree.py</code> makes and edits regex trees, <code>grammar.py</code> guarantees every tree is a valid and safe pattern, and <code>fitness.py</code> scores each one, with <code>safe_match.py</code> stopping any pattern that runs too long.</li>
